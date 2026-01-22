@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router";
 import { injectIntl } from "react-intl";
-import { getSpecialtyByIds } from "../../services/specialtyService";
-import { HandleGetDoctorSpecialtyById } from "../../services/doctorService";
+import { getSpecialtyByIds } from "../../../services/specialtyService";
+import { HandleGetDoctorSpecialtyById } from "../../../services/doctorService";
 import HomeHeader from "containers/HomePage/HomeHeader";
-import Breadcrumb from "../../components/Breadcrumb";
-import "../../components/Breadcrumb.scss";
-import { getBase64FromBuffer } from "../../utils/CommonUtils";
+import Breadcrumb from "../../../components/Breadcrumb";
+import "../../../components/Breadcrumb.scss";
+import { getBase64FromBuffer } from "../../../utils/CommonUtils";
 import "./DetailSpecialty.scss";
 import DoctorCard from "components/Patient/DoctorCard";
 import { LANGUAGES } from "utils";

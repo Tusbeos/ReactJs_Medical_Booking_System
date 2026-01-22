@@ -1,4 +1,5 @@
 {
+  "name": "BookingCare",
   "components": {
     "doctor-card": {
       "no-schedule": "Không có lịch hẹn trong thời gian này",
@@ -51,7 +52,9 @@
     "doctor": {
       "manage-doctor": "Quản lý bác sĩ",
       "schedule": "Quản Lý Lịch Khám",
-      "manage-schedule": "Quản lý lịch khám của bác sĩ"
+      "manage-schedule": "Quản lý lịch khám của bác sĩ",
+      "manage-patient": "Quản lý bệnh nhân",
+      "patient-booking": "Danh sách bệnh nhân đặt lịch"
     },
     "manage-doctor": {
       "title": "Quản lý thông tin bác sĩ",
@@ -126,6 +129,10 @@
     }
   },
   "specialty": {
+    "special-list": {
+      "title": "Chuyên khoa dành cho bạn",
+      "no-info": "Không có dữ liệu chuyên khoa"
+    },
     "detail-specialty": {
       "select-province": "Chọn tỉnh thành",
       "all": "Toàn quốc",
@@ -133,9 +140,22 @@
       "hide-detail": "Thu gọn"
     }
   },
+  "clinic": {
+    "detail-clinic": {
+      "notFound": "Phòng khám không tìm thấy.",
+      "note_1": "Nền tảng Y tế chăm sóc sức khỏe toàn diện",
+      "note_2": "Từ nay, người bệnh có thể đặt lịch tại",
+      "note_3": "Được lựa chọn các giáo sư, tiến sĩ, bác sĩ chuyên khoa giàu kinh nghiệm",
+      "note_4": "Hỗ trợ đặt khám trực tuyến trước khi đi khám (miễn phí đặt lịch)"
+    }
+  },
   "booking": {
     "booking-doctor": {
+      "last-Name": "Họ",
+      "first-Name": "Tên",
       "title-booking": "ĐẶT LỊCH KHÁM",
+      "last-name": "Họ",
+      "first-name": "Tên",
       "full-name": "Nhập họ tên",
       "phone-number": "Nhập Số điện thoại",
       "male": "Nam",

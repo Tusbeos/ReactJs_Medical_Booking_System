@@ -15,7 +15,8 @@ class BookingModel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      fullName: "",
+      lastName: "",
+      firstName: "",
       gender: "",
       phoneNumber: "",
       email: "",
@@ -132,14 +133,23 @@ class BookingModel extends Component {
   handleConfirmBooking = async () => {
     let timeString = this.renderTimeBooking(this.state.timeBooking);
     let doctorName = this.buildDoctorName(this.state.detailDoctor);
-    let date = new Date(this.state.birthday).getTime();
+    let appointmentDate = this.state.timeBooking?.date || "";
+    let birthday = this.state.birthday
+      ? new Date(this.state.birthday).getTime()
+      : "";
+    let fullName = `${this.state.lastName || ""} ${
+      this.state.firstName || ""
+    }`.trim();
 
     let res = await postPatientBookAppointment({
-      fullName: this.state.fullName,
+      fullName: fullName,
+      lastName: this.state.lastName,
+      firstName: this.state.firstName,
       gender: this.state.gender,
       phoneNumber: this.state.phoneNumber,
       email: this.state.email,
-      date: date,
+      date: appointmentDate,
+      birthday: birthday,
       address: this.state.address,
       reason: this.state.reason,
       doctorId: this.state.doctorId,
@@ -247,18 +257,35 @@ class BookingModel extends Component {
 
               <div className="booking-modal-body">
                 <div className="row">
-                  <div className="col-12 form-group">
+                  <div className="col-12 col-md-6 form-group">
                     <div className="input-icon-group">
                       <i class="fas fa-user"></i>
                       <input
                         className="form-control"
                         type="text"
                         placeholder={intl.formatMessage({
-                          id: "booking.booking-doctor.full-name",
+                          id: "booking.booking-doctor.last-name",
                         })}
-                        value={this.state.fullName}
+                        value={this.state.lastName}
                         onChange={(event) =>
-                          this.handleOnChangeInput(event, "fullName")
+                          this.handleOnChangeInput(event, "lastName")
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-12 col-md-6 form-group">
+                    <div className="input-icon-group">
+                      <i class="fas fa-user"></i>
+                      <input
+                        className="form-control"
+                        type="text"
+                        placeholder={intl.formatMessage({
+                          id: "booking.booking-doctor.first-name",
+                        })}
+                        value={this.state.firstName}
+                        onChange={(event) =>
+                          this.handleOnChangeInput(event, "firstName")
                         }
                       />
                     </div>

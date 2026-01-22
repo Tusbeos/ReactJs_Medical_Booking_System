@@ -1,4 +1,5 @@
 {
+  "name": "BookingCare",
   "components": {
     "doctor-card": {
       "no-schedule": "No schedule available for this day",
@@ -51,7 +52,9 @@
     "doctor": {
       "manage-doctor": "Manage Doctor",
       "schedule": "Manage Schedule",
-      "manage-schedule": "Manage Doctor's Schedule"
+      "manage-schedule": "Manage Doctor's Schedule",
+      "manage-patient": "Manage Patient",
+      "patient-booking": "Patient Booking List"
     },
     "manage-doctor": {
       "title": "Manage doctor's information",
@@ -127,6 +130,10 @@
     }
   },
   "specialty": {
+    "special-list": {
+      "title": "Specialties for you",
+      "no-info": "No specialty data available"
+    },
     "detail-specialty": {
       "select-province": "Select province",
       "all": "All",
@@ -134,9 +141,22 @@
       "hide-detail": "Hide details"
     }
   },
+  "clinic": {
+    "detail-clinic": {
+      "notFound": "Clinic not found.",
+      "note_1": "Comprehensive healthcare medical platform",
+      "note_2": "From now on, patients can book appointments at",
+      "note_3": "Choose from professors, doctors, and experienced specialists",
+      "note_4": "Support online appointment booking before going for a checkup (free booking)"
+    }
+  },
   "booking": {
     "booking-doctor": {
+      "last-Name": "Last name",
+      "first-Name": "First name",
       "title-booking": "Book a doctor's appointment",
+      "last-name": "Last name",
+      "first-name": "First name",
       "full-name": "Full name",
       "phone-number": "Phone number",
       "male": "Male",

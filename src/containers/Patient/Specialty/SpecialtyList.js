@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router";
-import { handleGetAllSpecialties } from "../../services/specialtyService";
+import { FormattedMessage } from "react-intl";
+import { handleGetAllSpecialties } from "../../../services/specialtyService";
 import "./SpecialtyList.scss";
 import HomeHeader from "containers/HomePage/HomeHeader";
-import { getBase64FromBuffer } from "../../utils/CommonUtils";
-import Breadcrumb from "../../components/Breadcrumb";
-import "../../components/Breadcrumb.scss";
+import { getBase64FromBuffer } from "../../../utils/CommonUtils";
+import Breadcrumb from "../../../components/Breadcrumb";
+import "../../../components/Breadcrumb.scss";
 import { LANGUAGES } from "utils";
 
 class SpecialtyItem extends Component {
@@ -23,7 +24,7 @@ class SpecialtyItem extends Component {
             alt="icon"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = "https://via.placeholder.com/60?text=No+Img"; 
+              e.target.src = "https://via.placeholder.com/60?text=No+Img";
             }}
           />
         </div>
@@ -57,12 +58,9 @@ class SpecialtyList extends Component {
 
         this.setState({ specialties });
       } else {
-        console.log("Fetch failed or no data:", res);
         this.setState({ specialties: [] });
       }
-    } catch (error) {
-      console.error("Lỗi khi lấy danh sách chuyên khoa:", error);
-    }
+    } catch (error) {}
   };
 
   constructor(props) {
@@ -99,7 +97,9 @@ class SpecialtyList extends Component {
         />
         <div className="booking-container">
           <div className="specialty-list-container">
-            <h1 className="specialty-list-title">Chuyên khoa dành cho bạn</h1>
+            <h1 className="specialty-list-title">
+              <FormattedMessage id="special-list.title" />
+            </h1>
             <ul className="specialty-list-items">
               {specialties && specialties.length > 0 ? (
                 specialties.map((item, idx) => (
@@ -116,7 +116,9 @@ class SpecialtyList extends Component {
                   className="specialty-item"
                   style={{ justifyContent: "center" }}
                 >
-                  <span>Không có dữ liệu chuyên khoa</span>
+                  <span>
+                    <FormattedMessage id="special-list.no-info" />
+                  </span>
                 </li>
               )}
             </ul>

@@ -1,6 +1,5 @@
 export const adminMenu = [
   {
-    
     name: "menu.admin.manage-user",
     menus: [
       {
@@ -19,6 +18,10 @@ export const adminMenu = [
       {
         name: "menu.doctor.schedule",
         link: "/doctor/manage-schedule",
+      },
+      {
+        name: "menu.doctor.manage-patient",
+        link: "/doctor/manage-patient",
       },
     ],
   },
@@ -57,6 +60,10 @@ export const doctorMenu = [
       {
         name: "menu.doctor.manage-schedule",
         link: "/doctor/manage-schedule",
+      },
+      {
+        name: "menu.doctor.manage-patient",
+        link: "/doctor/manage-patient",
       },
     ],
   },

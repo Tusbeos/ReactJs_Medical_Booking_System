@@ -2,11 +2,11 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import HomeHeader from "containers/HomePage/HomeHeader";
 import "./DetailClinic.scss";
+import { FormattedMessage } from "react-intl";
 import { getDetailClinicById } from "../../../services/clinicService";
 import { getDoctorsByClinicId } from "../../../services/doctorService";
 import { getBase64FromBuffer } from "../../../utils/CommonUtils";
 import DoctorCard from "../../../components/Patient/DoctorCard";
-
 const HEADER_SELECTOR = "h2";
 
 class DetailClinic extends Component {
@@ -159,7 +159,9 @@ class DetailClinic extends Component {
       return (
         <div className="detail-clinic-wrapper">
           <HomeHeader />
-          <div className="not-found-msg">Không tìm thấy phòng khám.</div>
+          <div className="not-found-msg">
+            <FormattedMessage id="clinic-detail.notFound" />
+          </div>
         </div>
       );
     }

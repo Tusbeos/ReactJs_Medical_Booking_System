@@ -68,8 +68,6 @@
       }
     }
   }
-
-  /* 2. NAV TABS */
   .clinic-nav-tabs {
     background: #fff;
     border-bottom: 1px solid #e1e1e1;
@@ -104,8 +102,6 @@
       }
     }
   }
-
-  /* 3. BODY CONTENT */
   .clinic-body-section {
     padding-top: 30px;
 
@@ -159,11 +155,19 @@
         margin: 0 auto;
         display: inline-block;
       }
-      h2, h3 { color: #333; margin: 20px 0 10px; font-weight: bold; }
+      h2, h3 { 
+        color: #337ab7; 
+        margin: 20px 0 10px; 
+        font-weight: 600; 
+        font-size: 25px; }
+      figcaption {
+        font-size: 14px;
+        color: #666;
+        margin-top: 6px;
+        font-style: italic
+      }
     }
   }
-
-  /* 4. AGENT STICKY FOOTER */
   .agent-sticky-footer {
     position: fixed;
     bottom: 0;

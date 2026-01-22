@@ -1,0 +1,122 @@
+$primary-color: #45c3d2; // Clinic/Doctor Theme Color
+$text-color: #333;
+$bg-light: #f8f9fa;
+$border-color: #d1d3e2;
+$card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+
+.manage-patient-container {
+    padding: 20px 30px;
+    background-color: #fff;
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    caret-color: transparent;
+    // Page Title
+    .ms-title {
+        text-align: center;
+        text-transform: uppercase;
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: $text-color;
+        border-bottom: 2px solid $bg-light;
+        padding-bottom: 10px;
+    }
+
+    // 1. Info Card Style (Shared Concept)
+    .info-card {
+        background: #fff;
+        border: 1px solid $border-color;
+        border-radius: 8px;
+        box-shadow: $card-shadow;
+        overflow: hidden;
+        margin-bottom: 0;
+
+        .card-header {
+            background-color: $bg-light;
+            padding: 10px 20px;
+            font-weight: 600;
+            color: darken($primary-color, 15%);
+            border-bottom: 1px solid $border-color;
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+            
+            i { margin-right: 8px; }
+        }
+
+        .card-body {
+            padding: 20px;
+
+            &.p-0 {
+                padding: 0; // For table to take full width
+            }
+        }
+    }
+
+    // 2. Form Groups
+    .form-group {
+        margin-bottom: 15px;
+        caret-color: auto; // Restore caret for inputs
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            color: #555;
+            font-size: 14px;
+
+            &.label-bold { color: #333; }
+        }
+
+        .form-control {
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            padding: 8px 12px;
+            font-size: 14px;
+            height: 38px; // Consistent height
+            transition: all 0.2s;
+
+            &:focus {
+                border-color: $primary-color;
+                box-shadow: 0 0 0 0.2rem rgba(69, 195, 210, 0.25);
+                outline: none;
+            }
+        }
+    }
+
+    // 3. Table Styles
+    .table-responsive {
+        .table {
+            th {
+                vertical-align: middle;
+                text-align: center; // Center header text
+                background-color: #f1f3f5;
+                font-weight: 600;
+                color: #444;
+                border-bottom: 2px solid $border-color;
+            }
+            
+            td {
+                vertical-align: middle;
+                font-size: 14px;
+                color: #333;
+            }
+
+            // Striped rows
+            &.table-striped tbody tr:nth-of-type(odd) {
+                background-color: rgba(0, 0, 0, 0.02);
+            }
+
+            // Hover effect
+            &.table-hover tbody tr:hover {
+                background-color: rgba(69, 195, 210, 0.05); // Very light primary color
+            }
+        }
+    }
+
+    // Loading / Error texts
+    .loading-text {
+        font-style: italic;
+        color: #666;
+    }
+}
