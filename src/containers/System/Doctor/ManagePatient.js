@@ -3,9 +3,13 @@ import { connect } from "react-redux";
 import "./ManagePatient.scss";
 import { FormattedMessage } from "react-intl";
 import DatePicker from "../../../components/Input/DatePicker";
-import { getPatientsByDoctor } from "../../../services/patientService";
+import {
+  getPatientsByDoctor,
+  confirmPatientBooking,
+} from "../../../services/patientService";
 import { LANGUAGES, USER_ROLE } from "../../../utils";
 import { handleGetAllDoctorsService } from "../../../services/doctorService";
+import { toast } from "react-toastify";
 
 class ManagePatient extends Component {
   constructor(props) {
@@ -141,6 +145,33 @@ class ManagePatient extends Component {
     }
   };
 
+  handleConfirmBooking = async (item) => {
+    const bookingId = item?.id;
+    if (!bookingId) return;
+
+    const confirmed = window.confirm("Xác nhận bệnh nhân đã khám xong?");
+    if (!confirmed) return;
+
+    const doctorId =
+      item?.doctorId ||
+      this.props.userInfo?.id ||
+      this.props.userInfo?.userId ||
+      this.state.selectedDoctorId ||
+      "";
+
+    try {
+      const res = await confirmPatientBooking(bookingId, doctorId, "S3");
+      if (res && res.errCode === 0) {
+        toast.success("Xác nhận thành công!");
+        this.fetchPatients();
+      } else {
+        toast.error(res?.errMessage || "Xác nhận thất bại!");
+      }
+    } catch (e) {
+      toast.error("Xác nhận thất bại!");
+    }
+  };
+
   render() {
     const {
       patients,
@@ -256,12 +287,13 @@ class ManagePatient extends Component {
                         <th>SĐT</th>
                         <th>Giờ khám</th>
                         <th>Lý do khám</th>
+                        <th>Hành động</th>
                       </tr>
                     </thead>
                     <tbody>
                       {isLoading ? (
                         <tr>
-                          <td colSpan="6" className="text-center p-4">
+                          <td colSpan="7" className="text-center p-4">
                             <i className="fas fa-spinner fa-spin mr-2"></i> Đang
                             tải dữ liệu...
                           </td>
@@ -281,11 +313,22 @@ class ManagePatient extends Component {
                                     : item.bookingTimeTypeData?.value_En || ""}
                                 </td>
                                 <td>{item.reason || ""}</td>
+                                <td>
+                                  <button
+                                    className="btn btn-primary btn-sm"
+                                    onClick={() => this.handleConfirmBooking(item)}
+                                    disabled={item.statusId === "S3"}
+                                  >
+                                    {item.statusId === "S3"
+                                      ? "Đã xác nhận"
+                                      : "Xác nhận"}
+                                  </button>
+                                </td>
                               </tr>
                             ))
                           ) : (
                             <tr>
-                              <td colSpan="6" className="text-center p-4">
+                              <td colSpan="7" className="text-center p-4">
                                 {"Chưa có bệnh nhân đặt lịch vào ngày này."}
                               </td>
                             </tr>

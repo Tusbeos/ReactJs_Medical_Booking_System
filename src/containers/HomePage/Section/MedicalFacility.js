@@ -19,7 +19,7 @@ class MedicalFacility extends Component {
   }
 
   getAllClinics = async () => {
-    let res = await handleGetAllClinics();
+    let res = await handleGetAllClinics(6);
     if (res && res.errCode === 0) {
       this.setState({
         dataClinics: res.data ? res.data : [],
@@ -33,6 +33,9 @@ class MedicalFacility extends Component {
     }
   };
 
+  handleClinicClick = () => {
+    if (this.props.history) this.props.history.push("/clinic");
+  };
   render() {
     let { dataClinics } = this.state;
     console.log(">>> Check data clinics: ", dataClinics);
@@ -45,7 +48,8 @@ class MedicalFacility extends Component {
               <span className="title-section">
                 <FormattedMessage id="home-header.medical-facility" />
               </span>
-              <button className="btn-section">
+              <button className="btn-section" 
+                onClick={this.handleClinicClick}>
                 <FormattedMessage id="home-header.see-more" />
               </button>
             </div>

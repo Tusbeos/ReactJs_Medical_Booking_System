@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import HomeHeader from "containers/HomePage/HomeHeader";
+import HomeFooter from "containers/HomePage/HomeFooter";
 import "./DetailClinic.scss";
 import { FormattedMessage } from "react-intl";
 import { getDetailClinicById } from "../../../services/clinicService";
@@ -264,6 +265,7 @@ class DetailClinic extends Component {
             </div>
           </div>
         </div>
+        <HomeFooter />
       </div>
     );
   }

@@ -4,6 +4,7 @@ import { FormattedMessage } from "react-intl";
 import { handleGetAllSpecialties } from "../../../services/specialtyService";
 import "./SpecialtyList.scss";
 import HomeHeader from "containers/HomePage/HomeHeader";
+import HomeFooter from "containers/HomePage/HomeFooter";
 import { getBase64FromBuffer } from "../../../utils/CommonUtils";
 import Breadcrumb from "../../../components/Breadcrumb";
 import "../../../components/Breadcrumb.scss";
@@ -124,6 +125,7 @@ class SpecialtyList extends Component {
             </ul>
           </div>
         </div>
+        <HomeFooter />
       </>
     );
   }

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import HomeHeader from "containers/HomePage/HomeHeader";
+import HomeFooter from "containers/HomePage/HomeFooter";
 import Breadcrumb from "../../../components/Breadcrumb";
 import "../../../components/Breadcrumb.scss";
 import "./DetailDoctor.scss";
@@ -125,6 +126,7 @@ class DetailDoctor extends Component {
             <div className="comment-doctor"></div>
           </div>
         </div>
+        <HomeFooter />
       </>
     );
   }

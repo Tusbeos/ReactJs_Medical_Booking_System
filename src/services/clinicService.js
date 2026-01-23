@@ -18,8 +18,10 @@ const getDetailClinicById = (clinicId) => {
   });
 };
 
-const handleGetAllClinics = () => {
-  return axios.get("/api/get-all-clinic");
+const handleGetAllClinics = (limit) => {
+  return axios.get("/api/get-all-clinic", {
+    params: { limit },
+  });
 };
 
 export {

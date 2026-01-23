@@ -6,6 +6,12 @@ const getPatientsByDoctor = (doctorId, date) => {
   });
 };
 
-export {
-  getPatientsByDoctor,
+const confirmPatientBooking = (bookingId, doctorId, statusId = "S3") => {
+  return axios.post("/api/confirm-patient-booking", {
+    bookingId,
+    doctorId,
+    statusId,
+  });
 };
+
+export { getPatientsByDoctor, confirmPatientBooking };

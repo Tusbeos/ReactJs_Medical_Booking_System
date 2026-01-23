@@ -3,6 +3,7 @@ import { withRouter } from "react-router";
 import { handleGetAllClinics } from "../../../services/clinicService";
 import "./ClinicList.scss";
 import HomeHeader from "containers/HomePage/HomeHeader";
+import HomeFooter from "containers/HomePage/HomeFooter";
 import { getBase64FromBuffer } from "../../../utils/CommonUtils";
 import Breadcrumb from "../../../components/Breadcrumb";
 import "../../../components/Breadcrumb.scss";
@@ -83,8 +84,7 @@ class ClinicList extends Component {
         to: "/home",
       },
       {
-        label:
-          this.props.language === LANGUAGES.VI ? "Phòng khám" : "Clinic",
+        label: this.props.language === LANGUAGES.VI ? "Phòng khám" : "Clinic",
       },
     ];
     return (
@@ -110,13 +110,17 @@ class ClinicList extends Component {
                   />
                 ))
               ) : (
-                <li className="clinic-item" style={{ justifyContent: "center" }}>
+                <li
+                  className="clinic-item"
+                  style={{ justifyContent: "center" }}
+                >
                   <span>Không có dữ liệu phòng khám</span>
                 </li>
               )}
             </ul>
           </div>
         </div>
+        <HomeFooter />
       </>
     );
   }

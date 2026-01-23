@@ -12,8 +12,10 @@ const deleteSpecialtyService = (id) => {
   return axios.delete("/api/delete-specialty", { data: { id } });
 };
 
-const handleGetAllSpecialties = () => {
-  return axios.get("/api/get-all-specialty");
+const handleGetAllSpecialties = (limit) => {
+  return axios.get("/api/get-all-specialty", {
+    params: { limit },
+  });
 };
 
 const getSpecialtyByIds = (ids = []) => {

@@ -4,6 +4,7 @@ import { injectIntl } from "react-intl";
 import { getSpecialtyByIds } from "../../../services/specialtyService";
 import { HandleGetDoctorSpecialtyById } from "../../../services/doctorService";
 import HomeHeader from "containers/HomePage/HomeHeader";
+import HomeFooter from "containers/HomePage/HomeFooter";
 import Breadcrumb from "../../../components/Breadcrumb";
 import "../../../components/Breadcrumb.scss";
 import { getBase64FromBuffer } from "../../../utils/CommonUtils";
@@ -139,6 +140,7 @@ class DetailSpecialty extends Component {
             />
           </div>
         </div>
+        <HomeFooter />
       </>
     );
   }

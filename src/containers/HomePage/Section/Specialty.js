@@ -19,7 +19,7 @@ class Specialty extends Component {
   }
 
   getAllSpecialties = async () => {
-    let res = await handleGetAllSpecialties();
+    let res = await handleGetAllSpecialties(6);
     if (res && res.errCode === 0) {
       this.setState({
         dataSpecialty: res.data ? res.data : [],
