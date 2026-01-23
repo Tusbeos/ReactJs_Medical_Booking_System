@@ -167,9 +167,9 @@ class DoctorCard extends Component {
     const positionVi = data.positionData?.value_Vi || "";
     const positionEn = data.positionData?.value_En || "";
     const nameVi =
-      `${positionVi} ${data.lastName || ""} ${data.firstName || ""}`.trim();
+      `${positionVi}, ${data.lastName || ""} ${data.firstName || ""}`.trim();
     const nameEn =
-      `${positionEn} ${data.firstName || ""} ${data.lastName || ""}`.trim();
+      `${positionEn}, ${data.firstName || ""} ${data.lastName || ""}`.trim();
     const name = language === LANGUAGES.VI ? nameVi : nameEn;
 
     return {

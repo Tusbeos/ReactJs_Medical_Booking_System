@@ -32,8 +32,11 @@ class DatePicker extends Component {
             const { onChange } = this.props;
             const value = event.target.value;
 
+            if (!value) return;
+
             // Take the blur event and process the string value
             const valueMoment = moment(value, 'DD/MM/YYYY');
+            if (!valueMoment.isValid()) return;
             onChange([valueMoment.toDate(), valueMoment.toDate()]);
         }
     }
@@ -51,7 +54,9 @@ class DatePicker extends Component {
 
         // Take the blur event and process the string value
         event.preventDefault();
+        if (!value) return;
         const valueMoment = moment(value, 'DD/MM/YYYY');
+        if (!valueMoment.isValid()) return;
         onChange([valueMoment.toDate(), valueMoment.toDate()]);
     };
 

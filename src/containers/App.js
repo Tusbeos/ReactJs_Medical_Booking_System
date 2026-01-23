@@ -7,6 +7,8 @@ import { ToastContainer } from "react-toastify";
 import {
   userIsAuthenticated,
   userIsNotAuthenticated,
+  userIsAdmin,
+  userIsDoctorOrAdmin,
 } from "../hoc/authentication";
 import Doctor from "routes/Doctor";
 
@@ -57,10 +59,7 @@ class App extends Component {
                     path={path.LOGIN}
                     component={userIsNotAuthenticated(Login)}
                   />
-                  <Route
-                    path={path.SYSTEM}
-                    component={userIsAuthenticated(System)}
-                  />
+                  <Route path={path.SYSTEM} component={userIsAdmin(System)} />
                   <Route
                     path={path.DETAIL_SPECIALTY}
                     component={detailSpecialty}
@@ -73,7 +72,7 @@ class App extends Component {
 
                   <Route
                     path={"/doctor"}
-                    component={userIsAuthenticated(Doctor)}
+                    component={userIsDoctorOrAdmin(Doctor)}
                   />
                   <Route path={path.HOMEPAGE} component={HomePage} />
                   <Route path={path.DETAIL_DOCTOR} component={DetailDoctor} />
