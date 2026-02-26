@@ -28,10 +28,21 @@ $highlight-color: #FE9400;
             
             i { font-size: 20px; cursor: pointer; color: #666; margin-right: 15px; }
             .header-logo {
-                width: 120px; height: 100%;
-                background: url(../../assets/Logo.svg) center center no-repeat;
+                width: 120px;
+                height: 65px;
+                display: flex;
+                align-items: center;
+                transition: all 0.3s ease-in-out;
+                background: url(../../assets/Logo.jpg) center center no-repeat;
                 background-size: contain;
                 cursor: pointer;
+                &:hover {
+                    transform: scale(1.05); 
+                    filter: brightness(1.1);
+                }
+                &:active {
+                    transform: scale(0.95);
+                }
             }
         }
         .center-content {

@@ -99,7 +99,7 @@ class SpecialtyList extends Component {
         <div className="booking-container">
           <div className="specialty-list-container">
             <h1 className="specialty-list-title">
-              <FormattedMessage id="special-list.title" />
+              <FormattedMessage id="specialty.special-list.title" />
             </h1>
             <ul className="specialty-list-items">
               {specialties && specialties.length > 0 ? (
