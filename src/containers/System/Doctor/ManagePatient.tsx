@@ -1,0 +1,341 @@
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useSelector } from "react-redux";
+import "./ManagePatient.scss";
+import { FormattedMessage } from "react-intl";
+import DatePicker from "../../../components/Input/DatePicker";
+import {
+  getPatientsByDoctor,
+  confirmPatientBooking,
+} from "../../../services/patientService";
+import { LANGUAGES, USER_ROLE } from "../../../utils";
+import { handleGetAllDoctorsService } from "../../../services/doctorService";
+import { toast } from "react-toastify";
+import { IRootState } from "../../../types";
+
+const ManagePatient = () => {
+  const userInfo = useSelector((state: IRootState) => state.user.userInfo);
+  const language = useSelector((state: IRootState) => state.app.language);
+
+  const [patients, setPatients] = useState<any[]>([]);
+  const [doctors, setDoctors] = useState<any[]>([]);
+  const [selectedDoctorId, setSelectedDoctorId] = useState<number | string>("");
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // Dùng ref để tránh stale closure trong fetchPatients
+  const selectedDoctorIdRef = useRef(selectedDoctorId);
+  selectedDoctorIdRef.current = selectedDoctorId;
+  const selectedDateRef = useRef(selectedDate);
+  selectedDateRef.current = selectedDate;
+
+  const fetchDoctors = useCallback(async () => {
+    try {
+      const isDoctorRole = userInfo?.roleId === USER_ROLE.DOCTOR;
+      if (isDoctorRole) {
+        let doctorId = userInfo.id || userInfo.userId || "";
+        if (!doctorId && userInfo.email) {
+          try {
+            const res = await handleGetAllDoctorsService();
+            if (res && res.errCode === 0 && Array.isArray(res.data)) {
+              const matched = res.data.find(
+                (item: any) => item && item.email === userInfo.email,
+              );
+              doctorId = matched?.id || "";
+            }
+          } catch (e) {}
+        }
+        setDoctors([]);
+        setSelectedDoctorId(doctorId);
+        return;
+      }
+
+      const res = await handleGetAllDoctorsService();
+      if (res && res.errCode === 0 && Array.isArray(res.data)) {
+        const doctorsList = res.data.map((item: any) => ({
+          id: item.id,
+          firstName: item.firstName,
+          lastName: item.lastName,
+        }));
+
+        let initDoctorId = selectedDoctorIdRef.current;
+        if (!initDoctorId && userInfo?.id) {
+          initDoctorId = userInfo.id;
+        }
+
+        setDoctors(doctorsList);
+        setSelectedDoctorId(initDoctorId);
+      }
+    } catch (e) {}
+  }, [userInfo]);
+
+  const fetchPatients = useCallback(async () => {
+    const isDoctorRole = userInfo?.roleId === USER_ROLE.DOCTOR;
+    const isAdmin = userInfo?.roleId === USER_ROLE.ADMIN;
+    const currentSelectedDoctorId = selectedDoctorIdRef.current;
+    const currentSelectedDate = selectedDateRef.current;
+
+    let doctorId = isDoctorRole
+      ? userInfo?.id || userInfo?.userId || ""
+      : isAdmin
+        ? currentSelectedDoctorId
+        : userInfo?.id || userInfo?.userId || currentSelectedDoctorId || "";
+
+    if (isAdmin && !doctorId) {
+      setPatients([]);
+      setIsLoading(false);
+      setErrorMessage("");
+      return;
+    }
+
+    if (isDoctorRole && !doctorId && userInfo?.email) {
+      try {
+        const res = await handleGetAllDoctorsService();
+        if (res && res.errCode === 0 && Array.isArray(res.data)) {
+          const matched = res.data.find(
+            (item: any) => item && item.email === userInfo.email,
+          );
+          doctorId = matched?.id || "";
+        }
+      } catch (e) {}
+    }
+
+    if (!doctorId || !currentSelectedDate) return;
+
+    setIsLoading(true);
+    setErrorMessage("");
+
+    try {
+      let dateValue = new Date(currentSelectedDate).setHours(0, 0, 0, 0);
+      const res = await getPatientsByDoctor(doctorId, dateValue);
+
+      if (res && res.errCode === 0 && Array.isArray(res.data)) {
+        setPatients(res.data);
+        setIsLoading(false);
+      } else {
+        setPatients([]);
+        setIsLoading(false);
+        setErrorMessage(res?.message || "Không có dữ liệu");
+      }
+    } catch (e) {
+      setPatients([]);
+      setIsLoading(false);
+    }
+  }, [userInfo]);
+
+  // Lấy danh sách bác sĩ và bệnh nhân khi mount
+  useEffect(() => {
+    const init = async () => {
+      await fetchDoctors();
+      await fetchPatients();
+    };
+    init();
+  }, [fetchDoctors, fetchPatients]);
+
+  // Khi selectedDate, userInfo, hoặc selectedDoctorId thay đổi → fetch lại patients
+  useEffect(() => {
+    fetchPatients();
+  }, [selectedDate, selectedDoctorId, userInfo, fetchPatients]);
+
+  const handleChangeDate = useCallback((date: any) => {
+    if (!date || !date[0]) return;
+    setSelectedDate(date[0]);
+  }, []);
+
+  const handleChangeDoctor = useCallback((event: any) => {
+    if (!event || !event.target) return;
+    setSelectedDoctorId(event.target.value);
+  }, []);
+
+  const handleConfirmBooking = async (item: any) => {
+    const bookingId = item?.id;
+    if (!bookingId) return;
+
+    const confirmed = window.confirm("Xác nhận bệnh nhân đã khám xong?");
+    if (!confirmed) return;
+
+    const doctorId =
+      item?.doctorId ||
+      userInfo?.id ||
+      userInfo?.userId ||
+      selectedDoctorId ||
+      "";
+
+    try {
+      const res = await confirmPatientBooking(bookingId, doctorId, "S3");
+      if (res && res.errCode === 0) {
+        toast.success("Xác nhận thành công!");
+        fetchPatients();
+      } else {
+        toast.error(res?.errMessage || "Xác nhận thất bại!");
+      }
+    } catch (e) {
+      toast.error("Xác nhận thất bại!");
+    }
+  };
+
+  const isAdmin = userInfo?.roleId === USER_ROLE.ADMIN;
+  const doctorDisplayName = userInfo
+    ? `${userInfo.lastName || ""} ${userInfo.firstName || ""}`.trim()
+    : "";
+
+  const renderFullName = (item: any) => {
+    if (item && item.patientData) {
+      const lastName = item.patientData.lastName || "";
+      const firstName = item.patientData.firstName || "";
+      return `${lastName} ${firstName}`.trim();
+    }
+    return item?.fullName || "";
+  };
+
+  return (
+    <div className="manage-patient-container">
+      <div className="ms-title">
+        <FormattedMessage id="menu.doctor.patient-booking" />
+      </div>
+      <div className="row">
+        <div className="col-12 mb-4">
+          <div className="info-card">
+            <div className="card-header">
+              <span>
+                <i className="fas fa-filter"></i> Bộ lọc tìm kiếm
+              </span>
+            </div>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-6 form-group">
+                  <label className="label-bold">
+                    <FormattedMessage id="manage-schedule.select-date" />
+                  </label>
+                  <DatePicker
+                    className="form-control"
+                    onChange={handleChangeDate}
+                    value={selectedDate}
+                  />
+                </div>
+                {isAdmin ? (
+                  <div className="col-md-6 form-group">
+                    <label className="label-bold">
+                      <FormattedMessage id="menu.manage-doctor.select-doctor" />
+                    </label>
+                    <select
+                      className="form-control"
+                      value={selectedDoctorId}
+                      onChange={handleChangeDoctor}
+                    >
+                      <option value="">
+                        {language === LANGUAGES.VI
+                          ? "Chọn bác sĩ"
+                          : "Select doctor"}
+                      </option>
+                      {doctors &&
+                        doctors.length > 0 &&
+                        doctors.map((item) => (
+                          <option key={item.id} value={item.id}>
+                            {language === LANGUAGES.VI
+                              ? `${item.lastName || ""} ${item.firstName || ""}`.trim()
+                              : `${item.firstName || ""} ${item.lastName || ""}`.trim()}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                ) : (
+                  <div className="col-md-6 form-group">
+                    <label className="label-bold">
+                      <FormattedMessage id="menu.manage-doctor.select-doctor" />
+                    </label>
+                    <input
+                      className="form-control"
+                      value={doctorDisplayName}
+                      disabled
+                      readOnly
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-12">
+          <div className="info-card">
+            <div className="card-header">
+              <span>
+                <i className="fas fa-list-alt"></i> Danh sách bệnh nhân đặt
+                lịch
+              </span>
+            </div>
+            <div className="card-body p-0">
+              <div className="table-responsive">
+                <table className="table table-striped table-bordered mb-0">
+                  <thead>
+                    <tr>
+                      <th style={{ width: "50px", textAlign: "center" }}>
+                        #
+                      </th>
+                      <th>Họ tên</th>
+                      <th>Email</th>
+                      <th>SĐT</th>
+                      <th>Giờ khám</th>
+                      <th>Lý do khám</th>
+                      <th>Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {isLoading ? (
+                      <tr>
+                        <td colSpan={7} className="text-center p-4">
+                          <i className="fas fa-spinner fa-spin mr-2"></i> Đang
+                          tải dữ liệu...
+                        </td>
+                      </tr>
+                    ) : (
+                      <>
+                        {patients && patients.length > 0 ? (
+                          patients.map((item, index) => (
+                            <tr key={item.id || index}>
+                              <td className="text-center">{index + 1}</td>
+                              <td>{renderFullName(item)}</td>
+                              <td>{item.patientData?.email || ""}</td>
+                              <td>{item.patientData?.phoneNumber || ""}</td>
+                              <td>
+                                {language === LANGUAGES.VI
+                                  ? item.bookingTimeTypeData?.value_Vi || ""
+                                  : item.bookingTimeTypeData?.value_En || ""}
+                              </td>
+                              <td>{item.reason || ""}</td>
+                              <td>
+                                <button
+                                  className="btn btn-primary btn-sm"
+                                  onClick={() => handleConfirmBooking(item)}
+                                  disabled={item.statusId === "S3"}
+                                >
+                                  {item.statusId === "S3"
+                                    ? "Đã xác nhận"
+                                    : "Xác nhận"}
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={7} className="text-center p-4">
+                              {"Chưa có bệnh nhân đặt lịch vào ngày này."}
+                            </td>
+                          </tr>
+                        )}
+                      </>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ManagePatient;

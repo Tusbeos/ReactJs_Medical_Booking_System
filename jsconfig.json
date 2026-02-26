@@ -1,7 +1,0 @@
-{
-  "compilerOptions": {
-    "baseUrl": "src",
-    "forceConsistentCasingInFileNames": true
-  },
-  "exclude": ["node_modules", "build"]
-}
