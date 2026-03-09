@@ -1,14 +1,14 @@
 import axios from "../axiosClient";
 
-const handleGetTopDoctorHomeService = (limit: number): Promise<any> => {
+const handleGetTopDoctorHome = (limit: number): Promise<any> => {
   return axios.get("/api/top-doctor-home", { params: { limit } });
 };
 
-const handleGetAllDoctorsService = (): Promise<any> => {
-  return axios.get("/api/get-all-doctors");
+const handleGetAllDoctors = (): Promise<any> => {
+  return axios.get("/api/doctors");
 };
 
-const saveDetailDoctorService = (data: any): Promise<any> => {
+const saveDetailDoctor = (data: any): Promise<any> => {
   return axios.post("/api/save-info-doctors", data);
 };
 
@@ -29,10 +29,10 @@ const getScheduleDoctorByDate = (
   });
 };
 
-const saveBulkDoctorServices = (data: any): Promise<any> =>
+const saveBulkDoctor = (data: any): Promise<any> =>
   axios.post("/api/bulk-create-doctor-services", data);
 
-const getAllDoctorServices = (inputId: number | string): Promise<any> => {
+const getAllDoctor = (inputId: number | string): Promise<any> => {
   return axios.get(`/api/get-list-doctor-services?doctorId=${inputId}`);
 };
 
@@ -55,14 +55,14 @@ const getDoctorsByClinicId = (clinicId: number | string): Promise<any> => {
 };
 
 export {
-  handleGetTopDoctorHomeService,
-  handleGetAllDoctorsService,
-  saveDetailDoctorService,
+  handleGetTopDoctorHome,
+  handleGetAllDoctors,
+  saveDetailDoctor,
   getDetailInfoDoctor,
   saveBulkScheduleDoctor,
   getScheduleDoctorByDate,
-  saveBulkDoctorServices,
-  getAllDoctorServices,
+  saveBulkDoctor,
+  getAllDoctor,
   getExtraInfoDoctorById,
   getSpecialtiesByDoctorId,
   HandleGetDoctorSpecialtyById,

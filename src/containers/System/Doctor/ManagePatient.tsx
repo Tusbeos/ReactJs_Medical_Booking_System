@@ -8,7 +8,7 @@ import {
   confirmPatientBooking,
 } from "../../../services/patientService";
 import { LANGUAGES, USER_ROLE } from "../../../utils";
-import { handleGetAllDoctorsService } from "../../../services/doctorService";
+import { handleGetAllDoctors } from "../../../services/doctorService";
 import { toast } from "react-toastify";
 import { IRootState } from "../../../types";
 
@@ -36,7 +36,7 @@ const ManagePatient = () => {
         let doctorId = userInfo.id || userInfo.userId || "";
         if (!doctorId && userInfo.email) {
           try {
-            const res = await handleGetAllDoctorsService();
+            const res = await handleGetAllDoctors();
             if (res && res.errCode === 0 && Array.isArray(res.data)) {
               const matched = res.data.find(
                 (item: any) => item && item.email === userInfo.email,
@@ -50,7 +50,7 @@ const ManagePatient = () => {
         return;
       }
 
-      const res = await handleGetAllDoctorsService();
+      const res = await handleGetAllDoctors();
       if (res && res.errCode === 0 && Array.isArray(res.data)) {
         const doctorsList = res.data.map((item: any) => ({
           id: item.id,
@@ -90,7 +90,7 @@ const ManagePatient = () => {
 
     if (isDoctorRole && !doctorId && userInfo?.email) {
       try {
-        const res = await handleGetAllDoctorsService();
+        const res = await handleGetAllDoctors();
         if (res && res.errCode === 0 && Array.isArray(res.data)) {
           const matched = res.data.find(
             (item: any) => item && item.email === userInfo.email,
@@ -262,8 +262,7 @@ const ManagePatient = () => {
           <div className="info-card">
             <div className="card-header">
               <span>
-                <i className="fas fa-list-alt"></i> Danh sách bệnh nhân đặt
-                lịch
+                <i className="fas fa-list-alt"></i> Danh sách bệnh nhân đặt lịch
               </span>
             </div>
             <div className="card-body p-0">
@@ -271,9 +270,7 @@ const ManagePatient = () => {
                 <table className="table table-striped table-bordered mb-0">
                   <thead>
                     <tr>
-                      <th style={{ width: "50px", textAlign: "center" }}>
-                        #
-                      </th>
+                      <th style={{ width: "50px", textAlign: "center" }}>#</th>
                       <th>Họ tên</th>
                       <th>Email</th>
                       <th>SĐT</th>

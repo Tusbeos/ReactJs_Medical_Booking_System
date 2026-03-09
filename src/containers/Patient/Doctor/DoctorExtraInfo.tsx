@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import "./DoctorExtraInfo.scss";
 import {
   getExtraInfoDoctorById,
-  getAllDoctorServices,
+  getAllDoctor,
 } from "../../../services/doctorService";
 import { LANGUAGES } from "utils";
 import { NumericFormat } from "react-number-format";
@@ -26,12 +26,10 @@ const DoctorExtraInfo = ({ detailDoctorFromParent }: IDoctorExtraInfoProps) => {
   const fetchExtraInfo = useCallback(async (doctorId: number | string) => {
     try {
       let data = await getExtraInfoDoctorById(doctorId);
-      let doctorServices = await getAllDoctorServices(doctorId);
+      let doctorServices = await getAllDoctor(doctorId);
       if (data && data.errCode === 0) {
         setExtraInfo(data && data.data ? data.data : {});
-        setListDoctorServices(
-          doctorServices.data ? doctorServices.data : []
-        );
+        setListDoctorServices(doctorServices.data ? doctorServices.data : []);
       }
     } catch (e) {
       setExtraInfo({});
@@ -50,7 +48,8 @@ const DoctorExtraInfo = ({ detailDoctorFromParent }: IDoctorExtraInfoProps) => {
   }, []);
 
   const handleViewDetailClinic = useCallback(() => {
-    const clinicId = extraInfo && extraInfo.clinicId ? extraInfo.clinicId : null;
+    const clinicId =
+      extraInfo && extraInfo.clinicId ? extraInfo.clinicId : null;
     if (clinicId) {
       history.push({
         pathname: `/clinic/detail-clinic/${clinicId}`,
@@ -67,15 +66,15 @@ const DoctorExtraInfo = ({ detailDoctorFromParent }: IDoctorExtraInfoProps) => {
         </div>
         <div
           className="name-clinic"
-          style={{ cursor: extraInfo && extraInfo.clinicId ? "pointer" : "default" }}
+          style={{
+            cursor: extraInfo && extraInfo.clinicId ? "pointer" : "default",
+          }}
           onClick={handleViewDetailClinic}
         >
           {extraInfo && extraInfo.nameClinic ? extraInfo.nameClinic : ""}
         </div>
         <div className="detail-address">
-          {extraInfo && extraInfo.addressClinic
-            ? extraInfo.addressClinic
-            : ""}
+          {extraInfo && extraInfo.addressClinic ? extraInfo.addressClinic : ""}
         </div>
       </div>
       <div className="content-down">
@@ -170,8 +169,7 @@ const DoctorExtraInfo = ({ detailDoctorFromParent }: IDoctorExtraInfoProps) => {
                 <FormattedMessage id="patient.extra-info-doctor.service-price" />
               </div>
               <div className="detail-service">
-                {listDoctorServices &&
-                listDoctorServices.length > 0 ? (
+                {listDoctorServices && listDoctorServices.length > 0 ? (
                   listDoctorServices.map((item, index) => {
                     return (
                       <div key={index} className="service-item">

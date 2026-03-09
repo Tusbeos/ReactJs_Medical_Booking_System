@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import "./DoctorCard.scss";
 import { FormattedMessage } from "react-intl";
 import {
-  handleGetAllDoctorsService,
+  handleGetAllDoctors,
   getDetailInfoDoctor,
   getScheduleDoctorByDate,
   HandleGetDoctorSpecialtyById,
@@ -12,7 +12,7 @@ import { LANGUAGES, path } from "utils";
 import { getBase64FromBuffer } from "utils/CommonUtils";
 import DoctorExtraInfo from "../../containers/Patient/Doctor/DoctorExtraInfo";
 import { useHistory } from "react-router";
-import { IRootState } from '../../types';
+import { IRootState } from "../../types";
 
 interface IDoctorCardProps {
   specialtyId?: number | string;
@@ -40,7 +40,11 @@ const buildDateOptions = () => {
 };
 
 // DoctorCard chuyển sang Function Component + Hooks
-const DoctorCard: React.FC<IDoctorCardProps> = ({ specialtyId, clinicId, doctorIds }) => {
+const DoctorCard: React.FC<IDoctorCardProps> = ({
+  specialtyId,
+  clinicId,
+  doctorIds,
+}) => {
   const language = useSelector((state: IRootState) => state.app.language);
   const history = useHistory();
 
@@ -48,31 +52,38 @@ const DoctorCard: React.FC<IDoctorCardProps> = ({ specialtyId, clinicId, doctorI
   const [filteredDoctors, setFilteredDoctors] = useState<any[]>([]);
   const [provinceOptions, setProvinceOptions] = useState<any[]>([]);
   const [selectedProvince, setSelectedProvince] = useState<string>("ALL");
-  const [schedulesByDoctor, setSchedulesByDoctor] = useState<Record<string, any[]>>({});
-  const [selectedDateByDoctor, setSelectedDateByDoctor] = useState<Record<string, number>>({});
+  const [schedulesByDoctor, setSchedulesByDoctor] = useState<
+    Record<string, any[]>
+  >({});
+  const [selectedDateByDoctor, setSelectedDateByDoctor] = useState<
+    Record<string, number>
+  >({});
   const [dateOptions] = useState(() => buildDateOptions());
 
-  const normalizeDoctor = useCallback((data: any) => {
-    const positionVi = data.positionData?.value_Vi || "";
-    const positionEn = data.positionData?.value_En || "";
-    const nameVi =
-      `${positionVi}, ${data.lastName || ""} ${data.firstName || ""}`.trim();
-    const nameEn =
-      `${positionEn}, ${data.firstName || ""} ${data.lastName || ""}`.trim();
-    const name = language === LANGUAGES.VI ? nameVi : nameEn;
+  const normalizeDoctor = useCallback(
+    (data: any) => {
+      const positionVi = data.positionData?.value_Vi || "";
+      const positionEn = data.positionData?.value_En || "";
+      const nameVi =
+        `${positionVi}, ${data.lastName || ""} ${data.firstName || ""}`.trim();
+      const nameEn =
+        `${positionEn}, ${data.firstName || ""} ${data.lastName || ""}`.trim();
+      const name = language === LANGUAGES.VI ? nameVi : nameEn;
 
-    return {
-      id: data.id,
-      name,
-      desc: data.Markdown?.description || "Chưa có mô tả",
-      image: data.image ? getBase64FromBuffer(data.image) : "",
-      province:
-        data.DoctorInfo?.provinceTypeData?.value_Vi ||
-        data.DoctorInfo?.provinceTypeData?.value_En ||
-        "",
-      address: data.DoctorInfo?.addressClinic || "",
-    };
-  }, [language]);
+      return {
+        id: data.id,
+        name,
+        desc: data.Markdown?.description || "Chưa có mô tả",
+        image: data.image ? getBase64FromBuffer(data.image) : "",
+        province:
+          data.DoctorInfo?.provinceTypeData?.value_Vi ||
+          data.DoctorInfo?.provinceTypeData?.value_En ||
+          "",
+        address: data.DoctorInfo?.addressClinic || "",
+      };
+    },
+    [language],
+  );
 
   const buildProvinceOptions = useCallback((doctorsList: any[] = []) => {
     const map = new Map();
@@ -85,16 +96,19 @@ const DoctorCard: React.FC<IDoctorCardProps> = ({ specialtyId, clinicId, doctorI
     ];
   }, []);
 
-  const handleFetchSchedule = useCallback(async (doctorId: any, dateValue: number) => {
-    try {
-      const res = await getScheduleDoctorByDate(doctorId, dateValue);
-      const schedules = res && res.errCode === 0 ? res.data || [] : [];
-      setSchedulesByDoctor((prev) => ({ ...prev, [doctorId]: schedules }));
-      setSelectedDateByDoctor((prev) => ({ ...prev, [doctorId]: dateValue }));
-    } catch (e) {
-      setSchedulesByDoctor((prev) => ({ ...prev, [doctorId]: [] }));
-    }
-  }, []);
+  const handleFetchSchedule = useCallback(
+    async (doctorId: any, dateValue: number) => {
+      try {
+        const res = await getScheduleDoctorByDate(doctorId, dateValue);
+        const schedules = res && res.errCode === 0 ? res.data || [] : [];
+        setSchedulesByDoctor((prev) => ({ ...prev, [doctorId]: schedules }));
+        setSelectedDateByDoctor((prev) => ({ ...prev, [doctorId]: dateValue }));
+      } catch (e) {
+        setSchedulesByDoctor((prev) => ({ ...prev, [doctorId]: [] }));
+      }
+    },
+    [],
+  );
 
   const fetchDoctors = useCallback(async () => {
     try {
@@ -127,7 +141,7 @@ const DoctorCard: React.FC<IDoctorCardProps> = ({ specialtyId, clinicId, doctorI
       } else if (clinicId) {
         // clinicId case
       } else {
-        res = await handleGetAllDoctorsService();
+        res = await handleGetAllDoctors();
       }
       if (res && res.errCode === 0) {
         let list: any[] = [];
@@ -176,45 +190,65 @@ const DoctorCard: React.FC<IDoctorCardProps> = ({ specialtyId, clinicId, doctorI
       setFilteredDoctors([]);
       setProvinceOptions([]);
     }
-  }, [specialtyId, clinicId, doctorIds, normalizeDoctor, buildProvinceOptions, handleFetchSchedule, dateOptions]);
+  }, [
+    specialtyId,
+    clinicId,
+    doctorIds,
+    normalizeDoctor,
+    buildProvinceOptions,
+    handleFetchSchedule,
+    dateOptions,
+  ]);
 
   // componentDidMount + componentDidUpdate khi props thay đổi
   useEffect(() => {
     fetchDoctors();
   }, [fetchDoctors]);
 
-  const handleFilterProvince = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = event.target.value;
-    const filtered =
-      selected === "ALL"
-        ? doctors
-        : doctors.filter((doc) => doc.province === selected);
-    setSelectedProvince(selected);
-    setFilteredDoctors(filtered);
-  }, [doctors]);
+  const handleFilterProvince = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const selected = event.target.value;
+      const filtered =
+        selected === "ALL"
+          ? doctors
+          : doctors.filter((doc) => doc.province === selected);
+      setSelectedProvince(selected);
+      setFilteredDoctors(filtered);
+    },
+    [doctors],
+  );
 
-  const handleBookingDoctor = useCallback((scheduleTime: any, doctorIdFromList: any) => {
-    if (!scheduleTime) return;
-    const doctorId = scheduleTime.doctorId || doctorIdFromList;
-    if (!doctorId || !path.BOOKING_DOCTOR || !history) return;
+  const handleBookingDoctor = useCallback(
+    (scheduleTime: any, doctorIdFromList: any) => {
+      if (!scheduleTime) return;
+      const doctorId = scheduleTime.doctorId || doctorIdFromList;
+      if (!doctorId || !path.BOOKING_DOCTOR || !history) return;
 
-    const linkRedirect = path.BOOKING_DOCTOR.replace(":id", doctorId);
-    history.push({
-      pathname: linkRedirect,
-      state: { dataTime: scheduleTime },
-    });
-  }, [history]);
+      const linkRedirect = path.BOOKING_DOCTOR.replace(":id", doctorId);
+      history.push({
+        pathname: linkRedirect,
+        state: { dataTime: scheduleTime },
+      });
+    },
+    [history],
+  );
 
-  const handleViewDetailDoctor = useCallback((doctorId: any) => {
-    if (history) {
-      history.push(`/detail-doctor/${doctorId}`);
-    }
-  }, [history]);
+  const handleViewDetailDoctor = useCallback(
+    (doctorId: any) => {
+      if (history) {
+        history.push(`/detail-doctor/${doctorId}`);
+      }
+    },
+    [history],
+  );
 
-  const handleChangeDate = useCallback((doctorId: any, event: React.ChangeEvent<HTMLSelectElement>) => {
-    const dateValue = Number(event.target.value);
-    handleFetchSchedule(doctorId, dateValue);
-  }, [handleFetchSchedule]);
+  const handleChangeDate = useCallback(
+    (doctorId: any, event: React.ChangeEvent<HTMLSelectElement>) => {
+      const dateValue = Number(event.target.value);
+      handleFetchSchedule(doctorId, dateValue);
+    },
+    [handleFetchSchedule],
+  );
 
   const renderProvinceOptions = () => {
     return (
@@ -349,9 +383,7 @@ const DoctorCard: React.FC<IDoctorCardProps> = ({ specialtyId, clinicId, doctorI
   return (
     <div className="doctor-specialty-container">
       {!clinicId && (
-        <div className="doctor-specialty-filter">
-          {renderProvinceOptions()}
-        </div>
+        <div className="doctor-specialty-filter">{renderProvinceOptions()}</div>
       )}
       <div className="doctor-specialty-list">{renderDoctorList()}</div>
     </div>

@@ -5,10 +5,6 @@ export const adminMenu: IMenuGroup[] = [
     name: "menu.admin.manage-user",
     menus: [
       {
-        name: "menu.admin.crud",
-        link: "/system/user-crud",
-      },
-      {
         name: "menu.admin.crud-redux",
         link: "/system/user-crud-redux",
       },

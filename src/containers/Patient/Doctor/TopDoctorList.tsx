@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { handleGetTopDoctorHomeService } from "../../../services/doctorService";
+import { handleGetTopDoctorHome } from "../../../services/doctorService";
 import "./TopDoctorList.scss";
 import HomeHeader from "containers/HomePage/HomeHeader";
 import HomeFooter from "containers/HomePage/HomeFooter";
@@ -19,7 +19,13 @@ interface IDoctorItemProps {
   onClick: () => void;
 }
 
-const DoctorItem = ({ name, subTitle, imageUrl, isLast, onClick }: IDoctorItemProps) => {
+const DoctorItem = ({
+  name,
+  subTitle,
+  imageUrl,
+  isLast,
+  onClick,
+}: IDoctorItemProps) => {
   return (
     <li
       className={`top-doctor-item${isLast ? " last" : ""}`}
@@ -63,7 +69,7 @@ const TopDoctorList = () => {
       }
       return "";
     },
-    [language]
+    [language],
   );
 
   const buildDoctorSubTitle = useCallback(
@@ -79,12 +85,12 @@ const TopDoctorList = () => {
       }
       return language === LANGUAGES.VI ? "Bác sĩ nổi bật" : "Top doctor";
     },
-    [language]
+    [language],
   );
 
   const fetchTopDoctors = useCallback(async () => {
     try {
-      const res = await handleGetTopDoctorHomeService(100);
+      const res = await handleGetTopDoctorHome(100);
       if (res && res.errCode === 0 && res.data && Array.isArray(res.data)) {
         const dataArr = res.data;
         const doctorsList = dataArr.map((item: any) => ({
@@ -113,7 +119,7 @@ const TopDoctorList = () => {
     (id: any) => {
       history.push(`/detail-doctor/${id}`);
     },
-    [history]
+    [history],
   );
 
   const breadcrumbItems = [

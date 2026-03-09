@@ -13,15 +13,19 @@ import {
   saveBulkScheduleDoctor,
   getScheduleDoctorByDate,
 } from "../../../services/doctorService";
-import { handleGetAllDoctorsService } from "../../../services/doctorService";
+import { handleGetAllDoctors } from "../../../services/doctorService";
 import { IRootState } from "../../../types";
 
 const ManageSchedule = () => {
   const dispatch = useDispatch();
   const language = useSelector((state: IRootState) => state.app.language);
   const userInfo = useSelector((state: IRootState) => state.user.userInfo);
-  const allDoctors = useSelector((state: IRootState) => (state as any).admin.allDoctors);
-  const allScheduleTime = useSelector((state: IRootState) => (state as any).admin.allScheduleTime);
+  const allDoctors = useSelector(
+    (state: IRootState) => (state as any).admin.allDoctors,
+  );
+  const allScheduleTime = useSelector(
+    (state: IRootState) => (state as any).admin.allScheduleTime,
+  );
 
   const [selectedDoctor, setSelectedDoctor] = useState<any>({});
   const [listDoctors, setListDoctors] = useState<any[]>([]);
@@ -36,16 +40,19 @@ const ManageSchedule = () => {
   const rangeTimeRef = useRef(rangeTime);
   rangeTimeRef.current = rangeTime;
 
-  const buildDataInputSelect = useCallback((inputData: any[] = []) => {
-    return inputData.map((item: any) => {
-      const labelVi = `${item.lastName ?? ""} ${item.firstName ?? ""}`.trim();
-      const labelEn = `${item.firstName ?? ""} ${item.lastName ?? ""}`.trim();
-      return {
-        label: language === LANGUAGES.VI ? labelVi : labelEn,
-        value: item.id,
-      };
-    });
-  }, [language]);
+  const buildDataInputSelect = useCallback(
+    (inputData: any[] = []) => {
+      return inputData.map((item: any) => {
+        const labelVi = `${item.lastName ?? ""} ${item.firstName ?? ""}`.trim();
+        const labelEn = `${item.firstName ?? ""} ${item.lastName ?? ""}`.trim();
+        return {
+          label: language === LANGUAGES.VI ? labelVi : labelEn,
+          value: item.id,
+        };
+      });
+    },
+    [language],
+  );
 
   const initDoctorForRole = useCallback(async () => {
     if (!userInfo) return;
@@ -54,7 +61,7 @@ const ManageSchedule = () => {
       let doctorId = userInfo.id || userInfo.userId;
       if (!doctorId && userInfo.email) {
         try {
-          const res = await handleGetAllDoctorsService();
+          const res = await handleGetAllDoctors();
           if (res && res.errCode === 0 && Array.isArray(res.data)) {
             const matched = res.data.find(
               (item: any) => item && item.email === userInfo.email,
@@ -145,16 +152,22 @@ const ManageSchedule = () => {
   // Khi allScheduleTime thay đổi → set rangeTime với isSelected
   useEffect(() => {
     if (allScheduleTime && allScheduleTime.length > 0) {
-      let data = allScheduleTime.map((item: any) => ({ ...item, isSelected: false }));
+      let data = allScheduleTime.map((item: any) => ({
+        ...item,
+        isSelected: false,
+      }));
       setRangeTime(data);
     }
   }, [allScheduleTime]);
 
-  const handleChangeSelectDoctor = useCallback(async (selected: any) => {
-    if (userInfo?.roleId === USER_ROLE.DOCTOR) return;
-    if (!selected || !selected.value) return;
-    setSelectedDoctor(selected);
-  }, [userInfo]);
+  const handleChangeSelectDoctor = useCallback(
+    async (selected: any) => {
+      if (userInfo?.roleId === USER_ROLE.DOCTOR) return;
+      if (!selected || !selected.value) return;
+      setSelectedDoctor(selected);
+    },
+    [userInfo],
+  );
 
   // Khi selectedDoctor thay đổi → fetch schedule
   useEffect(() => {
@@ -278,7 +291,9 @@ const ManageSchedule = () => {
 
       if (res && res.errCode === 0) {
         toast.success("Save schedule succeed!");
-        setRangeTime((prev) => prev.map((item) => ({ ...item, isSelected: false })));
+        setRangeTime((prev) =>
+          prev.map((item) => ({ ...item, isSelected: false })),
+        );
       } else {
         toast.error("Save schedule failed!");
       }
@@ -287,7 +302,12 @@ const ManageSchedule = () => {
 
   let currentDay = new Date();
   const isAdmin = userInfo?.roleId === USER_ROLE.ADMIN;
-  console.log("Check state manage schedule: ", { selectedDoctor, listDoctors, startDate, rangeTime });
+  console.log("Check state manage schedule: ", {
+    selectedDoctor,
+    listDoctors,
+    startDate,
+    rangeTime,
+  });
 
   return (
     <div className="manage-schedule-container">
