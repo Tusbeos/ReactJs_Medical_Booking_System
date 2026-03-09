@@ -1,4 +1,4 @@
-import axios from "../axios";
+import axios from "../axiosClient";
 import { ISpecialty } from "../types";
 
 const createNewSpecialtyService = (data: Partial<ISpecialty>): Promise<any> => {

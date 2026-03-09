@@ -4,10 +4,13 @@ import { IUser } from '../../types';
 export const addUserSuccess = () => ({
     type: actionTypes.ADD_USER_SUCCESS as typeof actionTypes.ADD_USER_SUCCESS
 })
-export const userLoginSuccess = (userInfo: IUser) => ({
+
+export const userLoginSuccess = (userInfo: IUser, token?: string) => ({
   type: actionTypes.USER_LOGIN_SUCCESS as typeof actionTypes.USER_LOGIN_SUCCESS,
   userInfo: userInfo,
+  token: token || null,
 });
+
 export const userLoginFail = () => ({
   type: actionTypes.USER_LOGIN_FAIL as typeof actionTypes.USER_LOGIN_FAIL,
 });

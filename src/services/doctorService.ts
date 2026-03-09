@@ -1,4 +1,4 @@
-import axios from "../axios";
+import axios from "../axiosClient";
 
 const handleGetTopDoctorHomeService = (limit: number): Promise<any> => {
   return axios.get("/api/top-doctor-home", { params: { limit } });
@@ -13,14 +13,17 @@ const saveDetailDoctorService = (data: any): Promise<any> => {
 };
 
 const getDetailInfoDoctor = (inputId: number | string): Promise<any> => {
-  return axios.get("/api/get-detail-doctor-by-id", { params: { id: inputId } });
+  return axios.get(`/api/doctor/${inputId}`);
 };
 
 const saveBulkScheduleDoctor = (data: any): Promise<any> => {
   return axios.post("/api/bulk-create-schedule", data);
 };
 
-const getScheduleDoctorByDate = (doctorId: number | string, date: number | string): Promise<any> => {
+const getScheduleDoctorByDate = (
+  doctorId: number | string,
+  date: number | string,
+): Promise<any> => {
   return axios.get("/api/get-schedule-doctor-by-date", {
     params: { doctorId: doctorId, date: date },
   });
@@ -41,7 +44,9 @@ const getSpecialtiesByDoctorId = (doctorId: number | string): Promise<any> => {
   return axios.get(`/api/get-specialties-by-doctor-id?doctorId=${doctorId}`);
 };
 
-const HandleGetDoctorSpecialtyById = (inputId: number | string): Promise<any> => {
+const HandleGetDoctorSpecialtyById = (
+  inputId: number | string,
+): Promise<any> => {
   return axios.get(`/api/get-doctor-specialty-by-id?id=${inputId}`);
 };
 

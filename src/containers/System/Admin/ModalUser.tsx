@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import emitter from "../../utils/emitter";
+import emitter from "../../../utils/emitter";
 
 interface IModalUserProps {
   isOpen: boolean;

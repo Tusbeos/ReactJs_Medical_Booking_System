@@ -1,4 +1,4 @@
-import axios from "../axios";
+import axios from "../axiosClient";
 import { IClinic } from "../types";
 
 const createNewClinicService = (data: Partial<IClinic>): Promise<any> => {

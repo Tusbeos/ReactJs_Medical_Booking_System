@@ -20,7 +20,6 @@ const TableManageUser: React.FC<ITableManageUserProps> = ({ handleEditUserFromPa
     dispatch(actions.fetchAllUsersStart() as any);
   }, [dispatch]);
 
-  // Đồng bộ userRedux khi listUsers thay đổi
   useEffect(() => {
     if (listUsers) {
       setUserRedux(listUsers);

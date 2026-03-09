@@ -171,6 +171,7 @@ export interface IAppState {
 export interface IUserState {
   isLoggedIn: boolean;
   userInfo: IUser | null;
+  token: string | null;
 }
 
 export interface IAdminState {

@@ -1,9 +1,8 @@
 import React from 'react';
 import { useSelector } from "react-redux";
 import { Route, Switch } from "react-router-dom";
-import UserManage from "../containers/System/UserManage";
 import UserRedux from "../containers/System/Admin/UserRedux";
-import ManageDoctor from "../containers/System/Admin/ManageDoctor";
+import ManageDoctor from "../containers/System/Doctor/ManageDoctor";
 import Header from "containers/Header/Header";
 import ManageSpecialty from "containers/System/Specialty/ManageSpecialty";
 import ManageClinic from "containers/System/Clinic/ManageClinic";
@@ -25,7 +24,7 @@ const System = () => {
               component={ManageSpecialty}
             />
             <Route path="/system/manage-clinic" component={ManageClinic} />
-            <Route render={() => <UserManage />} />
+            <Route render={() => <UserRedux />} />
           </Switch>
         </div>
       </div>

@@ -1,12 +1,18 @@
-import axios from "../axios";
+import axios from "../axiosClient";
 import { IUser } from "../types";
 
-const handleLoginApi = (userEmail: string, userPassword: string): Promise<any> => {
-  return axios.post("/api/login", { email: userEmail, password: userPassword });
+const handleLoginApi = (
+  userEmail: string,
+  userPassword: string,
+): Promise<any> => {
+  return axios.post("/api/auth/login", {
+    email: userEmail,
+    password: userPassword,
+  });
 };
 
-const handleGetAllUsers = (inputId: string | number): Promise<any> => {
-  return axios.get("/api/get-all-users", { params: { id: inputId } });
+const handleGetAllUsers = (): Promise<any> => {
+  return axios.get("/api/users");
 };
 
 const handleCreateNewUserService = (data: Partial<IUser>): Promise<any> => {
@@ -22,7 +28,7 @@ const handleEditUserService = (inputData: Partial<IUser>): Promise<any> => {
 };
 
 const handleGetAllCodeService = (inputType: string): Promise<any> => {
-  return axios.get("/api/allcode", { params: { type: inputType } });
+  return axios.get("/api/all-codes", { params: { type: inputType } });
 };
 
 export {

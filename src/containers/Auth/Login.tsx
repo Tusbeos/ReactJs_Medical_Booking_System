@@ -1,14 +1,15 @@
 import React, { useState, useCallback } from "react";
 import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 import * as actions from "../../store/actions";
 import "./Login.scss";
 import { handleLoginApi } from "../../services/userService";
-import { IUser } from "../../types";
+import { USER_ROLE } from "../../utils";
 
-// Login chuyển sang Function Component + Hooks
 const Login: React.FC = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -18,11 +19,21 @@ const Login: React.FC = () => {
     setErrMessage("");
     try {
       const data = await handleLoginApi(username, password);
-      if (!data || data.errCode !== 0) {
+      if (!data || !data.success) {
         return setErrMessage(data?.message || "Login failed");
       }
-      dispatch(actions.userLoginSuccess(data.user));
+      dispatch(actions.userLoginSuccess(data.data, data.data?.token));
       console.log("Login success");
+
+      // Redirect dựa theo roleId của user
+      const roleId = data.data?.roleId;
+      if (roleId === USER_ROLE.ADMIN) {
+        history.push("/system");
+      } else if (roleId === USER_ROLE.DOCTOR) {
+        history.push("/doctor/manage-schedule");
+      } else {
+        history.push("/");
+      }
     } catch (e: any) {
       const msg =
         e?.response?.data?.message ||
@@ -31,13 +42,16 @@ const Login: React.FC = () => {
       setErrMessage(msg);
       console.log("login error:", e);
     }
-  }, [username, password, dispatch]);
+  }, [username, password, dispatch, history]);
 
-  const handleKeyDown = useCallback((event: any) => {
-    if (event.key === "Enter" || event.keyCode === 13) {
-      handleLogin();
-    }
-  }, [handleLogin]);
+  const handleKeyDown = useCallback(
+    (event: any) => {
+      if (event.key === "Enter" || event.keyCode === 13) {
+        handleLogin();
+      }
+    },
+    [handleLogin],
+  );
 
   return (
     <div className="login_background">
@@ -91,9 +105,7 @@ const Login: React.FC = () => {
           </div>
 
           <div className="col-12 text-center mt-3">
-            <span className="text-other-login text-center">
-              Or Login with:
-            </span>
+            <span className="text-other-login text-center">Or Login with:</span>
           </div>
 
           <div className="col-12 social-login">

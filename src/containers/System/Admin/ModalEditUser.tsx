@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import _ from "lodash";
-import { IUser } from "../../types";
+import { IUser } from "../../../types";
 
 interface IModalEditUserProps {
   isOpen: boolean;

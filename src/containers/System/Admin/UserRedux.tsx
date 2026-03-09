@@ -47,7 +47,6 @@ const UserRedux: React.FC = () => {
     dispatch(actions.fetchRoleStart() as any);
   }, [dispatch]);
 
-  // Cập nhật genderArr khi genderRedux thay đổi
   useEffect(() => {
     if (genderRedux) {
       setGenderArr(genderRedux);
@@ -55,7 +54,6 @@ const UserRedux: React.FC = () => {
     }
   }, [genderRedux]);
 
-  // Cập nhật roleArr khi roleRedux thay đổi
   useEffect(() => {
     if (roleRedux) {
       setRoleArr(roleRedux);
@@ -175,6 +173,7 @@ const UserRedux: React.FC = () => {
 
   let isLoadingGenderRedux = isLoadingGender;
 
+
   return (
     <div className="user-crud-redux-container">
       <div className="title">
@@ -219,9 +218,7 @@ const UserRedux: React.FC = () => {
                     className="form-control"
                     type="password"
                     value={password}
-                    onChange={(event) =>
-                      onChangeInput(event, "password")
-                    }
+                    onChange={(event) => onChangeInput(event, "password")}
                     disabled={currentAction === CRUD_ACTIONS.EDIT}
                   />
                 </div>
@@ -233,9 +230,7 @@ const UserRedux: React.FC = () => {
                     className="form-control"
                     type="text"
                     value={firstName}
-                    onChange={(event) =>
-                      onChangeInput(event, "firstName")
-                    }
+                    onChange={(event) => onChangeInput(event, "firstName")}
                   />
                 </div>
                 <div className="col-md-4 form-group">
@@ -246,9 +241,7 @@ const UserRedux: React.FC = () => {
                     className="form-control"
                     type="text"
                     value={lastName}
-                    onChange={(event) =>
-                      onChangeInput(event, "lastName")
-                    }
+                    onChange={(event) => onChangeInput(event, "lastName")}
                   />
                 </div>
                 <div className="col-md-4 form-group">
@@ -259,9 +252,7 @@ const UserRedux: React.FC = () => {
                     className="form-control"
                     type="text"
                     value={phoneNumber}
-                    onChange={(event) =>
-                      onChangeInput(event, "phoneNumber")
-                    }
+                    onChange={(event) => onChangeInput(event, "phoneNumber")}
                   />
                 </div>
                 <div className="col-md-12 form-group">
@@ -289,8 +280,8 @@ const UserRedux: React.FC = () => {
                       genderArr.map((item, index) => (
                         <option key={index} value={item.keyMap}>
                           {language === LANGUAGES.VI
-                            ? item.value_Vi
-                            : item.value_En}
+                            ? item.valueVi
+                            : item.valueEn}
                         </option>
                       ))}
                   </select>
@@ -301,9 +292,7 @@ const UserRedux: React.FC = () => {
                   </label>
                   <select
                     className="form-select form-control"
-                    onChange={(event) =>
-                      onChangeInput(event, "position")
-                    }
+                    onChange={(event) => onChangeInput(event, "position")}
                     value={position}
                   >
                     {positionArr &&
@@ -311,8 +300,8 @@ const UserRedux: React.FC = () => {
                       positionArr.map((item, index) => (
                         <option key={index} value={item.keyMap}>
                           {language === LANGUAGES.VI
-                            ? item.value_Vi
-                            : item.value_En}
+                            ? item.valueVi
+                            : item.valueEn}
                         </option>
                       ))}
                   </select>
@@ -331,8 +320,8 @@ const UserRedux: React.FC = () => {
                       roleArr.map((item, index) => (
                         <option key={index} value={item.keyMap}>
                           {language === LANGUAGES.VI
-                            ? item.value_Vi
-                            : item.value_En}
+                            ? item.valueVi
+                            : item.valueEn}
                         </option>
                       ))}
                   </select>
@@ -399,9 +388,7 @@ const UserRedux: React.FC = () => {
                 </div>
                 <div className="card-body p-0">
                   <TableManageUser
-                    handleEditUserFromParentKey={
-                      handleEditUserFromParent
-                    }
+                    handleEditUserFromParentKey={handleEditUserFromParent}
                     actions={currentAction}
                   />
                 </div>
