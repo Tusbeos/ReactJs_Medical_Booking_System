@@ -12,6 +12,8 @@ export const path = {
   LIST_CLINIC: "/clinic",
   DETAIL_CLINIC: "/clinic/detail-clinic/:id",
   LIST_TOP_DOCTOR: "/top-doctor",
+  PATIENT_PROFILE: "/patient/profile",
+  PATIENT_HISTORY: "/patient/history",
 };
 
 export const LANGUAGES = {

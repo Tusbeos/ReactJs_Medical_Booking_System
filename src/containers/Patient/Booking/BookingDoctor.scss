@@ -284,3 +284,50 @@
     }
     }
 }
+
+// Styles cho tính năng đặt hộ
+.for-other-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 15px;
+    color: #333;
+    padding: 8px 0;
+    margin-bottom: 0;
+
+    input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #45c3d2;
+    }
+}
+
+.for-other-section {
+    border: 1px solid #45c3d2;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background: #f0fbfc;
+
+    .for-other-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #25a0b0;
+        margin-bottom: 14px;
+    }
+
+    .form-control {
+        border-radius: 6px;
+        font-size: 14px;
+
+        &:focus {
+            border-color: #45c3d2;
+            box-shadow: 0 0 0 0.2rem rgba(69, 195, 210, 0.2);
+        }
+    }
+
+    textarea.form-control {
+        resize: vertical;
+    }
+}

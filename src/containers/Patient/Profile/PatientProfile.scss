@@ -1,0 +1,205 @@
+$primary-color: #45c3d2;
+
+.patient-profile-container {
+  max-width: 720px;
+  margin: 30px auto;
+  padding: 0 16px;
+
+  .profile-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 28px;
+      background: linear-gradient(135deg, $primary-color, darken($primary-color, 10%));
+      color: #fff;
+
+      h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .btn-edit {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        color: #fff;
+        padding: 6px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.35);
+        }
+      }
+    }
+
+    .profile-body {
+      padding: 28px;
+
+      .avatar-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 28px;
+
+        .avatar-wrapper {
+          position: relative;
+          width: 96px;
+          height: 96px;
+          border-radius: 50%;
+          overflow: hidden;
+          background: #eee;
+          margin-bottom: 10px;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+
+          .default-avatar {
+            font-size: 96px;
+            color: #ccc;
+          }
+
+          .avatar-upload {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 32px;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #fff;
+            font-size: 14px;
+          }
+        }
+
+        .user-display-name {
+          font-size: 18px;
+          font-weight: 600;
+          color: #333;
+        }
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+
+          &.full-width {
+            grid-column: span 2;
+          }
+
+          label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+          }
+
+          input,
+          select {
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border 0.2s;
+
+            &:focus {
+              border-color: $primary-color;
+              box-shadow: 0 0 0 3px rgba($primary-color, 0.12);
+            }
+          }
+
+          .field-value {
+            font-size: 15px;
+            color: #333;
+            padding: 10px 0;
+            min-height: 24px;
+
+            &.readonly {
+              color: #999;
+            }
+          }
+        }
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        justify-content: center;
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 10px 28px;
+          border: none;
+          border-radius: 25px;
+          font-size: 15px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+
+          &:hover {
+            transform: translateY(-1px);
+          }
+        }
+
+        .btn-save {
+          background: linear-gradient(135deg, $primary-color, darken($primary-color, 8%));
+          color: #fff;
+
+          &:hover {
+            box-shadow: 0 4px 12px rgba($primary-color, 0.4);
+          }
+        }
+
+        .btn-cancel {
+          background: #f0f0f0;
+          color: #666;
+
+          &:hover {
+            background: #e0e0e0;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Responsive mobile */
+@media (max-width: 600px) {
+  .patient-profile-container {
+    .profile-card .profile-body .form-grid {
+      grid-template-columns: 1fr;
+
+      .form-group.full-width {
+        grid-column: span 1;
+      }
+    }
+  }
+}

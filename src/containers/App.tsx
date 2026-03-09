@@ -28,6 +28,8 @@ import detailSpecialty from "./Patient/Specialty/DetailSpecialty";
 import detailClinic from "./Patient/Clinic/DetailClinic";
 import ClinicList from "./Patient/Clinic/ClinicList";
 import TopDoctorList from "./Patient/Doctor/TopDoctorList";
+import PatientProfile from "./Patient/Profile/PatientProfile";
+import PatientHistory from "./Patient/History/PatientHistory";
 
 interface IAppProps {
   persistor: any;
@@ -97,6 +99,14 @@ const App: React.FC<IAppProps> = ({ persistor, onBeforeLift }) => {
                   path={path.LIST_TOP_DOCTOR}
                   exact
                   component={TopDoctorList}
+                />
+                <Route
+                  path={path.PATIENT_PROFILE}
+                  component={userIsAuthenticated(PatientProfile)}
+                />
+                <Route
+                  path={path.PATIENT_HISTORY}
+                  component={userIsAuthenticated(PatientHistory)}
                 />
               </Switch>
             </CustomScrollbars>

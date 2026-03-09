@@ -31,7 +31,10 @@ const ManagePatient = () => {
 
   const fetchDoctors = useCallback(async () => {
     try {
-      const isDoctorRole = userInfo?.roleId === USER_ROLE.DOCTOR;
+      // roleId có thể đến từ AuthResponse trực tiếp hoặc từ roleData.keyMap
+      const roleKey =
+        userInfo?.roleId || (userInfo as any)?.roleData?.keyMap || "";
+      const isDoctorRole = roleKey === USER_ROLE.DOCTOR;
       if (isDoctorRole) {
         let doctorId = userInfo.id || userInfo.userId || "";
         if (!doctorId && userInfo.email) {
@@ -70,8 +73,10 @@ const ManagePatient = () => {
   }, [userInfo]);
 
   const fetchPatients = useCallback(async () => {
-    const isDoctorRole = userInfo?.roleId === USER_ROLE.DOCTOR;
-    const isAdmin = userInfo?.roleId === USER_ROLE.ADMIN;
+    const roleKey =
+      userInfo?.roleId || (userInfo as any)?.roleData?.keyMap || "";
+    const isDoctorRole = roleKey === USER_ROLE.DOCTOR;
+    const isAdmin = roleKey === USER_ROLE.ADMIN;
     const currentSelectedDoctorId = selectedDoctorIdRef.current;
     const currentSelectedDate = selectedDateRef.current;
 
@@ -174,18 +179,30 @@ const ManagePatient = () => {
     }
   };
 
-  const isAdmin = userInfo?.roleId === USER_ROLE.ADMIN;
+  const roleKey = userInfo?.roleId || (userInfo as any)?.roleData?.keyMap || "";
+  const isAdmin = roleKey === USER_ROLE.ADMIN;
   const doctorDisplayName = userInfo
     ? `${userInfo.lastName || ""} ${userInfo.firstName || ""}`.trim()
     : "";
 
   const renderFullName = (item: any) => {
+    // Nếu là booking đặt hộ, hiển thị tên bệnh nhân được đặt hộ
+    if (item?.profileData) {
+      const lastName = item.profileData.lastName || "";
+      const firstName = item.profileData.firstName || "";
+      return `${lastName} ${firstName}`.trim();
+    }
     if (item && item.patientData) {
       const lastName = item.patientData.lastName || "";
       const firstName = item.patientData.firstName || "";
       return `${lastName} ${firstName}`.trim();
     }
     return item?.fullName || "";
+  };
+
+  const renderPhone = (item: any) => {
+    if (item?.profileData?.phoneNumber) return item.profileData.phoneNumber;
+    return item?.patientData?.phoneNumber || "";
   };
 
   return (
@@ -276,13 +293,14 @@ const ManagePatient = () => {
                       <th>SĐT</th>
                       <th>Giờ khám</th>
                       <th>Lý do khám</th>
+                      <th>Trạng thái</th>
                       <th>Hành động</th>
                     </tr>
                   </thead>
                   <tbody>
                     {isLoading ? (
                       <tr>
-                        <td colSpan={7} className="text-center p-4">
+                        <td colSpan={8} className="text-center p-4">
                           <i className="fas fa-spinner fa-spin mr-2"></i> Đang
                           tải dữ liệu...
                         </td>
@@ -293,15 +311,44 @@ const ManagePatient = () => {
                           patients.map((item, index) => (
                             <tr key={item.id || index}>
                               <td className="text-center">{index + 1}</td>
-                              <td>{renderFullName(item)}</td>
+                              <td>
+                                {renderFullName(item)}
+                                {item.profileData && (
+                                  <span
+                                    className="badge badge-secondary ml-1"
+                                    title={`Đặt hộ bởi: ${item.patientData?.email || ""} — Quan hệ: ${item.profileData.relationship || ""}`}
+                                  >
+                                    Đặt hộ
+                                  </span>
+                                )}
+                              </td>
                               <td>{item.patientData?.email || ""}</td>
-                              <td>{item.patientData?.phoneNumber || ""}</td>
+                              <td>{renderPhone(item)}</td>
                               <td>
                                 {language === LANGUAGES.VI
                                   ? item.bookingTimeTypeData?.valueVi || ""
                                   : item.bookingTimeTypeData?.valueEn || ""}
                               </td>
                               <td>{item.reason || ""}</td>
+                              <td>
+                                {item.statusId === "S1" ? (
+                                  <span className="badge badge-warning">
+                                    Chờ xác nhận email
+                                  </span>
+                                ) : item.statusId === "S2" ? (
+                                  <span className="badge badge-info">
+                                    Chờ khám
+                                  </span>
+                                ) : item.statusId === "S3" ? (
+                                  <span className="badge badge-success">
+                                    Đã khám
+                                  </span>
+                                ) : (
+                                  <span className="badge badge-secondary">
+                                    {item.statusId}
+                                  </span>
+                                )}
+                              </td>
                               <td>
                                 <button
                                   className="btn btn-primary btn-sm"
@@ -317,7 +364,7 @@ const ManagePatient = () => {
                           ))
                         ) : (
                           <tr>
-                            <td colSpan={7} className="text-center p-4">
+                            <td colSpan={8} className="text-center p-4">
                               {"Chưa có bệnh nhân đặt lịch vào ngày này."}
                             </td>
                           </tr>

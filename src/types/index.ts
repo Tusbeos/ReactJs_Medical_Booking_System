@@ -101,6 +101,16 @@ export interface IBookingData {
   language?: string;
   timeString?: string;
   doctorName?: string;
+  // Đặt hộ cho người khác
+  isForOther?: boolean;
+  profileFirstName?: string;
+  profileLastName?: string;
+  profilePhoneNumber?: string;
+  profileGender?: string;
+  profileDateOfBirth?: string;
+  profileAddress?: string;
+  relationship?: string;
+  medicalHistory?: string;
 }
 
 // Kiểu dữ liệu Specialty

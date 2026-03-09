@@ -20,4 +20,8 @@ const confirmPatientBooking = (
   });
 };
 
-export { getPatientsByDoctor, confirmPatientBooking };
+const getPatientHistory = (patientId: number | string): Promise<any> => {
+  return axios.get(`/api/histories/patient/${patientId}`);
+};
+
+export { getPatientsByDoctor, confirmPatientBooking, getPatientHistory };
