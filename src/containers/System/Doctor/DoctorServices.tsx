@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import "./DoctorServices.scss";
 import { LANGUAGES } from "../../../utils";
 import { toast } from "react-toastify";
-import { getAllDoctor } from "../../../services/doctorService";
+import { getAllDoctorService } from "../../../services/doctorService";
 import { IRootState } from "../../../types";
 
 interface IDoctorServiceItem {
@@ -35,7 +35,7 @@ const DoctorServices = forwardRef<any, IDoctorServicesProps>(
 
     const fetchDataServices = useCallback(async (doctorId: number | string) => {
       try {
-        let res = await getAllDoctor(doctorId);
+        let res = await getAllDoctorService(doctorId);
         if (res && res.errCode === 0 && res.data && res.data.length > 0) {
           setArrServices(res.data);
         } else {

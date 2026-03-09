@@ -21,8 +21,8 @@ const SectionItem: React.FC<ISectionItemProps> = ({ item, onClick, isCircular, s
 
   let name = item.name;
   if (item.lastName && item.firstName) {
-    let positionVi = item.positionData ? item.positionData.value_Vi : "";
-    let positionEn = item.positionData ? item.positionData.value_En : "";
+    let positionVi = item.positionData ? item.positionData.valueVi : "";
+    let positionEn = item.positionData ? item.positionData.valueEn : "";
     if (language === LANGUAGES.VI) {
       name = `${positionVi}, ${item.lastName} ${item.firstName}`;
     } else {

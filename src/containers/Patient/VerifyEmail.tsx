@@ -13,8 +13,10 @@ const VerifyEmail = () => {
     const verifyEmail = async () => {
       if (location && location.search) {
         let urlParams = new URLSearchParams(location.search);
-        let token = urlParams.get("token");
-        let doctorId = urlParams.get("doctorId");
+        let token = urlParams.get("token") || "";
+        // doctorId từ URL params là string, cần parse sang number cho BE (VerifyBookingRequest.doctorId là Integer)
+        let doctorIdRaw = urlParams.get("doctorId");
+        let doctorId = doctorIdRaw ? Number(doctorIdRaw) : 0;
         let res = await handleVerifyEmail({
           token: token,
           doctorId: doctorId,

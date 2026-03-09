@@ -16,15 +16,15 @@ const handleGetAllUsers = (): Promise<any> => {
 };
 
 const handleCreateNewUser = (data: Partial<IUser>): Promise<any> => {
-  return axios.post("/api/create-new-user", data);
+  return axios.post("/api/users", data);
 };
 
 const handleDeleteUser = (userId: number | string): Promise<any> => {
-  return axios.delete("/api/delete-user", { data: { id: userId } });
+  return axios.delete(`/api/users/${userId}`);
 };
 
 const handleEditUser = (inputData: Partial<IUser>): Promise<any> => {
-  return axios.put("/api/edit-user", inputData);
+  return axios.put(`/api/users/${inputData.id}`, inputData);
 };
 
 const handleGetAllCode = (inputType: string): Promise<any> => {

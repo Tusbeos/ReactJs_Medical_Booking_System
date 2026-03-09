@@ -12,7 +12,7 @@ import {
   handleGetAllDoctors,
   saveDetailDoctor,
   saveBulkDoctor,
-  getAllDoctor,
+  getAllDoctorService,
 } from "../../services/doctorService";
 import { IUser } from "../../types";
 
@@ -219,7 +219,7 @@ export const saveDoctorServices = (data: any) => {
 export const fetchDoctorServices = (doctorId: number | string) => {
   return async (dispatch: any) => {
     try {
-      let res = await getAllDoctor(doctorId);
+      let res = await getAllDoctorService(doctorId);
       if (res && res.success) {
         dispatch({
           type: actionTypes.FETCH_DOCTOR_SERVICES_SUCCESS,

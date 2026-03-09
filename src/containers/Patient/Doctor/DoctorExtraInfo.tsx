@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import "./DoctorExtraInfo.scss";
 import {
   getExtraInfoDoctorById,
-  getAllDoctor,
+  getAllDoctorService,
 } from "../../../services/doctorService";
 import { LANGUAGES } from "utils";
 import { NumericFormat } from "react-number-format";
@@ -26,7 +26,7 @@ const DoctorExtraInfo = ({ detailDoctorFromParent }: IDoctorExtraInfoProps) => {
   const fetchExtraInfo = useCallback(async (doctorId: number | string) => {
     try {
       let data = await getExtraInfoDoctorById(doctorId);
-      let doctorServices = await getAllDoctor(doctorId);
+      let doctorServices = await getAllDoctorService(doctorId);
       if (data && data.errCode === 0) {
         setExtraInfo(data && data.data ? data.data : {});
         setListDoctorServices(doctorServices.data ? doctorServices.data : []);
@@ -87,7 +87,7 @@ const DoctorExtraInfo = ({ detailDoctorFromParent }: IDoctorExtraInfoProps) => {
                 language === LANGUAGES.VI && (
                   <NumericFormat
                     className="currency"
-                    value={extraInfo.priceTypeData.value_Vi}
+                    value={extraInfo.priceTypeData.valueVi}
                     thousandsGroupStyle="thousand"
                     thousandSeparator=","
                     suffix="đ"
@@ -99,7 +99,7 @@ const DoctorExtraInfo = ({ detailDoctorFromParent }: IDoctorExtraInfoProps) => {
                 language === LANGUAGES.EN && (
                   <NumericFormat
                     className="currency"
-                    value={extraInfo.priceTypeData.value_En}
+                    value={extraInfo.priceTypeData.valueEn}
                     thousandsGroupStyle="thousand"
                     thousandSeparator=","
                     suffix="$"
@@ -131,7 +131,7 @@ const DoctorExtraInfo = ({ detailDoctorFromParent }: IDoctorExtraInfoProps) => {
                     language === LANGUAGES.VI && (
                       <NumericFormat
                         className="currency"
-                        value={extraInfo.priceTypeData.value_Vi}
+                        value={extraInfo.priceTypeData.valueVi}
                         thousandsGroupStyle="thousand"
                         thousandSeparator=","
                         suffix="đ"
@@ -143,7 +143,7 @@ const DoctorExtraInfo = ({ detailDoctorFromParent }: IDoctorExtraInfoProps) => {
                     language === LANGUAGES.EN && (
                       <NumericFormat
                         className="currency"
-                        value={extraInfo.priceTypeData.value_En}
+                        value={extraInfo.priceTypeData.valueEn}
                         thousandsGroupStyle="thousand"
                         thousandSeparator=","
                         suffix="$"
@@ -159,8 +159,8 @@ const DoctorExtraInfo = ({ detailDoctorFromParent }: IDoctorExtraInfoProps) => {
                 <FormattedMessage id="patient.extra-info-doctor.payment" />
                 {extraInfo && extraInfo.paymentTypeData
                   ? language === LANGUAGES.VI
-                    ? extraInfo.paymentTypeData.value_Vi
-                    : extraInfo.paymentTypeData.value_En
+                    ? extraInfo.paymentTypeData.valueVi
+                    : extraInfo.paymentTypeData.valueEn
                   : ""}
               </div>
             </div>

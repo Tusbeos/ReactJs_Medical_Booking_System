@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 import { useSelector, useDispatch } from "react-redux";
 import "./ManageSchedule.scss";
@@ -29,16 +29,11 @@ const ManageSchedule = () => {
 
   const [selectedDoctor, setSelectedDoctor] = useState<any>({});
   const [listDoctors, setListDoctors] = useState<any[]>([]);
-  const [startDate, setStartDate] = useState<Date>(new Date());
+  // Khởi tạo startDate về nửa đêm để khớp timestamp khi query/lưu lịch
+  const [startDate, setStartDate] = useState<Date>(
+    new Date(new Date().setHours(0, 0, 0, 0)),
+  );
   const [rangeTime, setRangeTime] = useState<any[]>([]);
-
-  // Refs để tránh stale closure
-  const selectedDoctorRef = useRef(selectedDoctor);
-  selectedDoctorRef.current = selectedDoctor;
-  const startDateRef = useRef(startDate);
-  startDateRef.current = startDate;
-  const rangeTimeRef = useRef(rangeTime);
-  rangeTimeRef.current = rangeTime;
 
   const buildDataInputSelect = useCallback(
     (inputData: any[] = []) => {
@@ -82,38 +77,46 @@ const ManageSchedule = () => {
     }
   }, [userInfo, language]);
 
-  const fetchScheduleForDate = useCallback(async () => {
-    const currentSelectedDoctor = selectedDoctorRef.current;
-    const currentStartDate = startDateRef.current;
-    const currentRangeTime = rangeTimeRef.current;
+  useEffect(() => {
+    if (!allScheduleTime || allScheduleTime.length === 0) return;
 
-    const doctorId = currentSelectedDoctor?.value
-      ? currentSelectedDoctor.value
+    const doctorId = selectedDoctor?.value
+      ? selectedDoctor.value
       : userInfo?.roleId === USER_ROLE.DOCTOR
         ? userInfo?.id || userInfo?.userId
         : "";
 
-    if (!doctorId || !currentStartDate) return;
-
-    const parsed = new Date(currentStartDate);
-    const dateValue = !isNaN(parsed.getTime()) ? parsed.getTime() : null;
-    if (!dateValue) return;
-
-    try {
-      const res = await getScheduleDoctorByDate(doctorId, dateValue);
-      const scheduled = res && res.errCode === 0 ? res.data || [] : [];
-      const scheduledKeys = new Set(
-        scheduled.map((item: any) => item.timeType || item.keyMap),
+    if (!doctorId || !startDate) {
+      setRangeTime(
+        allScheduleTime.map((item: any) => ({ ...item, isSelected: false })),
       );
+      return;
+    }
 
-      const updatedRange = (currentRangeTime || []).map((item: any) => ({
-        ...item,
-        isSelected: scheduledKeys.has(item.keyMap),
-      }));
+    // Chuẩn hóa về nửa đêm để khớp với timestamp phía patient (DoctorSchedules)
+    const dateValue = new Date(
+      new Date(startDate).setHours(0, 0, 0, 0),
+    ).getTime();
 
-      setRangeTime(updatedRange);
-    } catch (e) {}
-  }, [userInfo]);
+    getScheduleDoctorByDate(doctorId, dateValue)
+      .then((res) => {
+        const scheduled = res && res.errCode === 0 ? res.data || [] : [];
+        const scheduledKeys = new Set(
+          scheduled.map((item: any) => item.timeType),
+        );
+        setRangeTime(
+          allScheduleTime.map((item: any) => ({
+            ...item,
+            isSelected: scheduledKeys.has(item.keyMap),
+          })),
+        );
+      })
+      .catch(() => {
+        setRangeTime(
+          allScheduleTime.map((item: any) => ({ ...item, isSelected: false })),
+        );
+      });
+  }, [allScheduleTime, selectedDoctor, startDate, userInfo]);
 
   // Mount: lấy danh sách bác sĩ (nếu admin) hoặc init doctor cho role
   useEffect(() => {
@@ -149,16 +152,7 @@ const ManageSchedule = () => {
     }
   }, [language, allDoctors, buildDataInputSelect, userInfo, initDoctorForRole]);
 
-  // Khi allScheduleTime thay đổi → set rangeTime với isSelected
-  useEffect(() => {
-    if (allScheduleTime && allScheduleTime.length > 0) {
-      let data = allScheduleTime.map((item: any) => ({
-        ...item,
-        isSelected: false,
-      }));
-      setRangeTime(data);
-    }
-  }, [allScheduleTime]);
+  // allScheduleTime, selectedDoctor, startDate được xử lý trong effect tổng hợp bên trên
 
   const handleChangeSelectDoctor = useCallback(
     async (selected: any) => {
@@ -169,41 +163,25 @@ const ManageSchedule = () => {
     [userInfo],
   );
 
-  // Khi selectedDoctor thay đổi → fetch schedule
-  useEffect(() => {
-    if (selectedDoctor?.value) {
-      fetchScheduleForDate();
-    }
-  }, [selectedDoctor, fetchScheduleForDate]);
+  // Khi selectedDoctor thay đổi → effect tổng hợp tự xử lý
 
   const handleChange = useCallback((selectedDates: Date[]) => {
-    let nextDate: Date | null = null;
-
-    if (selectedDates && selectedDates.length > 0) {
-      const candidate = selectedDates[0];
-      if (candidate && !isNaN(new Date(candidate).getTime())) {
-        nextDate = candidate;
-      }
-    }
-
-    if (!nextDate && selectedDates && selectedDates.length === 0) {
-      return;
-    }
-
-    setStartDate(nextDate!);
+    // Trường hợp không có ngày nào được chọn → giữ nguyên startDate
+    if (!selectedDates || selectedDates.length === 0) return;
+    const candidate = selectedDates[0];
+    // Nếu date không hợp lệ → giữ nguyên, không set null
+    if (!candidate || isNaN(new Date(candidate).getTime())) return;
+    // Chuẩn hóa về nửa đêm để timestamp khớp phía patient query
+    setStartDate(new Date(new Date(candidate).setHours(0, 0, 0, 0)));
   }, []);
 
-  // Khi startDate thay đổi → fetch schedule
-  useEffect(() => {
-    if (startDate) {
-      fetchScheduleForDate();
-    }
-  }, [startDate, fetchScheduleForDate]);
+  // Khi startDate thay đổi → effect tổng hợp tự xử lý
 
   const handleClickTime = useCallback((time: any) => {
     setRangeTime((prev) => {
       return prev.map((item) => {
-        if (item.id === time.id) {
+        // Dùng keyMap để so sánh – AllCode không có trường id
+        if (item.keyMap === time.keyMap) {
           return { ...item, isSelected: !item.isSelected };
         }
         return item;
@@ -251,9 +229,10 @@ const ManageSchedule = () => {
     }
 
     const parsedStartDate = startDate ? new Date(startDate) : null;
+    // Chuẩn hóa về nửa đêm để timestamp khớp với phía patient query lịch
     const formatDate =
       parsedStartDate && !isNaN(parsedStartDate.getTime())
-        ? parsedStartDate.getTime()
+        ? new Date(new Date(parsedStartDate).setHours(0, 0, 0, 0)).getTime()
         : null;
 
     if (!formatDate) {
@@ -300,7 +279,11 @@ const ManageSchedule = () => {
     }
   };
 
-  let currentDay = new Date();
+  // Ngày hiện tại (midnight) — stable qua các render, dùng cho minDate của DatePicker
+  const currentDay = useMemo(
+    () => new Date(new Date().setHours(0, 0, 0, 0)),
+    [],
+  );
   const isAdmin = userInfo?.roleId === USER_ROLE.ADMIN;
   console.log("Check state manage schedule: ", {
     selectedDoctor,
@@ -384,8 +367,8 @@ const ManageSchedule = () => {
                             onClick={() => handleClickTime(item)}
                           >
                             {language === LANGUAGES.VI
-                              ? item.value_Vi
-                              : item.value_En}
+                              ? item.valueVi
+                              : item.valueEn}
                           </button>
                         );
                       })}

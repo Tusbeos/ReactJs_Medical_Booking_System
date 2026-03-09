@@ -1,7 +1,7 @@
 import axios from "../axiosClient";
 
 const handleGetTopDoctorHome = (limit: number): Promise<any> => {
-  return axios.get("/api/top-doctor-home", { params: { limit } });
+  return axios.get("/api/doctors/top", { params: { limit } });
 };
 
 const handleGetAllDoctors = (): Promise<any> => {
@@ -9,49 +9,53 @@ const handleGetAllDoctors = (): Promise<any> => {
 };
 
 const saveDetailDoctor = (data: any): Promise<any> => {
-  return axios.post("/api/save-info-doctors", data);
+  const { doctorId, ...body } = data;
+  return axios.post(`/api/doctors/${doctorId}/info`, body);
 };
 
 const getDetailInfoDoctor = (inputId: number | string): Promise<any> => {
-  return axios.get(`/api/doctor/${inputId}`);
+  return axios.get(`/api/doctors/${inputId}`);
 };
 
 const saveBulkScheduleDoctor = (data: any): Promise<any> => {
-  return axios.post("/api/bulk-create-schedule", data);
+  const { doctorId, ...body } = data;
+  return axios.post(`/api/doctors/${doctorId}/schedules`, body);
 };
 
 const getScheduleDoctorByDate = (
   doctorId: number | string,
   date: number | string,
 ): Promise<any> => {
-  return axios.get("/api/get-schedule-doctor-by-date", {
-    params: { doctorId: doctorId, date: date },
+  return axios.get(`/api/doctors/${doctorId}/schedules`, {
+    params: { date },
   });
 };
 
-const saveBulkDoctor = (data: any): Promise<any> =>
-  axios.post("/api/bulk-create-doctor-services", data);
+const saveBulkDoctor = (data: any): Promise<any> => {
+  const { doctorId, ...body } = data;
+  return axios.post(`/api/doctors/${doctorId}/services`, body);
+};
 
-const getAllDoctor = (inputId: number | string): Promise<any> => {
-  return axios.get(`/api/get-list-doctor-services?doctorId=${inputId}`);
+const getAllDoctorService = (doctorId: number | string): Promise<any> => {
+  return axios.get(`/api/doctors/${doctorId}/services`);
 };
 
 const getExtraInfoDoctorById = (doctorId: number | string): Promise<any> => {
-  return axios.get(`/api/get-extra-info-doctor-by-id?doctorId=${doctorId}`);
+  return axios.get(`/api/doctors/${doctorId}/extra-info`);
 };
 
 const getSpecialtiesByDoctorId = (doctorId: number | string): Promise<any> => {
-  return axios.get(`/api/get-specialties-by-doctor-id?doctorId=${doctorId}`);
+  return axios.get(`/api/doctors/${doctorId}/specialties`);
 };
 
 const HandleGetDoctorSpecialtyById = (
-  inputId: number | string,
+  specialtyId: number | string,
 ): Promise<any> => {
-  return axios.get(`/api/get-doctor-specialty-by-id?id=${inputId}`);
+  return axios.get(`/api/specialties/${specialtyId}/doctors`);
 };
 
 const getDoctorsByClinicId = (clinicId: number | string): Promise<any> => {
-  return axios.get(`/api/get-doctors-by-clinic-id?clinicId=${clinicId}`);
+  return axios.get(`/api/clinics/${clinicId}/doctors`);
 };
 
 export {
@@ -62,7 +66,7 @@ export {
   saveBulkScheduleDoctor,
   getScheduleDoctorByDate,
   saveBulkDoctor,
-  getAllDoctor,
+  getAllDoctorService,
   getExtraInfoDoctorById,
   getSpecialtiesByDoctorId,
   HandleGetDoctorSpecialtyById,

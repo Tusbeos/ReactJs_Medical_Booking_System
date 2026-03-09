@@ -58,8 +58,8 @@ const TopDoctorList = () => {
   const buildDoctorName = useCallback(
     (doctor: any) => {
       if (doctor && doctor.positionData) {
-        let nameVi = `${doctor.positionData.value_Vi}, ${doctor.lastName} ${doctor.firstName}`;
-        let nameEn = `${doctor.positionData.value_En}, ${doctor.firstName} ${doctor.lastName}`;
+        let nameVi = `${doctor.positionData.valueVi}, ${doctor.lastName} ${doctor.firstName}`;
+        let nameEn = `${doctor.positionData.valueEn}, ${doctor.firstName} ${doctor.lastName}`;
         return language === LANGUAGES.VI ? nameVi : nameEn;
       }
       if (doctor && doctor.firstName && doctor.lastName) {

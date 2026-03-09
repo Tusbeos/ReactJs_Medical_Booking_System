@@ -4,6 +4,7 @@
 
 // Kiểu API Response chung từ backend
 export interface IApiResponse<T = any> {
+  success?: boolean;
   errCode: number;
   errMessage?: string;
   message?: string;
@@ -17,8 +18,8 @@ export interface IAllCode {
   id?: number;
   keyMap?: string;
   type?: string;
-  value_Vi?: string;
-  value_En?: string;
+  valueVi?: string;
+  valueEn?: string;
 }
 
 // Kiểu dữ liệu User
@@ -149,7 +150,7 @@ export interface IPatientBooking {
   timeType?: string;
   token?: string;
   patientData?: IUser;
-  timeTypeDataBooking?: IAllCode;
+  bookingTimeTypeData?: IAllCode;
 }
 
 // =============================

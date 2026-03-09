@@ -4,8 +4,8 @@ const getPatientsByDoctor = (
   doctorId: number | string,
   date: number | string,
 ): Promise<any> => {
-  return axios.get("/api/get-patients-by-doctor", {
-    params: { doctorId, date },
+  return axios.get(`/api/doctors/${doctorId}/patients`, {
+    params: { date },
   });
 };
 
@@ -14,8 +14,7 @@ const confirmPatientBooking = (
   doctorId: number | string,
   statusId: string = "S3",
 ): Promise<any> => {
-  return axios.post("/api/confirm-patient-booking", {
-    bookingId,
+  return axios.post(`/api/bookings/${bookingId}/confirm`, {
     doctorId,
     statusId,
   });

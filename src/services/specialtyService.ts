@@ -2,26 +2,28 @@ import axios from "../axiosClient";
 import { ISpecialty } from "../types";
 
 const createNewSpecialtyService = (data: Partial<ISpecialty>): Promise<any> => {
-  return axios.post("/api/create-new-specialty", data);
+  return axios.post("/api/specialties", data);
 };
 
 const updateSpecialtyService = (data: Partial<ISpecialty>): Promise<any> => {
-  return axios.put("/api/update-specialty", data);
+  const { id, ...body } = data;
+  return axios.put(`/api/specialties/${id}`, body);
 };
 
 const deleteSpecialtyService = (id: number | string): Promise<any> => {
-  return axios.delete("/api/delete-specialty", { data: { id } });
+  return axios.delete(`/api/specialties/${id}`);
 };
 
 const handleGetAllSpecialties = (limit?: number): Promise<any> => {
-  return axios.get("/api/get-all-specialty", {
+  return axios.get("/api/specialties", {
     params: { limit },
   });
 };
 
 const getSpecialtyByIds = (ids: (number | string)[] = []): Promise<any> => {
-  const idsStr = Array.isArray(ids) ? ids.join(",") : String(ids || "");
-  return axios.get("/api/get-specialty-by-ids", { params: { ids: idsStr } });
+  return axios.get("/api/specialties/by-ids", {
+    params: { ids: ids.join(",") },
+  });
 };
 
 export {

@@ -131,8 +131,8 @@ const DoctorSchedules = ({ detailDoctorFromParent }: IDoctorSchedulesProps) => {
                 {availableTime.map((item, index) => {
                   let timeDisplay =
                     language === LANGUAGES.VI
-                      ? item.timeTypeData.value_Vi
-                      : item.timeTypeData.value_En;
+                      ? item.timeTypeData.valueVi
+                      : item.timeTypeData.valueEn;
                   return (
                     <button
                       onClick={() => handleBookingDoctor(item)}

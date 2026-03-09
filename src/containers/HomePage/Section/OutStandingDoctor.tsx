@@ -13,7 +13,6 @@ interface IOutStandingDoctorProps {
   settings: any;
 }
 
-// OutStandingDoctor chuyển sang Function Component + Hooks
 const OutStandingDoctor: React.FC<IOutStandingDoctorProps> = ({ settings }) => {
   const dispatch = useDispatch();
   const history = useHistory();

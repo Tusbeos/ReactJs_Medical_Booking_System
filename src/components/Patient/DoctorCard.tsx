@@ -62,8 +62,8 @@ const DoctorCard: React.FC<IDoctorCardProps> = ({
 
   const normalizeDoctor = useCallback(
     (data: any) => {
-      const positionVi = data.positionData?.value_Vi || "";
-      const positionEn = data.positionData?.value_En || "";
+      const positionVi = data.positionData?.valueVi || "";
+      const positionEn = data.positionData?.valueEn || "";
       const nameVi =
         `${positionVi}, ${data.lastName || ""} ${data.firstName || ""}`.trim();
       const nameEn =
@@ -76,8 +76,8 @@ const DoctorCard: React.FC<IDoctorCardProps> = ({
         desc: data.Markdown?.description || "Chưa có mô tả",
         image: data.image ? getBase64FromBuffer(data.image) : "",
         province:
-          data.DoctorInfo?.provinceTypeData?.value_Vi ||
-          data.DoctorInfo?.provinceTypeData?.value_En ||
+          data.DoctorInfo?.provinceTypeData?.valueVi ||
+          data.DoctorInfo?.provinceTypeData?.valueEn ||
           "",
         address: data.DoctorInfo?.addressClinic || "",
       };
@@ -275,8 +275,8 @@ const DoctorCard: React.FC<IDoctorCardProps> = ({
           onClick={() => handleBookingDoctor(item, doctorId)}
         >
           {language === LANGUAGES.VI
-            ? item.timeTypeData?.value_Vi
-            : item.timeTypeData?.value_En}
+            ? item.timeTypeData?.valueVi
+            : item.timeTypeData?.valueEn}
         </button>
       ));
     }

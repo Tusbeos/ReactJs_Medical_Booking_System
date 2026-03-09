@@ -36,11 +36,11 @@ const DetailDoctor = () => {
   const buildDoctorName = useCallback(
     (doctor: any) => {
       if (doctor && doctor.positionData) {
-        let nameVi = `${doctor.positionData.value_Vi}, ${
-          doctor.roleData?.value_Vi || ""
+        let nameVi = `${doctor.positionData.valueVi}, ${
+          doctor.roleData?.valueVi || ""
         } ${doctor.lastName} ${doctor.firstName}`;
-        let nameEn = `${doctor.positionData.value_En}, ${
-          doctor.roleData?.value_En || ""
+        let nameEn = `${doctor.positionData.valueEn}, ${
+          doctor.roleData?.valueEn || ""
         } ${doctor.firstName} ${doctor.lastName}`;
         return language === LANGUAGES.VI ? nameVi : nameEn;
       }

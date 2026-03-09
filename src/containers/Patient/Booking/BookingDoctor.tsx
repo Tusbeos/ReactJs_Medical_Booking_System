@@ -61,8 +61,8 @@ const BookingDoctor = () => {
       if (tb && tb.timeTypeData) {
         let time =
           language === LANGUAGES.VI
-            ? tb.timeTypeData.value_Vi
-            : tb.timeTypeData.value_En;
+            ? tb.timeTypeData.valueVi
+            : tb.timeTypeData.valueEn;
         let dateResult = "";
         if (tb.date) {
           let startTime = +tb.date;
@@ -90,7 +90,7 @@ const BookingDoctor = () => {
       }
       return "";
     },
-    [language]
+    [language],
   );
 
   const getDoctorImage = useCallback((doctor: any) => {
@@ -103,34 +103,49 @@ const BookingDoctor = () => {
   const buildDoctorName = useCallback(
     (doctor: any) => {
       if (doctor && doctor.positionData) {
-        let nameVi = `${doctor.positionData.value_Vi}, ${
-          doctor.roleData?.value_Vi || ""
+        let nameVi = `${doctor.positionData.valueVi}, ${
+          doctor.roleData?.valueVi || ""
         } ${doctor.lastName} ${doctor.firstName}`;
-        let nameEn = `${doctor.positionData.value_En}, ${
-          doctor.roleData?.value_En || ""
+        let nameEn = `${doctor.positionData.valueEn}, ${
+          doctor.roleData?.valueEn || ""
         } ${doctor.firstName} ${doctor.lastName}`;
         return language === LANGUAGES.VI ? nameVi : nameEn;
       }
       return "";
     },
-    [language]
+    [language],
   );
 
   const handleOnChangeInput = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>, field: string) => {
       let value = event.target.value;
       switch (field) {
-        case "lastName": setLastName(value); break;
-        case "firstName": setFirstName(value); break;
-        case "gender": setGender(value); break;
-        case "phoneNumber": setPhoneNumber(value); break;
-        case "email": setEmail(value); break;
-        case "address": setAddress(value); break;
-        case "reason": setReason(value); break;
-        default: break;
+        case "lastName":
+          setLastName(value);
+          break;
+        case "firstName":
+          setFirstName(value);
+          break;
+        case "gender":
+          setGender(value);
+          break;
+        case "phoneNumber":
+          setPhoneNumber(value);
+          break;
+        case "email":
+          setEmail(value);
+          break;
+        case "address":
+          setAddress(value);
+          break;
+        case "reason":
+          setReason(value);
+          break;
+        default:
+          break;
       }
     },
-    []
+    [],
   );
 
   const handleChangeDatePicker = useCallback((date: any) => {
@@ -189,8 +204,20 @@ const BookingDoctor = () => {
   ]);
 
   console.log("check props booking modal", {
-    lastName, firstName, gender, phoneNumber, email, birthday, address, reason,
-    doctorId, timeType, detailDoctor, timeBooking, doctorInfo, paymentMethod,
+    lastName,
+    firstName,
+    gender,
+    phoneNumber,
+    email,
+    birthday,
+    address,
+    reason,
+    doctorId,
+    timeType,
+    detailDoctor,
+    timeBooking,
+    doctorInfo,
+    paymentMethod,
   });
 
   return (
@@ -211,9 +238,7 @@ const BookingDoctor = () => {
                   <FormattedMessage id="booking.booking-doctor.title-booking" />
                 </div>
                 <div className="doctor-name">
-                  <div className="up">
-                    {buildDoctorName(detailDoctor)}
-                  </div>
+                  <div className="up">{buildDoctorName(detailDoctor)}</div>
                 </div>
                 <div className="time-booking">
                   <div>
@@ -253,7 +278,7 @@ const BookingDoctor = () => {
                     language === LANGUAGES.VI && (
                       <NumericFormat
                         className="currency"
-                        value={doctorInfo.priceTypeData.value_Vi}
+                        value={doctorInfo.priceTypeData.valueVi}
                         thousandsGroupStyle="thousand"
                         thousandSeparator=","
                         suffix="đ"
@@ -265,7 +290,7 @@ const BookingDoctor = () => {
                     language === LANGUAGES.EN && (
                       <NumericFormat
                         className="currency"
-                        value={doctorInfo.priceTypeData.value_En}
+                        value={doctorInfo.priceTypeData.valueEn}
                         thousandsGroupStyle="thousand"
                         thousandSeparator=","
                         suffix="$"
@@ -366,9 +391,7 @@ const BookingDoctor = () => {
                         id: "booking.booking-doctor.email",
                       })}
                       value={email}
-                      onChange={(event) =>
-                        handleOnChangeInput(event, "email")
-                      }
+                      onChange={(event) => handleOnChangeInput(event, "email")}
                     />
                   </div>
                 </div>
@@ -414,9 +437,7 @@ const BookingDoctor = () => {
                         id: "booking.booking-doctor.reason",
                       })}
                       value={reason}
-                      onChange={(event) =>
-                        handleOnChangeInput(event, "reason")
-                      }
+                      onChange={(event) => handleOnChangeInput(event, "reason")}
                     />
                   </div>
                 </div>
@@ -453,7 +474,7 @@ const BookingDoctor = () => {
                       language === LANGUAGES.VI && (
                         <NumericFormat
                           className="currency"
-                          value={doctorInfo.priceTypeData.value_Vi}
+                          value={doctorInfo.priceTypeData.valueVi}
                           thousandsGroupStyle="thousand"
                           thousandSeparator=","
                           suffix="đ"
@@ -465,7 +486,7 @@ const BookingDoctor = () => {
                       language === LANGUAGES.EN && (
                         <NumericFormat
                           className="currency"
-                          value={doctorInfo.priceTypeData.value_En}
+                          value={doctorInfo.priceTypeData.valueEn}
                           thousandsGroupStyle="thousand"
                           thousandSeparator=","
                           suffix="$"
@@ -495,7 +516,7 @@ const BookingDoctor = () => {
                       language === LANGUAGES.VI && (
                         <NumericFormat
                           className="currency"
-                          value={doctorInfo.priceTypeData.value_Vi}
+                          value={doctorInfo.priceTypeData.valueVi}
                           thousandsGroupStyle="thousand"
                           thousandSeparator=","
                           suffix="đ"
@@ -507,7 +528,7 @@ const BookingDoctor = () => {
                       language === LANGUAGES.EN && (
                         <NumericFormat
                           className="currency"
-                          value={doctorInfo.priceTypeData.value_En}
+                          value={doctorInfo.priceTypeData.valueEn}
                           thousandsGroupStyle="thousand"
                           thousandSeparator=","
                           suffix="$"

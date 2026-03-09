@@ -298,8 +298,8 @@ const ManagePatient = () => {
                               <td>{item.patientData?.phoneNumber || ""}</td>
                               <td>
                                 {language === LANGUAGES.VI
-                                  ? item.bookingTimeTypeData?.value_Vi || ""
-                                  : item.bookingTimeTypeData?.value_En || ""}
+                                  ? item.bookingTimeTypeData?.valueVi || ""
+                                  : item.bookingTimeTypeData?.valueEn || ""}
                               </td>
                               <td>{item.reason || ""}</td>
                               <td>

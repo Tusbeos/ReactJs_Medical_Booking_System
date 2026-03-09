@@ -82,7 +82,7 @@ const ManageDoctor: React.FC = () => {
         label = language === LANGUAGES.VI ? labelVi : labelEn;
         objectValue = item.id;
       } else {
-        label = language === LANGUAGES.VI ? item.value_Vi : item.value_En;
+        label = language === LANGUAGES.VI ? item.valueVi : item.valueEn;
         objectValue = item.keyMap;
       }
       return { label: label ? label.trim() : "", value: objectValue };
