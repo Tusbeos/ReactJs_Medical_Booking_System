@@ -49,16 +49,37 @@ const getArrDays = (language: string) => {
   return allDays;
 };
 
+// Kiểm tra slot đã đầy chưa
+const isSlotFull = (item: any): boolean => {
+  return item.currentNumber >= item.maxNumber;
+};
+
+// Kiểm tra khung giờ đã qua chưa (chỉ áp dụng cho ngày hôm nay)
+const isTimeSlotPast = (item: any, selectedDate: number): boolean => {
+  if (!moment(selectedDate).isSame(moment(), "day")) return false;
+  const valueVi = item.timeTypeData?.valueVi || "";
+  const match = valueVi.match(/^(\d+):(\d+)/);
+  if (!match) return false;
+  const hour = parseInt(match[1], 10);
+  const minute = parseInt(match[2], 10);
+  const slotTime = moment().startOf("day").add(hour, "hours").add(minute, "minutes");
+  return moment().isAfter(slotTime);
+};
+
 const DoctorSchedules = ({ detailDoctorFromParent }: IDoctorSchedulesProps) => {
   const language = useSelector((state: IRootState) => state.app.language);
   const history = useHistory();
   const [allDays, setAllDays] = useState<any[]>([]);
   const [availableTime, setAvailableTime] = useState<any[]>([]);
+  const [selectedDate, setSelectedDate] = useState<number>(
+    moment().startOf("day").valueOf()
+  );
 
   useEffect(() => {
     const initSchedule = async () => {
       let days = getArrDays(language);
       setAllDays(days);
+      setSelectedDate(days[0].value);
       if (detailDoctorFromParent) {
         let res = await getScheduleDoctorByDate(
           detailDoctorFromParent,
@@ -75,6 +96,7 @@ const DoctorSchedules = ({ detailDoctorFromParent }: IDoctorSchedulesProps) => {
       if (detailDoctorFromParent && detailDoctorFromParent !== -1) {
         let doctorId = detailDoctorFromParent;
         let date = event.target.value;
+        setSelectedDate(Number(date));
         let res = await getScheduleDoctorByDate(doctorId, date);
         if (res && res.errCode === 0) {
           setAvailableTime(res.data ? res.data : []);
@@ -133,15 +155,23 @@ const DoctorSchedules = ({ detailDoctorFromParent }: IDoctorSchedulesProps) => {
                     language === LANGUAGES.VI
                       ? item.timeTypeData.valueVi
                       : item.timeTypeData.valueEn;
+                  const isPast = isTimeSlotPast(item, selectedDate);
+                  const isFull = isSlotFull(item);
+                  const isDisabled = isPast || isFull;
                   return (
                     <button
-                      onClick={() => handleBookingDoctor(item)}
+                      onClick={() => !isDisabled && handleBookingDoctor(item)}
                       key={index}
-                      className={
+                      disabled={isDisabled}
+                      className={`${
                         language === LANGUAGES.VI ? "btn-vi" : "btn-en"
-                      }
+                      }${isPast ? " btn-time-past" : ""}${isFull && !isPast ? " btn-slot-full" : ""}`}
+                      title={isFull ? "Khung giờ này đã đầy" : undefined}
                     >
                       {timeDisplay}
+                      {isFull && !isPast && (
+                        <span className="slot-full-badge">Hết chỗ</span>
+                      )}
                     </button>
                   );
                 })}

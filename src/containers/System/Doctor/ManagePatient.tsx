@@ -332,11 +332,11 @@ const ManagePatient = () => {
                               <td>{item.reason || ""}</td>
                               <td>
                                 {item.statusId === "S1" ? (
-                                  <span className="badge badge-warning">
+                                  <span className="badge badge-warning text-danger">
                                     Chờ xác nhận email
                                   </span>
                                 ) : item.statusId === "S2" ? (
-                                  <span className="badge badge-info">
+                                  <span className="badge badge-info text-warning">
                                     Chờ khám
                                   </span>
                                 ) : item.statusId === "S3" ? (

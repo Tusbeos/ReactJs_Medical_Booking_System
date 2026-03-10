@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import "./DoctorCard.scss";
 import { FormattedMessage } from "react-intl";
+import moment from "moment";
 import {
   handleGetAllDoctors,
   getDetailInfoDoctor,
@@ -13,6 +14,26 @@ import { getBase64FromBuffer } from "utils/CommonUtils";
 import DoctorExtraInfo from "../../containers/Patient/Doctor/DoctorExtraInfo";
 import { useHistory } from "react-router";
 import { IRootState } from "../../types";
+
+// Kiểm tra slot đã đầy chưa
+const isSlotFull = (item: any): boolean => {
+  return item.currentNumber >= item.maxNumber;
+};
+
+// Kiểm tra khung giờ đã qua chưa (chỉ áp dụng cho ngày hôm nay)
+const isTimeSlotPast = (item: any, selectedDate: number): boolean => {
+  if (!moment(selectedDate).isSame(moment(), "day")) return false;
+  const valueVi = item.timeTypeData?.valueVi || "";
+  const match = valueVi.match(/^(\d+):(\d+)/);
+  if (!match) return false;
+  const hour = parseInt(match[1], 10);
+  const minute = parseInt(match[2], 10);
+  const slotTime = moment()
+    .startOf("day")
+    .add(hour, "hours")
+    .add(minute, "minutes");
+  return moment().isAfter(slotTime);
+};
 
 interface IDoctorCardProps {
   specialtyId?: number | string;
@@ -120,7 +141,9 @@ const DoctorCard: React.FC<IDoctorCardProps> = ({
           setProvinceOptions([]);
           return;
         }
-        const detailPromises = doctorIds.map((id) => getDetailInfoDoctor(id));
+        const detailPromises = doctorIds.map((id) =>
+          getDetailInfoDoctor(id).catch(() => null),
+        );
         const detailResults = await Promise.all(detailPromises);
         const docs = detailResults
           .filter((item) => item && item.errCode === 0 && item.data)
@@ -161,7 +184,7 @@ const DoctorCard: React.FC<IDoctorCardProps> = ({
           }
           const doctorId = item.doctorId || item.id;
           if (!doctorId) return Promise.resolve(null);
-          return getDetailInfoDoctor(doctorId);
+          return getDetailInfoDoctor(doctorId).catch(() => null);
         });
 
         const detailResults = await Promise.all(detailPromises);
@@ -266,19 +289,33 @@ const DoctorCard: React.FC<IDoctorCardProps> = ({
     );
   };
 
-  const renderScheduleTimes = (schedules: any[], doctorId: any) => {
+  const renderScheduleTimes = (
+    schedules: any[],
+    doctorId: any,
+    selectedDate: number,
+  ) => {
     if (schedules && schedules.length > 0) {
-      return schedules.map((item, idx) => (
-        <button
-          className="time-btn"
-          key={idx}
-          onClick={() => handleBookingDoctor(item, doctorId)}
-        >
-          {language === LANGUAGES.VI
-            ? item.timeTypeData?.valueVi
-            : item.timeTypeData?.valueEn}
-        </button>
-      ));
+      return schedules.map((item, idx) => {
+        const isPast = isTimeSlotPast(item, selectedDate);
+        const isFull = isSlotFull(item);
+        const isDisabled = isPast || isFull;
+        return (
+          <button
+            className={`time-btn${isPast ? " btn-time-past" : ""}${isFull && !isPast ? " btn-slot-full" : ""}`}
+            key={idx}
+            disabled={isDisabled}
+            onClick={() => !isDisabled && handleBookingDoctor(item, doctorId)}
+            title={isFull ? "Khung giờ này đã đầy" : undefined}
+          >
+            {language === LANGUAGES.VI
+              ? item.timeTypeData?.valueVi
+              : item.timeTypeData?.valueEn}
+            {isFull && !isPast && (
+              <span className="slot-full-badge">Hết chỗ</span>
+            )}
+          </button>
+        );
+      });
     }
     return (
       <div className="no-schedule">
@@ -361,7 +398,7 @@ const DoctorCard: React.FC<IDoctorCardProps> = ({
               </div>
 
               <div className="schedule-times">
-                {renderScheduleTimes(schedules, doctor.id)}
+                {renderScheduleTimes(schedules, doctor.id, selectedDate)}
               </div>
 
               <div className="book-free-text">

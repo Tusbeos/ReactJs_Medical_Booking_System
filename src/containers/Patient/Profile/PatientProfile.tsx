@@ -4,7 +4,12 @@ import { toast } from "react-toastify";
 import { FormattedMessage } from "react-intl";
 import HomeHeader from "../../HomePage/HomeHeader";
 import { IRootState, IUser } from "../../../types";
-import { handleEditUser, handleGetAllCode, handleGetUserById } from "../../../services/userService";
+import {
+  handleEditUser,
+  handleGetAllCode,
+  handleGetUserById,
+  handleChangePassword,
+} from "../../../services/userService";
 import { userLoginSuccess } from "../../../store/actions/userActions";
 import { LANGUAGES } from "../../../utils";
 import "./PatientProfile.scss";
@@ -25,6 +30,15 @@ const PatientProfile: React.FC = () => {
   const [previewAvatar, setPreviewAvatar] = useState("");
   const [avatar, setAvatar] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+
+  // State cho phần đổi mật khẩu
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Load thông tin user hiện tại vào form
   useEffect(() => {
@@ -68,7 +82,7 @@ const PatientProfile: React.FC = () => {
       }
     };
     fetchProfile();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInfo?.id]);
 
   // Lấy danh sách giới tính
@@ -134,7 +148,7 @@ const PatientProfile: React.FC = () => {
               ...fresh.data,
               image: fresh.data.image
                 ? `data:image/jpeg;base64,${fresh.data.image}`
-                : (avatar || userInfo.image),
+                : avatar || userInfo.image,
             };
             dispatch(userLoginSuccess(updatedUser, token || undefined));
           }
@@ -163,7 +177,87 @@ const PatientProfile: React.FC = () => {
           : "Error updating profile",
       );
     }
-  }, [userInfo, firstName, lastName, phoneNumber, address, gender, avatar, language, dispatch, token]);
+  }, [
+    userInfo,
+    firstName,
+    lastName,
+    phoneNumber,
+    address,
+    gender,
+    avatar,
+    language,
+    dispatch,
+    token,
+  ]);
+
+  // Xử lý đổi mật khẩu
+  const handleSavePassword = useCallback(async () => {
+    const userId = userInfo?.id || userInfo?.userId;
+    if (!userId) return;
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      toast.error(
+        language === LANGUAGES.VI
+          ? "Vui lòng điền đầy đủ thông tin"
+          : "Please fill in all fields",
+      );
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error(
+        language === LANGUAGES.VI
+          ? "Mật khẩu mới phải có ít nhất 6 ký tự"
+          : "New password must be at least 6 characters",
+      );
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error(
+        language === LANGUAGES.VI
+          ? "Mật khẩu mới và xác nhận không khớp"
+          : "New password and confirmation do not match",
+      );
+      return;
+    }
+
+    try {
+      const res = await handleChangePassword(userId, {
+        oldPassword,
+        newPassword,
+        confirmPassword,
+      });
+      if (res && res.errCode === 0) {
+        toast.success(
+          language === LANGUAGES.VI
+            ? "Đổi mật khẩu thành công!"
+            : "Password changed successfully!",
+        );
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setShowChangePassword(false);
+      } else {
+        toast.error(res?.errMessage || "Change password failed");
+      }
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.errMessage ||
+        err?.errMessage ||
+        (language === LANGUAGES.VI
+          ? "Có lỗi xảy ra khi đổi mật khẩu"
+          : "Error changing password");
+      toast.error(msg);
+    }
+  }, [userInfo, oldPassword, newPassword, confirmPassword, language]);
+
+  const handleCancelPassword = useCallback(() => {
+    setOldPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setShowChangePassword(false);
+  }, []);
 
   const handleCancel = useCallback(() => {
     if (userInfo) {
@@ -196,10 +290,7 @@ const PatientProfile: React.FC = () => {
               />
             </h2>
             {!isEditing && (
-              <button
-                className="btn-edit"
-                onClick={() => setIsEditing(true)}
-              >
+              <button className="btn-edit" onClick={() => setIsEditing(true)}>
                 <i className="fas fa-pen" />
                 <span>
                   <FormattedMessage
@@ -372,6 +463,133 @@ const PatientProfile: React.FC = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Section đổi mật khẩu */}
+        <div className="profile-card password-card">
+          <div
+            className="password-header"
+            onClick={() => setShowChangePassword(!showChangePassword)}
+          >
+            <div className="password-header-left">
+              <i className="fas fa-lock" />
+              <h3>
+                <FormattedMessage
+                  id="patient.profile.changePassword"
+                  defaultMessage="Đổi mật khẩu"
+                />
+              </h3>
+            </div>
+            <i
+              className={`fas fa-chevron-${showChangePassword ? "up" : "down"}`}
+            />
+          </div>
+
+          {showChangePassword && (
+            <div className="password-body">
+              <div className="password-form">
+                <div className="form-group">
+                  <label>
+                    <FormattedMessage
+                      id="patient.profile.oldPassword"
+                      defaultMessage="Mật khẩu hiện tại"
+                    />
+                  </label>
+                  <div className="password-input-wrapper">
+                    <input
+                      type={showOldPassword ? "text" : "password"}
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
+                      placeholder={
+                        language === LANGUAGES.VI
+                          ? "Nhập mật khẩu hiện tại"
+                          : "Enter current password"
+                      }
+                    />
+                    <i
+                      className={`fas fa-eye${showOldPassword ? "-slash" : ""}`}
+                      onClick={() => setShowOldPassword(!showOldPassword)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>
+                    <FormattedMessage
+                      id="patient.profile.newPassword"
+                      defaultMessage="Mật khẩu mới"
+                    />
+                  </label>
+                  <div className="password-input-wrapper">
+                    <input
+                      type={showNewPassword ? "text" : "password"}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder={
+                        language === LANGUAGES.VI
+                          ? "Nhập mật khẩu mới (ít nhất 6 ký tự)"
+                          : "Enter new password (min 6 characters)"
+                      }
+                    />
+                    <i
+                      className={`fas fa-eye${showNewPassword ? "-slash" : ""}`}
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>
+                    <FormattedMessage
+                      id="patient.profile.confirmPassword"
+                      defaultMessage="Xác nhận mật khẩu mới"
+                    />
+                  </label>
+                  <div className="password-input-wrapper">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder={
+                        language === LANGUAGES.VI
+                          ? "Nhập lại mật khẩu mới"
+                          : "Confirm new password"
+                      }
+                    />
+                    <i
+                      className={`fas fa-eye${
+                        showConfirmPassword ? "-slash" : ""
+                      }`}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-actions">
+                <button className="btn-save" onClick={handleSavePassword}>
+                  <i className="fas fa-check" />
+                  <span>
+                    <FormattedMessage
+                      id="patient.profile.savePassword"
+                      defaultMessage="Đổi mật khẩu"
+                    />
+                  </span>
+                </button>
+                <button className="btn-cancel" onClick={handleCancelPassword}>
+                  <i className="fas fa-times" />
+                  <span>
+                    <FormattedMessage
+                      id="patient.profile.cancel"
+                      defaultMessage="Huỷ"
+                    />
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

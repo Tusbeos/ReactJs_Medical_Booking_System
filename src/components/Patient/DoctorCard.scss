@@ -140,6 +140,32 @@ $border-color: #f1f0f0;
                         &:hover {
                             background-color: #f1d50e; 
                         }
+                        &.btn-time-past, &:disabled {
+                            background-color: #cccccc;
+                            color: #888888;
+                            opacity: 0.55;
+                            cursor: not-allowed;
+                            &:hover {
+                                background-color: #cccccc;
+                                cursor: not-allowed;
+                            }
+                        }
+                        &.btn-slot-full {
+                            background-color: #ffe0e0;
+                            color: #c0392b;
+                            opacity: 0.75;
+                            cursor: not-allowed;
+                            &:hover {
+                                background-color: #ffe0e0;
+                                cursor: not-allowed;
+                            }
+                            .slot-full-badge {
+                                display: block;
+                                font-size: 11px;
+                                font-weight: 400;
+                                color: #c0392b;
+                            }
+                        }
                     }
                     .no-schedule { font-style: italic; font-size: 13px; }
                 }

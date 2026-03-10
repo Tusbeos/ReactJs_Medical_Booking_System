@@ -203,3 +203,146 @@ $primary-color: #45c3d2;
     }
   }
 }
+
+/* Section đổi mật khẩu */
+.patient-profile-container {
+  .password-card {
+    margin-top: 20px;
+
+    .password-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 28px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+
+      &:hover {
+        background: #f8f9fa;
+      }
+
+      .password-header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        i {
+          font-size: 18px;
+          color: $primary-color;
+        }
+
+        h3 {
+          margin: 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #333;
+        }
+      }
+
+      > i {
+        color: #999;
+        font-size: 14px;
+      }
+    }
+
+    .password-body {
+      padding: 0 28px 24px;
+
+      .password-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+
+          label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+          }
+
+          .password-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+
+            input {
+              width: 100%;
+              padding: 10px 40px 10px 14px;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+              font-size: 15px;
+              outline: none;
+              transition: border 0.2s;
+
+              &:focus {
+                border-color: $primary-color;
+                box-shadow: 0 0 0 3px rgba($primary-color, 0.12);
+              }
+            }
+
+            > i {
+              position: absolute;
+              right: 12px;
+              color: #999;
+              cursor: pointer;
+              font-size: 14px;
+              padding: 4px;
+
+              &:hover {
+                color: #666;
+              }
+            }
+          }
+        }
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 10px 28px;
+          border: none;
+          border-radius: 25px;
+          font-size: 15px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+
+          &:hover {
+            transform: translateY(-1px);
+          }
+        }
+
+        .btn-save {
+          background: linear-gradient(135deg, $primary-color, darken($primary-color, 8%));
+          color: #fff;
+
+          &:hover {
+            box-shadow: 0 4px 12px rgba($primary-color, 0.4);
+          }
+        }
+
+        .btn-cancel {
+          background: #f0f0f0;
+          color: #666;
+
+          &:hover {
+            background: #e0e0e0;
+          }
+        }
+      }
+    }
+  }
+}

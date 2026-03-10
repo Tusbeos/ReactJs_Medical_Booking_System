@@ -35,6 +35,13 @@ const handleGetAllCode = (inputType: string): Promise<any> => {
   return axios.get("/api/all-codes", { params: { type: inputType } });
 };
 
+const handleChangePassword = (
+  userId: number | string,
+  data: { oldPassword: string; newPassword: string; confirmPassword: string },
+): Promise<any> => {
+  return axios.put(`/api/users/${userId}/change-password`, data);
+};
+
 export {
   handleLoginApi,
   handleGetAllUsers,
@@ -43,4 +50,5 @@ export {
   handleDeleteUser,
   handleEditUser,
   handleGetAllCode,
+  handleChangePassword,
 };

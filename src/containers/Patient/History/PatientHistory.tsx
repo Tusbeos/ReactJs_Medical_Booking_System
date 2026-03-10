@@ -25,8 +25,15 @@ interface IHistoryRecord {
   diagnosis: string;
   prescription: string;
   notes: string;
+  // Thông tin người thân (nếu đặt hộ)
+  profileId?: number;
+  profileFirstName?: string;
+  profileLastName?: string;
+  profileRelationship?: string;
   createdAt: string;
 }
+
+type TabType = "all" | "self" | "relative";
 
 const PatientHistory: React.FC = () => {
   const language = useSelector((state: IRootState) => state.app.language);
@@ -35,6 +42,7 @@ const PatientHistory: React.FC = () => {
   const [histories, setHistories] = useState<IHistoryRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<TabType>("all");
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -57,17 +65,27 @@ const PatientHistory: React.FC = () => {
     fetchHistory();
   }, [userInfo?.id, (userInfo as any)?.userId]);
 
+  // Lọc theo tab
+  const filteredHistories = histories.filter((r) => {
+    if (activeTab === "self") return !r.profileId;
+    if (activeTab === "relative") return !!r.profileId;
+    return true;
+  });
+
   // Chuyển timestamp sang ngày hiển thị
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "—";
     const ts = Number(dateStr);
     if (!isNaN(ts) && ts > 0) {
       const d = new Date(ts);
-      return d.toLocaleDateString(language === LANGUAGES.VI ? "vi-VN" : "en-US", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
+      return d.toLocaleDateString(
+        language === LANGUAGES.VI ? "vi-VN" : "en-US",
+        {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        },
+      );
     }
     return dateStr;
   };
@@ -91,6 +109,38 @@ const PatientHistory: React.FC = () => {
             </h2>
           </div>
 
+          {/* Tabs lọc: Tất cả / Của tôi / Người thân */}
+          <div className="history-tabs">
+            <button
+              className={`tab-btn ${activeTab === "all" ? "active" : ""}`}
+              onClick={() => setActiveTab("all")}
+            >
+              <FormattedMessage
+                id="patient.history.tab-all"
+                defaultMessage="Tất cả"
+              />
+            </button>
+            <button
+              className={`tab-btn ${activeTab === "self" ? "active" : ""}`}
+              onClick={() => setActiveTab("self")}
+            >
+              <FormattedMessage
+                id="patient.history.tab-self"
+                defaultMessage="Của tôi"
+              />
+            </button>
+            <button
+              className={`tab-btn ${activeTab === "relative" ? "active" : ""}`}
+              onClick={() => setActiveTab("relative")}
+            >
+              <i className="fas fa-users" />{" "}
+              <FormattedMessage
+                id="patient.history.tab-relative"
+                defaultMessage="Người thân"
+              />
+            </button>
+          </div>
+
           <div className="history-body">
             {loading ? (
               <div className="loading-state">
@@ -102,7 +152,7 @@ const PatientHistory: React.FC = () => {
                   />
                 </span>
               </div>
-            ) : histories.length === 0 ? (
+            ) : filteredHistories.length === 0 ? (
               <div className="empty-state">
                 <i className="fas fa-clipboard-list" />
                 <p>
@@ -114,7 +164,7 @@ const PatientHistory: React.FC = () => {
               </div>
             ) : (
               <div className="history-list">
-                {histories.map((record) => {
+                {filteredHistories.map((record) => {
                   const isExpanded = expandedId === record.id;
                   const doctorName =
                     language === LANGUAGES.VI
@@ -125,10 +175,20 @@ const PatientHistory: React.FC = () => {
                       ? record.timeTypeValueVi
                       : record.timeTypeValueEn;
 
+                  // Tên người được khám (bản thân hoặc người thân)
+                  const isForRelative = !!record.profileId;
+                  const patientName = isForRelative
+                    ? language === LANGUAGES.VI
+                      ? `${record.profileLastName || ""} ${record.profileFirstName || ""}`.trim()
+                      : `${record.profileFirstName || ""} ${record.profileLastName || ""}`.trim()
+                    : language === LANGUAGES.VI
+                      ? `${record.patientLastName || ""} ${record.patientFirstName || ""}`.trim()
+                      : `${record.patientFirstName || ""} ${record.patientLastName || ""}`.trim();
+
                   return (
                     <div
                       key={record.id}
-                      className={`history-item ${isExpanded ? "expanded" : ""}`}
+                      className={`history-item ${isExpanded ? "expanded" : ""} ${isForRelative ? "for-relative" : ""}`}
                     >
                       <div
                         className="item-summary"
@@ -149,6 +209,18 @@ const PatientHistory: React.FC = () => {
                               <span>{timeLabel}</span>
                             </div>
                           )}
+                          {/* Badge cho người thân */}
+                          {isForRelative && (
+                            <div className="relative-badge">
+                              <i className="fas fa-user-friends" />
+                              <span>
+                                {patientName}
+                                {record.profileRelationship
+                                  ? ` (${record.profileRelationship})`
+                                  : ""}
+                              </span>
+                            </div>
+                          )}
                         </div>
                         <i
                           className={`fas fa-chevron-down expand-icon ${isExpanded ? "rotated" : ""}`}
@@ -157,6 +229,24 @@ const PatientHistory: React.FC = () => {
 
                       {isExpanded && (
                         <div className="item-detail">
+                          {/* Người được khám */}
+                          <div className="detail-row">
+                            <span className="detail-label">
+                              <FormattedMessage
+                                id="patient.history.patient-name"
+                                defaultMessage="Người khám"
+                              />
+                            </span>
+                            <span className="detail-value">
+                              {patientName || "—"}
+                              {isForRelative && record.profileRelationship && (
+                                <span className="relationship-tag">
+                                  {" "}
+                                  ({record.profileRelationship})
+                                </span>
+                              )}
+                            </span>
+                          </div>
                           {record.reason && (
                             <div className="detail-row">
                               <span className="detail-label">
@@ -165,7 +255,9 @@ const PatientHistory: React.FC = () => {
                                   defaultMessage="Lý do khám"
                                 />
                               </span>
-                              <span className="detail-value">{record.reason}</span>
+                              <span className="detail-value">
+                                {record.reason}
+                              </span>
                             </div>
                           )}
                           {record.diagnosis && (
@@ -176,7 +268,9 @@ const PatientHistory: React.FC = () => {
                                   defaultMessage="Chẩn đoán"
                                 />
                               </span>
-                              <span className="detail-value">{record.diagnosis}</span>
+                              <span className="detail-value">
+                                {record.diagnosis}
+                              </span>
                             </div>
                           )}
                           {record.prescription && (
@@ -200,7 +294,9 @@ const PatientHistory: React.FC = () => {
                                   defaultMessage="Ghi chú"
                                 />
                               </span>
-                              <span className="detail-value">{record.notes}</span>
+                              <span className="detail-value">
+                                {record.notes}
+                              </span>
                             </div>
                           )}
                         </div>
@@ -218,3 +314,4 @@ const PatientHistory: React.FC = () => {
 };
 
 export default PatientHistory;
+
