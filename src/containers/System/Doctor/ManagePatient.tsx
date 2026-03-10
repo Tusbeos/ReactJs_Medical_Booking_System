@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import "./ManagePatient.scss";
 import { FormattedMessage } from "react-intl";
 import DatePicker from "../../../components/Input/DatePicker";
@@ -15,6 +16,8 @@ import { IRootState } from "../../../types";
 const ManagePatient = () => {
   const userInfo = useSelector((state: IRootState) => state.user.userInfo);
   const language = useSelector((state: IRootState) => state.app.language);
+
+  const routerHistory = useHistory();
 
   const [patients, setPatients] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
@@ -315,7 +318,7 @@ const ManagePatient = () => {
                                 {renderFullName(item)}
                                 {item.profileData && (
                                   <span
-                                    className="badge badge-secondary ml-1"
+                                    className="badge badge-secondary ml-1 text-muted"
                                     title={`Đặt hộ bởi: ${item.patientData?.email || ""} — Quan hệ: ${item.profileData.relationship || ""}`}
                                   >
                                     Đặt hộ
@@ -340,7 +343,7 @@ const ManagePatient = () => {
                                     Chờ khám
                                   </span>
                                 ) : item.statusId === "S3" ? (
-                                  <span className="badge badge-success">
+                                  <span className="badge badge-success text-primary">
                                     Đã khám
                                   </span>
                                 ) : (
@@ -350,15 +353,39 @@ const ManagePatient = () => {
                                 )}
                               </td>
                               <td>
-                                <button
-                                  className="btn btn-primary btn-sm"
-                                  onClick={() => handleConfirmBooking(item)}
-                                  disabled={item.statusId === "S3"}
-                                >
-                                  {item.statusId === "S3"
-                                    ? "Đã xác nhận"
-                                    : "Xác nhận"}
-                                </button>
+                                {/* S1: chờ xác nhận email → không hiện nút */}
+                                {item.statusId === "S1" && (
+                                  <span
+                                    className="text-muted"
+                                    style={{ fontSize: "12px" }}
+                                  >
+                                    Chờ xác nhận email
+                                  </span>
+                                )}
+                                {/* S2: email đã xác nhận → hiện nút Xác nhận khám */}
+                                {item.statusId === "S2" && (
+                                  <button
+                                    className="btn btn-primary btn-sm"
+                                    onClick={() => handleConfirmBooking(item)}
+                                  >
+                                    <i className="fas fa-check mr-1"></i> Xác
+                                    nhận khám
+                                  </button>
+                                )}
+                                {/* S3: đã khám → hiện nút Kê đơn */}
+                                {item.statusId === "S3" && (
+                                  <button
+                                    className="btn btn-success btn-sm"
+                                    onClick={() =>
+                                      routerHistory.push(
+                                        `/doctor/prescription/${item.id}`,
+                                      )
+                                    }
+                                  >
+                                    <i className="fas fa-notes-medical mr-1"></i>{" "}
+                                    Kê đơn
+                                  </button>
+                                )}
                               </td>
                             </tr>
                           ))

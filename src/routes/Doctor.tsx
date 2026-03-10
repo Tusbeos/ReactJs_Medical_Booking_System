@@ -4,6 +4,7 @@ import { Route, Switch } from "react-router-dom";
 import ManageSchedule from "containers/System/Doctor/ManageSchedule";
 import Header from "containers/Header/Header";
 import ManagePatient from "containers/System/Doctor/ManagePatient";
+import Prescription from "containers/System/Doctor/Prescription";
 import { userIsDoctorOrAdmin } from "../hoc/authentication";
 import { IRootState } from "../types";
 
@@ -23,6 +24,10 @@ const Doctor = () => {
             <Route
               path="/doctor/manage-patient"
               component={userIsDoctorOrAdmin(ManagePatient)}
+            />
+            <Route
+              path="/doctor/prescription/:bookingId"
+              component={userIsDoctorOrAdmin(Prescription)}
             />
           </Switch>
         </div>

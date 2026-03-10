@@ -1,0 +1,96 @@
+.prescription-container {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 0 20px 40px;
+
+  .prescription-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e9ecef;
+
+    .back-btn {
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .prescription-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #2c3e50;
+
+      .booking-id-badge {
+        display: inline-block;
+        margin-left: 12px;
+        padding: 2px 10px;
+        background-color: #e8f4f8;
+        color: #2980b9;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .prescription-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+
+    .prescription-label {
+      font-weight: 600;
+      color: #34495e;
+      margin-bottom: 8px;
+
+      i {
+        color: #3498db;
+      }
+
+      .required-star {
+        color: #e74c3c;
+        margin-left: 2px;
+      }
+    }
+
+    .prescription-input,
+    .prescription-textarea {
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+
+      &:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.2);
+      }
+    }
+
+    .prescription-textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+    }
+
+    .prescription-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 20px;
+      border-top: 1px solid #e9ecef;
+
+      .btn-confirm {
+        padding: 8px 24px;
+        font-weight: 600;
+        font-size: 15px;
+      }
+    }
+  }
+}
