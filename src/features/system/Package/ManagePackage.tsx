@@ -60,6 +60,9 @@ const ManagePackage = () => {
   ]);
   const [isEditing, setIsEditing] = useState(false);
   const [editPackageId, setEditPackageId] = useState<number | null>(null);
+  const [deletingPackageId, setDeletingPackageId] = useState<number | null>(
+    null,
+  );
   const [searchTerm, setSearchTerm] = useState("");
 
   const fileInput = useRef<HTMLInputElement>(null);
@@ -350,13 +353,27 @@ const ManagePackage = () => {
       return;
     }
 
-    const res = await deletePackage(item.id).unwrap();
-    if (res && res.errCode === 0) {
-      toast.success("Xóa gói khám thành công.");
-      return;
-    }
+    setDeletingPackageId(item.id);
+    try {
+      const res = await deletePackage(item.id).unwrap();
+      if (res && res.errCode === 0) {
+        toast.success("Xóa gói khám thành công.");
+        if (editPackageId === item.id) {
+          resetForm();
+        }
+        return;
+      }
 
-    toast.error(res?.errMessage || "Xóa gói khám thất bại.");
+      toast.error(res?.errMessage || "Xóa gói khám thất bại.");
+    } catch (error: any) {
+      toast.error(
+        error?.data?.errMessage ||
+          error?.data?.message ||
+          "Xóa gói khám thất bại. Vui lòng thử lại.",
+      );
+    } finally {
+      setDeletingPackageId(null);
+    }
   };
 
   const getTypeName = (item: any) => {
@@ -675,7 +692,9 @@ const ManagePackage = () => {
           }
           onRetry={() => void refetchPackages()}
           onEdit={handleEditPackage}
-          onDelete={handleDeletePackage}
+          onDelete={
+            deletingPackageId === null ? handleDeletePackage : undefined
+          }
         />
       </Panel>
     </div>

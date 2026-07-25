@@ -8,8 +8,8 @@ import { FormattedMessage } from "react-intl";
 import "moment/locale/vi";
 import { IRootState } from "../../../types";
 import {
-  useGetDoctorExtraInfoQuery,
-  useGetDoctorServicesQuery,
+  useGetPublicDoctorExtraInfoQuery,
+  useGetPublicDoctorServicesQuery,
 } from "../../../store/api/publicApi";
 
 interface IDoctorExtraInfoProps {
@@ -21,10 +21,10 @@ const DoctorExtraInfo = ({ detailDoctorFromParent }: IDoctorExtraInfoProps) => {
   const navigate = useNavigate();
   const [isShowDetailInfo, setIsShowDetailInfo] = useState(false);
   const shouldSkip = !detailDoctorFromParent || detailDoctorFromParent === -1;
-  const { data: extraInfoResponse } = useGetDoctorExtraInfoQuery(detailDoctorFromParent, {
+  const { data: extraInfoResponse } = useGetPublicDoctorExtraInfoQuery(detailDoctorFromParent, {
     skip: shouldSkip,
   });
-  const { data: doctorServicesResponse } = useGetDoctorServicesQuery(detailDoctorFromParent, {
+  const { data: doctorServicesResponse } = useGetPublicDoctorServicesQuery(detailDoctorFromParent, {
     skip: shouldSkip,
   });
   const extraInfo = extraInfoResponse?.errCode === 0 ? extraInfoResponse.data || {} : {};

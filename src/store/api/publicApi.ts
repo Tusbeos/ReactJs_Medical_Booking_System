@@ -41,6 +41,7 @@ export type CreatePackageBookingPayload = {
   address?: string;
   reason?: string;
   desiredDate: string;
+  desiredTime: string;
   language: "vi" | "en";
 };
 
@@ -56,6 +57,7 @@ export type PackageBookingRecord = {
   email: string;
   phoneNumber: string;
   desiredDate: string;
+  desiredTime?: string;
   reason?: string;
   status:
     | "PENDING_EMAIL"
@@ -79,6 +81,40 @@ export type DoctorsPaginatedArgs = {
   search?: string;
   specialty?: string;
   clinic?: string;
+};
+
+export type PublicDoctorDirectoryArgs = {
+  page: number;
+  size: number;
+  keyword?: string;
+  specialtyId?: number;
+  clinicId?: number;
+  location?: string;
+  date?: string;
+  availableOnly?: boolean;
+  sort?: "relevance" | "name-asc" | "name-desc";
+};
+
+export type PublicDoctorCard = {
+  id: number;
+  firstName?: string;
+  lastName?: string;
+  positionName?: string;
+  avatarUrl?: string;
+  specialties?: string[];
+  clinicName?: string;
+  location?: string;
+  priceLabel?: string;
+  nextAvailableDate?: string;
+  nextAvailableTime?: string;
+};
+
+export type PublicDoctorDirectoryData = {
+  doctors: PublicDoctorCard[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
 };
 
 type DoctorsPaginatedData = {
@@ -247,6 +283,25 @@ export const publicApi = createApi({
       providesTags: (result) => buildListTags("Doctor", result, "TOP"),
       keepUnusedDataFor: 300,
     }),
+    getPublicDoctors: builder.query<
+      ApiResponse<PublicDoctorDirectoryData>,
+      PublicDoctorDirectoryArgs
+    >({
+      query: (params) => ({
+        url: "/api/doctors/public",
+        params,
+      }),
+      providesTags: (result) => [
+        ...(Array.isArray(result?.data?.doctors)
+          ? result.data.doctors.map((doctor) => ({
+              type: "Doctor" as const,
+              id: doctor.id,
+            }))
+          : []),
+        { type: "Doctor", id: "PUBLIC_DIRECTORY" },
+      ],
+      keepUnusedDataFor: 30,
+    }),
     getAllDoctors: builder.query<ApiResponse<any[]>, void>({
       query: () => ({ url: "/api/doctors" }),
       providesTags: (result) => buildListTags("Doctor", result),
@@ -280,6 +335,13 @@ export const publicApi = createApi({
         { type: "Doctor", id: doctorId },
       ],
       keepUnusedDataFor: 300,
+    }),
+    getPublicDoctorById: builder.query<ApiResponse<any>, number | string>({
+      query: (doctorId) => ({ url: `/api/doctors/public/${doctorId}` }),
+      providesTags: (_result, _error, doctorId) => [
+        { type: "Doctor", id: doctorId },
+      ],
+      keepUnusedDataFor: 30,
     }),
     getDoctorSpecialties: builder.query<
       ApiResponse<Array<number | string>>,
@@ -326,6 +388,19 @@ export const publicApi = createApi({
       ],
       keepUnusedDataFor: 10,
     }),
+    getPublicDoctorSchedule: builder.query<
+      ApiResponse<any[]>,
+      { doctorId: number | string; date: string }
+    >({
+      query: ({ doctorId, date }) => ({
+        url: `/api/doctors/public/${doctorId}/schedules`,
+        params: { date },
+      }),
+      providesTags: (_result, _error, arg) => [
+        { type: "Schedule", id: `${arg.doctorId}-${arg.date}` },
+      ],
+      keepUnusedDataFor: 10,
+    }),
     getDoctorExtraInfo: builder.query<ApiResponse<any>, number | string>({
       query: (doctorId) => ({ url: `/api/doctors/${doctorId}/extra-info` }),
       providesTags: (_result, _error, doctorId) => [
@@ -333,12 +408,26 @@ export const publicApi = createApi({
       ],
       keepUnusedDataFor: 300,
     }),
+    getPublicDoctorExtraInfo: builder.query<ApiResponse<any>, number | string>({
+      query: (doctorId) => ({ url: `/api/doctors/public/${doctorId}/extra-info` }),
+      providesTags: (_result, _error, doctorId) => [
+        { type: "Doctor", id: doctorId },
+      ],
+      keepUnusedDataFor: 30,
+    }),
     getDoctorServices: builder.query<ApiResponse<any[]>, number | string>({
       query: (doctorId) => ({ url: `/api/doctors/${doctorId}/services` }),
       providesTags: (_result, _error, doctorId) => [
         { type: "Doctor", id: doctorId },
       ],
       keepUnusedDataFor: 300,
+    }),
+    getPublicDoctorServices: builder.query<ApiResponse<any[]>, number | string>({
+      query: (doctorId) => ({ url: `/api/doctors/public/${doctorId}/services` }),
+      providesTags: (_result, _error, doctorId) => [
+        { type: "Doctor", id: doctorId },
+      ],
+      keepUnusedDataFor: 30,
     }),
     getPackages: builder.query<ApiResponse<any[]>, number | void>({
       query: (limit) => ({
@@ -348,12 +437,27 @@ export const publicApi = createApi({
       providesTags: (result) => buildListTags("Package", result),
       keepUnusedDataFor: 300,
     }),
+    getPublicPackages: builder.query<ApiResponse<any[]>, number | void>({
+      query: (limit) => ({
+        url: "/api/packages/public",
+        params: { limit },
+      }),
+      providesTags: (result) => buildListTags("Package", result),
+      keepUnusedDataFor: 30,
+    }),
     getPackageById: builder.query<ApiResponse<any>, number | string>({
       query: (packageId) => ({ url: `/api/packages/${packageId}` }),
       providesTags: (_result, _error, packageId) => [
         { type: "Package", id: packageId },
       ],
       keepUnusedDataFor: 300,
+    }),
+    getPublicPackageById: builder.query<ApiResponse<any>, number | string>({
+      query: (packageId) => ({ url: `/api/packages/public/${packageId}` }),
+      providesTags: (_result, _error, packageId) => [
+        { type: "Package", id: packageId },
+      ],
+      keepUnusedDataFor: 30,
     }),
     getPatientProfiles: builder.query<
       ApiResponse<PatientProfileRecord[]>,
@@ -637,6 +741,20 @@ export const publicApi = createApi({
         { type: "Package", id: packageId },
       ],
     }),
+    updateClinicManagerPackageStatus: builder.mutation<
+      ApiResponse<any>,
+      { packageId: number | string; statusId: "SD2" | "SD3" }
+    >({
+      query: ({ packageId, statusId }) => ({
+        url: `/api/clinic-manager/packages/${packageId}/status`,
+        method: "PATCH",
+        params: { statusId },
+      }),
+      invalidatesTags: (_result, _error, arg) => [
+        { type: "Package", id: arg.packageId },
+        { type: "Package", id: "LIST" },
+      ],
+    }),
     saveDoctorInfo: builder.mutation<ApiResponse<any>, any>({
       query: ({ doctorId, ...data }) => ({
         url: `/api/doctors/${doctorId}/info`,
@@ -799,17 +917,24 @@ export const {
   useGetClinicByIdQuery,
   useLazyGetClinicByIdQuery,
   useGetTopDoctorsQuery,
+  useGetPublicDoctorsQuery,
   useGetAllDoctorsQuery,
   useGetDoctorsPaginatedQuery,
   useGetDoctorByIdQuery,
+  useGetPublicDoctorByIdQuery,
   useGetDoctorSpecialtiesQuery,
   useGetDoctorsBySpecialtyIdQuery,
   useGetDoctorsByClinicIdQuery,
   useGetDoctorScheduleQuery,
+  useGetPublicDoctorScheduleQuery,
   useGetDoctorExtraInfoQuery,
+  useGetPublicDoctorExtraInfoQuery,
   useGetDoctorServicesQuery,
+  useGetPublicDoctorServicesQuery,
   useGetPackagesQuery,
+  useGetPublicPackagesQuery,
   useGetPackageByIdQuery,
+  useGetPublicPackageByIdQuery,
   useLazyGetPackageByIdQuery,
   useGetPatientProfilesQuery,
   useCreatePackageBookingMutation,
@@ -838,6 +963,7 @@ export const {
   useUpdatePackageMutation,
   useDeletePackageMutation,
   useApproveClinicManagerPackageMutation,
+  useUpdateClinicManagerPackageStatusMutation,
   useSaveDoctorInfoMutation,
   useSaveDoctorServicesMutation,
   useSaveDoctorScheduleMutation,

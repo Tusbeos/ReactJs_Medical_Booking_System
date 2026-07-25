@@ -6,6 +6,7 @@ import {
   ARTICLE_WORKSPACE_LIVE_OPTIONS,
   ArticleListItem,
   ArticleStatus,
+  useRequestArticleEditMutation,
   useGetWriterArticlesQuery,
   useSubmitArticleMutation,
 } from "store/api/articleApi";
@@ -20,6 +21,7 @@ import {
   ARTICLE_STATUS_OPTIONS,
   formatArticleDate,
   getApiErrorMessage,
+  getArticleStatusLabel,
   statusVariant,
 } from "./articleHelpers";
 import "./ArticleSystem.scss";
@@ -37,6 +39,11 @@ const WriterArticles: React.FC = () => {
     );
   const [submitArticle, { isLoading: isSubmitting }] =
     useSubmitArticleMutation();
+  const [requestArticleEdit, { isLoading: isRequestingEdit }] =
+    useRequestArticleEditMutation();
+  const [requestedArticleIds, setRequestedArticleIds] = useState<Set<number>>(
+    () => new Set(),
+  );
 
   const articles = useMemo(() => data?.data || [], [data]);
   const pagination = data?.pagination;
@@ -67,6 +74,25 @@ const WriterArticles: React.FC = () => {
       toast.success(response.message || "Đã gửi bài viết để duyệt.");
     } catch (error) {
       toast.error(getApiErrorMessage(error, "Không thể gửi bài viết."));
+    }
+  };
+
+  const handleRequestEdit = async (article: ArticleListItem) => {
+    const description = window.prompt(
+      "Nhập lý do muốn sửa bài viết đã xuất bản (không bắt buộc):",
+      "",
+    );
+    if (description === null) return;
+    try {
+      await requestArticleEdit({ id: article.id, description }).unwrap();
+      setRequestedArticleIds((current) => {
+        const next = new Set(current);
+        next.add(article.id);
+        return next;
+      });
+      toast.success("Đã gửi yêu cầu sửa bài viết cho Admin.");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Không thể gửi yêu cầu sửa bài viết."));
     }
   };
 
@@ -144,7 +170,7 @@ const WriterArticles: React.FC = () => {
               title: "Trạng thái",
               render: (article) => (
                 <StatusBadge
-                  label={article.statusValueVi || article.statusId}
+                  label={getArticleStatusLabel(article.statusId, article.statusValueVi)}
                   variant={statusVariant(article.statusId)}
                 />
               ),
@@ -163,7 +189,13 @@ const WriterArticles: React.FC = () => {
           renderActions={(article) => {
             const editable =
               article.statusId === ARTICLE_STATUS.DRAFT ||
+              article.statusId === ARTICLE_STATUS.PENDING ||
               article.statusId === ARTICLE_STATUS.REJECTED;
+            const canSubmit =
+              article.statusId === ARTICLE_STATUS.DRAFT ||
+              article.statusId === ARTICLE_STATUS.REJECTED;
+            const canRequestEdit = article.statusId === ARTICLE_STATUS.PUBLISHED;
+            const requested = requestedArticleIds.has(article.id);
             return (
               <div className="article-table-actions">
                 {editable && (
@@ -176,7 +208,7 @@ const WriterArticles: React.FC = () => {
                     <i className="fas fa-pencil-alt" /> Sửa
                   </button>
                 )}
-                {editable && (
+                {canSubmit && (
                   <button
                     type="button"
                     className="submit"
@@ -186,7 +218,18 @@ const WriterArticles: React.FC = () => {
                     <i className="fas fa-paper-plane" /> Gửi duyệt
                   </button>
                 )}
-                {!editable && <span>Chỉ xem</span>}
+                {canRequestEdit && (
+                  <button
+                    type="button"
+                    className="submit"
+                    disabled={isRequestingEdit || requested}
+                    onClick={() => handleRequestEdit(article)}
+                  >
+                    <i className="fas fa-pen" />
+                    {requested ? "Đã gửi yêu cầu" : "Xin sửa bài"}
+                  </button>
+                )}
+                {!editable && !canRequestEdit && <span>Chỉ xem</span>}
               </div>
             );
           }}

@@ -9,6 +9,7 @@ import {
   useLazySearchPublicQuery,
 } from "store/api/publicApi";
 import { normalizeImageSrc } from "utils/CommonUtils";
+import { path } from "utils";
 
 interface IHomeHeaderProps {
   isShowBanner?: boolean;
@@ -53,7 +54,7 @@ const HomeHeader: React.FC<IHomeHeaderProps> = ({ isShowBanner }) => {
   const returnToHome = useCallback(() => navigate("/home"), [navigate]);
   const goSpecialty = useCallback(() => navigate("/specialty"), [navigate]);
   const goClinic = useCallback(() => navigate("/clinic"), [navigate]);
-  const goDoctor = useCallback(() => navigate("/top-doctor"), [navigate]);
+  const goDoctor = useCallback(() => navigate(path.LIST_DOCTOR), [navigate]);
   const goPackage = useCallback(() => navigate("/package"), [navigate]);
   const goArticles = useCallback(() => navigate("/articles"), [navigate]);
   const goSearch = useCallback(() => {
@@ -181,6 +182,7 @@ const HomeHeader: React.FC<IHomeHeaderProps> = ({ isShowBanner }) => {
             </button>
             <button
               className={
+                location.pathname.startsWith("/doctors") ||
                 location.pathname.startsWith("/top-doctor") ||
                 location.pathname.startsWith("/detail-doctor")
                   ? "active"

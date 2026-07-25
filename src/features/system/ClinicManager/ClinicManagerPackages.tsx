@@ -5,6 +5,7 @@ import "./ClinicManagerShared.scss";
 import {
   useApproveClinicManagerPackageMutation,
   useGetClinicManagerPackagesQuery,
+  useUpdateClinicManagerPackageStatusMutation,
 } from "../../../store/api/publicApi";
 import { DataState } from "components/System/SystemShared";
 
@@ -13,6 +14,19 @@ const getStatusKey = (pkg: any) =>
 
 const formatPrice = (price?: number) =>
   price ? `${price.toLocaleString("vi-VN")} VNĐ` : "—";
+
+const getStatusLabel = (pkg: any) => {
+  const statusKey = getStatusKey(pkg);
+  if (statusKey === "SD2") return "Hoạt động";
+  if (statusKey === "SD3") return "Ngừng hoạt động";
+  return "Chờ duyệt";
+};
+
+const getStatusClass = (statusKey: string) => {
+  if (statusKey === "SD2") return "active";
+  if (statusKey === "SD3") return "inactive";
+  return "pending";
+};
 
 const ClinicManagerPackages: React.FC = () => {
   const { isClinicManager, selectedClinicId } = useClinicContext();
@@ -26,6 +40,7 @@ const ClinicManagerPackages: React.FC = () => {
     skip: !selectedClinicId,
   });
   const [approvePackage] = useApproveClinicManagerPackageMutation();
+  const [updatePackageStatus] = useUpdateClinicManagerPackageStatusMutation();
   const [search, setSearch] = useState("");
 
   const packages = useMemo(
@@ -51,7 +66,29 @@ const ClinicManagerPackages: React.FC = () => {
       await approvePackage(pkgId).unwrap();
       toast.success("Duyệt gói khám thành công!");
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Duyệt thất bại.");
+      toast.error(
+        err?.data?.errMessage || err?.data?.message || "Duyệt thất bại.",
+      );
+    }
+  };
+
+  const handleChangeStatus = async (
+    pkgId: number,
+    statusId: "SD2" | "SD3",
+  ) => {
+    try {
+      await updatePackageStatus({ packageId: pkgId, statusId }).unwrap();
+      toast.success(
+        statusId === "SD3"
+          ? "Đã ngừng hoạt động gói khám."
+          : "Đã kích hoạt lại gói khám.",
+      );
+    } catch (err: any) {
+      toast.error(
+        err?.data?.errMessage ||
+          err?.data?.message ||
+          "Cập nhật trạng thái thất bại.",
+      );
     }
   };
 
@@ -136,10 +173,10 @@ const ClinicManagerPackages: React.FC = () => {
                 <span>{pkg.typeData?.valueVi || pkg.typeCode || "—"}</span>
                 <span>{formatPrice(pkg.price)}</span>
                 <span
-                  className={`cm-status ${isPending ? "pending" : "active"}`}
+                  className={`cm-status ${getStatusClass(statusKey)}`}
                 >
                   <span className="status-dot" />
-                  {isPending ? "Chờ duyệt" : "Hoạt động"}
+                  {getStatusLabel(pkg)}
                 </span>
                 <div className="cm-actions-cell">
                   {isPending && (
@@ -148,6 +185,22 @@ const ClinicManagerPackages: React.FC = () => {
                       onClick={() => handleApprove(pkg.id)}
                     >
                       Duyệt
+                    </button>
+                  )}
+                  {statusKey === "SD2" && (
+                    <button
+                      className="cm-action-btn reject"
+                      onClick={() => handleChangeStatus(pkg.id, "SD3")}
+                    >
+                      Ngừng hoạt động
+                    </button>
+                  )}
+                  {statusKey === "SD3" && (
+                    <button
+                      className="cm-action-btn approve"
+                      onClick={() => handleChangeStatus(pkg.id, "SD2")}
+                    >
+                      Kích hoạt lại
                     </button>
                   )}
                 </div>

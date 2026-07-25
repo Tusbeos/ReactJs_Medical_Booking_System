@@ -19,7 +19,11 @@ import {
 import { getApiErrorMessage } from "./articleHelpers";
 import "./ArticleSystem.scss";
 
-const mdParser = new MarkdownIt({ html: false, linkify: true, breaks: true });
+// Articles may contain trusted author markup such as <figure> and <img>.
+// Published/review views still pass the result through DOMPurify before it is
+// inserted into the page; enabling HTML here only makes the editor preview
+// render the same markup instead of showing the tags as plain text.
+const mdParser = new MarkdownIt({ html: true, linkify: true, breaks: true });
 
 const ArticleEditor: React.FC = () => {
   const navigate = useNavigate();

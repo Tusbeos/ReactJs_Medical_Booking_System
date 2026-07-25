@@ -32,9 +32,7 @@ const emptyRow: IDoctorServiceItem = {
 
 const DoctorServices = forwardRef<any, IDoctorServicesProps>(
   ({ doctorIdFromParent }, ref) => {
-    const [arrServices, setArrServices] = useState<IDoctorServiceItem[]>([
-      { ...emptyRow },
-    ]);
+    const [arrServices, setArrServices] = useState<IDoctorServiceItem[]>([]);
 
     const {
       data: servicesResponse,
@@ -49,7 +47,7 @@ const DoctorServices = forwardRef<any, IDoctorServicesProps>(
     // Lấy dữ liệu dịch vụ khi mount hoặc khi doctorId thay đổi
     useEffect(() => {
       if (!doctorIdFromParent) {
-        setArrServices([{ ...emptyRow }]);
+        setArrServices([]);
         return;
       }
 
@@ -62,7 +60,7 @@ const DoctorServices = forwardRef<any, IDoctorServicesProps>(
       ) {
         setArrServices(servicesResponse.data);
       } else {
-        setArrServices([{ ...emptyRow }]);
+        setArrServices([]);
       }
     }, [doctorIdFromParent, servicesResponse]);
 
@@ -101,27 +99,31 @@ const DoctorServices = forwardRef<any, IDoctorServicesProps>(
       ref,
       () => ({
         getDataFromChild: () => {
+          const populatedServices = arrServices.filter((service) =>
+            Object.values(service).some((value) => String(value || "").trim()),
+          );
           let isValid = true;
-          for (let i = 0; i < arrServices.length; i++) {
-            if (arrServices[i].nameVi && !arrServices[i].price) {
+          for (let i = 0; i < populatedServices.length; i++) {
+            if (populatedServices[i].nameVi && !populatedServices[i].price) {
               isValid = false;
               toast.error(
-                `Please fill in the price in the number line  ${i + 1}`,
+                `Vui lòng nhập giá cho dịch vụ ở dòng ${i + 1}.`,
               );
               break;
             }
-            if (!arrServices[i].nameVi && arrServices[i].price) {
+            if (!populatedServices[i].nameVi && populatedServices[i].price) {
               isValid = false;
               toast.error(
-                `Please fill in the service name in the number line  ${i + 1}`,
+                `Vui lòng nhập tên cho dịch vụ ở dòng ${i + 1}.`,
               );
               break;
             }
           }
-          return { isValid, data: arrServices };
+          return { isValid, data: populatedServices };
         },
+        handleAddService: handleAddNewRow,
       }),
-      [arrServices],
+      [arrServices, handleAddNewRow],
     );
 
     return (
@@ -153,24 +155,20 @@ const DoctorServices = forwardRef<any, IDoctorServicesProps>(
                   text="Đang tải dữ liệu dịch vụ..."
                   compact
                 />
-              ) : isError ? (
-                <DataState
-                  variant="error"
-                  text="Không thể tải danh sách dịch vụ."
-                  onRetry={() => void refetch()}
-                  compact
-                />
               ) : (
                 <>
-                  {servicesResponse?.errCode === 0 &&
-                    Array.isArray(servicesResponse.data) &&
-                    servicesResponse.data.length === 0 && (
-                      <DataState
-                        variant="empty"
-                        text="Bác sĩ chưa có dịch vụ; hãy nhập dịch vụ đầu tiên."
-                        compact
-                      />
-                    )}
+                  {arrServices.length === 0 && (
+                    <DataState
+                      variant="empty"
+                      text={
+                        isError
+                          ? "Chưa có dịch vụ để hiển thị. Bạn vẫn có thể thêm dịch vụ mới."
+                          : "Bác sĩ chưa có dịch vụ."
+                      }
+                      onRetry={isError ? () => void refetch() : undefined}
+                      compact
+                    />
+                  )}
                   {arrServices.map((item, index) => {
                     return (
                       <div className="row service-row" key={index}>
@@ -247,7 +245,7 @@ const DoctorServices = forwardRef<any, IDoctorServicesProps>(
               <button
                 className="btn btn-primary btn-add-new"
                 onClick={() => handleAddNewRow()}
-                disabled={isLoading || isFetching || isError}
+                disabled={isLoading || isFetching}
               >
                 <i className="fas fa-plus-circle"></i> Thêm dịch vụ
               </button>

@@ -87,6 +87,14 @@ const SpecialtyList = () => {
       ),
     }));
   }, [specialtiesResponse]);
+  const [keyword, setKeyword] = useState("");
+  const visibleSpecialties = useMemo(() => {
+    const query = keyword.trim().toLocaleLowerCase("vi-VN");
+    if (!query) return specialties;
+    return specialties.filter((specialty) =>
+      `${specialty.name} ${specialty.description}`.toLocaleLowerCase("vi-VN").includes(query),
+    );
+  }, [keyword, specialties]);
 
   const handleViewDetailSpecialty = useCallback(
     (id: number) => {
@@ -114,9 +122,21 @@ const SpecialtyList = () => {
       />
       <div className="booking-container">
         <div className="specialty-list-container">
+          <section className="specialty-directory-hero">
+            <div>
+              <span>Chọn đúng chuyên khoa</span>
+              <h1>Chuyên khoa</h1>
+              <p>Tìm chuyên khoa phù hợp với nhu cầu khám và tiếp tục xem danh sách bác sĩ.</p>
+            </div>
+            <i className="fas fa-stethoscope" aria-hidden="true" />
+          </section>
           <h1 className="specialty-list-title">
             <FormattedMessage id="specialty.special-list.title" />
           </h1>
+          <label className="specialty-directory-search">
+            <i className="fas fa-search" aria-hidden="true" />
+            <input value={keyword} onChange={(event) => setKeyword(event.target.value)} placeholder="Tìm theo tên chuyên khoa hoặc nội dung" />
+          </label>
 
           {isLoading ? (
             <div className="specialty-list-state" role="status">
@@ -131,9 +151,9 @@ const SpecialtyList = () => {
                 Thử lại
               </button>
             </div>
-          ) : specialties.length > 0 ? (
+          ) : visibleSpecialties.length > 0 ? (
             <ul className="specialty-list-items">
-              {specialties.map((item) => (
+              {visibleSpecialties.map((item) => (
                 <SpecialtyItem
                   key={item.id}
                   name={item.name}
@@ -146,9 +166,7 @@ const SpecialtyList = () => {
           ) : (
             <div className="specialty-list-state">
               <i className="fas fa-notes-medical" aria-hidden="true" />
-              <span>
-                <FormattedMessage id="special-list.no-info" />
-              </span>
+              <span>{keyword ? "Chưa tìm thấy chuyên khoa phù hợp." : <FormattedMessage id="special-list.no-info" />}</span>
             </div>
           )}
         </div>

@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { DataState } from "components/System/SystemShared";
-import { useGetPackagesQuery } from "store/api/publicApi";
+import { useGetPublicPackagesQuery } from "store/api/publicApi";
 import { normalizeImageSrc } from "utils";
 
 const formatPrice = (price: unknown) => {
@@ -10,7 +10,7 @@ const formatPrice = (price: unknown) => {
 };
 
 const PackageSection: React.FC = () => {
-  const packagesQuery = useGetPackagesQuery(6);
+  const packagesQuery = useGetPublicPackagesQuery(6);
   const packages = useMemo(() => {
     const data = Array.isArray(packagesQuery.data?.data)
       ? packagesQuery.data.data

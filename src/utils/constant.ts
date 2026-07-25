@@ -18,6 +18,7 @@ export const path = {
   BOOKING_PACKAGE: "/booking-package/:id",
   VERIFY_PACKAGE_BOOKING: "/verify-package-booking",
   LIST_TOP_DOCTOR: "/top-doctor",
+  LIST_DOCTOR: "/doctors",
   PATIENT_PROFILE: "/patient/profile",
   PATIENT_HISTORY: "/patient/history",
   LIST_ARTICLE: "/articles",

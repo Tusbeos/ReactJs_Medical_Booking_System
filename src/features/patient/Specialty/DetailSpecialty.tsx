@@ -79,7 +79,7 @@ const DetailSpecialty = () => {
 
   return (
     <>
-      <HomeHeader />
+      <HomeHeader isShowBanner={false} />
       <div className="booking-container">
         <div className="detail-specialty-container">
           <div className="description-specialty">
@@ -88,13 +88,15 @@ const DetailSpecialty = () => {
               containerClassName="booking-container"
             />
             {specialty && (
-              <div className="description-content-up">
+              <div className="description-content-up specialty-detail-hero">
                 <div
                   className="description-bg"
                   style={{ backgroundImage: backgroundImage }}
                 ></div>
 
                 <div className="description-content-text">
+                  <span className="specialty-detail-eyebrow">Thông tin chuyên khoa</span>
+                  <h1 className="specialty-title">{specialty.name}</h1>
                   <div
                     className="specialty-desc-html"
                     style={
@@ -125,6 +127,10 @@ const DetailSpecialty = () => {
               </div>
             )}
           </div>
+          <section className="specialty-detail-doctors-heading">
+            <span>Đội ngũ chuyên môn</span>
+            <h2>Bác sĩ thuộc chuyên khoa {specialty?.name || "này"}</h2>
+          </section>
           <DoctorCard
             specialtyId={specialty ? specialty.id : null}
             doctorIds={doctorIds}

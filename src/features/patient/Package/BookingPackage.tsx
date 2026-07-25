@@ -8,7 +8,8 @@ import type { IRootState } from "types";
 import { USER_ROLE, getApiErrorMessage, normalizeImageSrc } from "utils";
 import {
   useCreatePackageBookingMutation,
-  useGetPackageByIdQuery,
+  useGetAllCodeQuery,
+  useGetPublicPackageByIdQuery,
   useGetPatientProfilesQuery,
 } from "store/api/publicApi";
 import type { PackageBookingRecord } from "store/api/publicApi";
@@ -23,6 +24,7 @@ type FormValues = {
   birthday: string;
   address: string;
   desiredDate: string;
+  desiredTime: string;
   reason: string;
 };
 
@@ -61,7 +63,7 @@ const BookingPackage = () => {
     data: packageResponse,
     isLoading: isPackageLoading,
     isError: isPackageError,
-  } = useGetPackageByIdQuery(id || "", { skip: !isValidPackageId });
+  } = useGetPublicPackageByIdQuery(id || "", { skip: !isValidPackageId });
   const packageInfo = packageResponse?.errCode === 0 ? packageResponse.data : null;
   const {
     data: profilesResponse,
@@ -76,8 +78,17 @@ const BookingPackage = () => {
         : [],
     [profilesResponse],
   );
+  const { data: timeSlotsResponse } = useGetAllCodeQuery("TIME");
+  const timeSlots = useMemo(
+    () =>
+      timeSlotsResponse?.errCode === 0 && Array.isArray(timeSlotsResponse.data)
+        ? timeSlotsResponse.data
+        : [],
+    [timeSlotsResponse],
+  );
 
   const [profileChoice, setProfileChoice] = useState("self");
+  const [isForOther, setIsForOther] = useState(false);
   const [values, setValues] = useState<FormValues>({
     email: "",
     fullName: "",
@@ -86,6 +97,7 @@ const BookingPackage = () => {
     birthday: "",
     address: "",
     desiredDate: "",
+    desiredTime: "",
     reason: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
@@ -100,6 +112,7 @@ const BookingPackage = () => {
     bookingDraft?: {
       values?: FormValues;
       profileChoice?: string;
+      isForOther?: boolean;
     };
   } | null;
 
@@ -110,12 +123,14 @@ const BookingPackage = () => {
     return formatLocalDate(date);
   }, []);
   const selectedProfile = useMemo(
-    () => profiles.find((profile) => String(profile.id) === profileChoice),
-    [profileChoice, profiles],
+    () => isForOther && profileChoice !== "new"
+      ? profiles.find((profile) => String(profile.id) === profileChoice)
+      : undefined,
+    [isForOther, profileChoice, profiles],
   );
 
   useEffect(() => {
-    if (!isPatientAccount || !userInfo) return;
+    if (!isPatientAccount || !userInfo || isForOther) return;
     setValues((current) => ({
       ...current,
       email: userInfo.email || current.email,
@@ -127,7 +142,7 @@ const BookingPackage = () => {
       birthday: current.birthday || userInfo.dateOfBirth || "",
       address: current.address || userInfo.address || "",
     }));
-  }, [isPatientAccount, userInfo]);
+  }, [isForOther, isPatientAccount, userInfo]);
 
   useEffect(() => {
     if (restoredState?.bookingKind !== "package") return;
@@ -138,7 +153,35 @@ const BookingPackage = () => {
       email: userInfo?.email || draft.values.email,
     });
     setProfileChoice(draft.profileChoice || "self");
+    setIsForOther(Boolean(draft.isForOther));
   }, [restoredState?.bookingDraft, restoredState?.bookingKind, userInfo?.email]);
+
+  const handleForOtherChange = (checked: boolean) => {
+    setIsForOther(checked);
+    setErrors((current) => ({ ...current, profile: undefined }));
+    if (checked) {
+      setProfileChoice("new");
+      setValues((current) => ({
+        ...current,
+        fullName: "",
+        phoneNumber: "",
+        gender: "",
+        birthday: "",
+        address: "",
+      }));
+      return;
+    }
+
+    setProfileChoice("self");
+    setValues((current) => ({
+      ...current,
+      fullName: `${userInfo?.lastName || ""} ${userInfo?.firstName || ""}`.trim(),
+      phoneNumber: userInfo?.phoneNumber || "",
+      gender: userInfo?.gender || "",
+      birthday: userInfo?.dateOfBirth || "",
+      address: userInfo?.address || "",
+    }));
+  };
 
   const updateValue = (field: keyof FormValues, value: string) => {
     setValues((current) => ({ ...current, [field]: value }));
@@ -175,6 +218,9 @@ const BookingPackage = () => {
     else if (values.desiredDate < today || values.desiredDate > maxDate) {
       nextErrors.desiredDate = "Ngày khám phải nằm trong 365 ngày tới.";
     }
+    if (!values.desiredTime) {
+      nextErrors.desiredTime = "Vui lòng chọn khung giờ mong muốn.";
+    }
     if (values.reason.length > 5000) {
       nextErrors.reason = "Lý do khám không được vượt quá 5.000 ký tự.";
     }
@@ -187,7 +233,7 @@ const BookingPackage = () => {
     savePendingPatientAuthFlow({
       returnTo,
       bookingKind: "package",
-      bookingDraft: { values, profileChoice },
+      bookingDraft: { values, profileChoice, isForOther },
     });
     navigate("/patient/auth?mode=login&switchAccount=1", {
       state: { returnTo },
@@ -205,7 +251,11 @@ const BookingPackage = () => {
         email: normalizedEmail,
         returnTo,
         bookingKind: "package",
-        bookingDraft: { values: { ...values, email: normalizedEmail }, profileChoice },
+        bookingDraft: {
+          values: { ...values, email: normalizedEmail },
+          profileChoice,
+          isForOther,
+        },
       });
       navigate("/patient/auth?mode=register", {
         state: { email: normalizedEmail, returnTo },
@@ -234,6 +284,7 @@ const BookingPackage = () => {
             }
           : {}),
         desiredDate: values.desiredDate,
+        desiredTime: values.desiredTime,
         reason: values.reason.trim() || undefined,
         language: language === "en" ? "en" : "vi",
       }).unwrap();
@@ -317,6 +368,7 @@ const BookingPackage = () => {
                 <div><dt>Mã yêu cầu</dt><dd>#{createdBooking.id}</dd></div>
                 <div><dt>Người khám</dt><dd>{createdBooking.patientName}</dd></div>
                 <div><dt>Ngày mong muốn</dt><dd>{createdBooking.desiredDate}</dd></div>
+                <div><dt>Khung giờ mong muốn</dt><dd>{createdBooking.desiredTime || "Chưa chọn"}</dd></div>
               </dl>
               <Link to="/package">Xem các gói khám khác</Link>
             </div>
@@ -352,9 +404,27 @@ const BookingPackage = () => {
 
               {submitError && <div className="form-alert" role="alert">{submitError}</div>}
 
+              <div className="form-section-heading">Thông tin người đi khám</div>
+
               {isPatientAccount && (
                 <div className="form-group full-width">
-                  <label htmlFor="package-profile">Người đi khám</label>
+                  <label className="for-other-toggle">
+                    <input
+                      type="checkbox"
+                      checked={isForOther}
+                      onChange={(event) => handleForOtherChange(event.target.checked)}
+                    />
+                    <span>
+                      <strong>Đặt cho người khác</strong>
+                      <small>Thông tin người khám sẽ được nhập riêng.</small>
+                    </span>
+                  </label>
+                </div>
+              )}
+
+              {isPatientAccount && isForOther && (
+                <div className="form-group full-width">
+                  <label htmlFor="package-profile">Hồ sơ người thân đã lưu (không bắt buộc)</label>
                   <select
                     id="package-profile"
                     value={profileChoice}
@@ -363,7 +433,7 @@ const BookingPackage = () => {
                       setErrors((current) => ({ ...current, profile: undefined }));
                     }}
                   >
-                    <option value="self">Bản thân tôi</option>
+                    <option value="new">Nhập thông tin mới</option>
                     {profiles.map((profile) => (
                       <option key={profile.id} value={profile.id}>
                         {profileName(profile) || `Hồ sơ #${profile.id}`}
@@ -372,7 +442,7 @@ const BookingPackage = () => {
                     ))}
                   </select>
                   {isProfilesError && (
-                    <small className="field-hint error">Không tải được hồ sơ người thân; bạn vẫn có thể đặt cho bản thân.</small>
+                    <small className="field-hint error">Không tải được hồ sơ người thân; bạn vẫn có thể nhập thông tin mới.</small>
                   )}
                   {errors.profile && <small className="field-error">{errors.profile}</small>}
                 </div>
@@ -465,7 +535,8 @@ const BookingPackage = () => {
                   </>
                 )}
 
-                <div className="form-group full-width">
+                <div className="form-section-heading full-width">Thông tin yêu cầu gói khám</div>
+                <div className="form-group">
                   <label htmlFor="package-date">Ngày khám mong muốn *</label>
                   <input
                     id="package-date"
@@ -478,6 +549,24 @@ const BookingPackage = () => {
                   />
                   <small className="field-hint">Đây là ngày mong muốn; phòng khám sẽ xác nhận lịch chính thức.</small>
                   {errors.desiredDate && <small className="field-error">{errors.desiredDate}</small>}
+                </div>
+                <div className="form-group">
+                  <label htmlFor="package-time">Khung giờ mong muốn *</label>
+                  <select
+                    id="package-time"
+                    value={values.desiredTime}
+                    aria-invalid={Boolean(errors.desiredTime)}
+                    onChange={(event) => updateValue("desiredTime", event.target.value)}
+                  >
+                    <option value="">Chọn khung giờ</option>
+                    {timeSlots.map((slot: any) => (
+                      <option key={slot.keyMap} value={slot.valueVi || slot.valueEn}>
+                        {slot.valueVi || slot.valueEn}
+                      </option>
+                    ))}
+                  </select>
+                  <small className="field-hint">Phòng khám sẽ xác nhận lại lịch chính thức.</small>
+                  {errors.desiredTime && <small className="field-error">{errors.desiredTime}</small>}
                 </div>
                 <div className="form-group full-width">
                   <label htmlFor="package-reason">Lý do khám / ghi chú</label>

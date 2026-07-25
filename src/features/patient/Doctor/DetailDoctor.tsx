@@ -5,16 +5,16 @@ import HomeHeader from "layout/HomeHeader";
 import HomeFooter from "layout/HomeFooter";
 import Breadcrumb from "components/Breadcrumb";
 import "./DetailDoctor.scss";
-import { LANGUAGES, sanitizeHtml } from "utils";
+import { LANGUAGES, normalizeImageSrc, sanitizeHtml } from "utils";
 import DoctorSchedules from "./DoctorSchedules";
 import DoctorExtraInfo from "./DoctorExtraInfo";
 import { IRootState } from "../../../types";
-import { useGetDoctorByIdQuery } from "../../../store/api/publicApi";
+import { useGetPublicDoctorByIdQuery } from "../../../store/api/publicApi";
 
 const DetailDoctor = () => {
   const { id } = useParams<{ id: string }>();
   const language = useSelector((state: IRootState) => state.app.language);
-  const { data: doctorResponse } = useGetDoctorByIdQuery(id || "", { skip: !id });
+  const { data: doctorResponse } = useGetPublicDoctorByIdQuery(id || "", { skip: !id });
   const detailDoctor = doctorResponse?.errCode === 0 && doctorResponse.data
     ? doctorResponse.data
     : { image: "", positionData: {} };
@@ -22,6 +22,7 @@ const DetailDoctor = () => {
     () => sanitizeHtml(detailDoctor?.Markdown?.contentHTML),
     [detailDoctor?.Markdown?.contentHTML],
   );
+  const doctorImage = normalizeImageSrc(detailDoctor?.image);
 
   const buildDoctorName = useCallback(
     (doctor: any) => {
@@ -46,7 +47,7 @@ const DetailDoctor = () => {
     },
     {
       label: language === LANGUAGES.VI ? "Bác sĩ" : "Doctor",
-      to: "/top-doctor",
+      to: "/doctors",
     },
     {
       label:
@@ -65,15 +66,11 @@ const DetailDoctor = () => {
       <div className="detail-doctor-container">
         <div className="booking-container">
           <div className="intro-doctor">
-            <div
-              className="content-left"
-              style={{
-                backgroundImage: `url(data:image/jpeg;base64,${
-                  detailDoctor.image ? detailDoctor.image : ""
-                })`,
-              }}
-            ></div>
+            <div className="content-left">
+              {doctorImage ? <img src={doctorImage} alt="" /> : <i className="fas fa-user-md" aria-hidden="true" />}
+            </div>
             <div className="content-right">
+              <span className="doctor-detail-eyebrow">Hồ sơ bác sĩ</span>
               <div className="up">{buildDoctorName(detailDoctor)}</div>
               <div className="down">
                 {detailDoctor.Markdown &&
@@ -85,6 +82,7 @@ const DetailDoctor = () => {
           </div>
           <div className="schedule-doctor">
             <div className="content-left">
+              <h2 className="doctor-detail-section-title"><i className="far fa-calendar-alt" /> Chọn lịch khám</h2>
               <DoctorSchedules
                 detailDoctorFromParent={
                   detailDoctor && detailDoctor.id ? detailDoctor.id : -1
@@ -92,6 +90,7 @@ const DetailDoctor = () => {
               />
             </div>
             <div className="content-right">
+              <h2 className="doctor-detail-section-title"><i className="fas fa-hospital" /> Thông tin khám</h2>
               <DoctorExtraInfo
                 detailDoctorFromParent={
                   detailDoctor && detailDoctor.id ? detailDoctor.id : -1
@@ -100,6 +99,7 @@ const DetailDoctor = () => {
             </div>
           </div>
           <div className="detail-info">
+            {doctorDescriptionHtml && <h2><i className="fas fa-user-doctor" /> Giới thiệu bác sĩ</h2>}
             {detailDoctor &&
               detailDoctor.Markdown &&
               doctorDescriptionHtml && (

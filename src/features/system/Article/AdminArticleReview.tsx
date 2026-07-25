@@ -3,13 +3,17 @@ import { toast } from "react-toastify";
 import {
   ARTICLE_STATUS,
   ARTICLE_WORKSPACE_LIVE_OPTIONS,
+  ArticleEditRequest,
   ArticleListItem,
   ArticleStatus,
   useApproveArticleMutation,
+  useApproveArticleEditRequestMutation,
+  useGetPendingArticleEditRequestsQuery,
   useGetAdminArticleQuery,
   useGetAdminArticlesQuery,
   usePublishArticleMutation,
   useRejectArticleMutation,
+  useRejectArticleEditRequestMutation,
   useUnpublishArticleMutation,
 } from "store/api/articleApi";
 import {
@@ -25,6 +29,7 @@ import {
   ARTICLE_STATUS_OPTIONS,
   formatArticleDate,
   getApiErrorMessage,
+  getArticleStatusLabel,
   statusVariant,
 } from "./articleHelpers";
 import "./ArticleSystem.scss";
@@ -55,15 +60,25 @@ const AdminArticleReview: React.FC = () => {
   const [rejectArticle, rejectState] = useRejectArticleMutation();
   const [publishArticle, publishState] = usePublishArticleMutation();
   const [unpublishArticle, unpublishState] = useUnpublishArticleMutation();
+  const editRequestQuery = useGetPendingArticleEditRequestsQuery(undefined, {
+    ...ARTICLE_WORKSPACE_LIVE_OPTIONS,
+  });
+  const [approveEditRequest, approveEditState] =
+    useApproveArticleEditRequestMutation();
+  const [rejectEditRequest, rejectEditState] =
+    useRejectArticleEditRequestMutation();
   const isActing =
     approveState.isLoading ||
     rejectState.isLoading ||
     publishState.isLoading ||
-    unpublishState.isLoading;
+    unpublishState.isLoading ||
+    approveEditState.isLoading ||
+    rejectEditState.isLoading;
 
   const articles = listQuery.data?.data || [];
   const pagination = listQuery.data?.pagination;
   const article = detailQuery.data?.data;
+  const editRequests = editRequestQuery.data?.data || [];
   const safeContent = useMemo(
     () => sanitizeHtml(article?.contentHtml),
     [article?.contentHtml],
@@ -85,6 +100,24 @@ const AdminArticleReview: React.FC = () => {
     } catch (error) {
       toast.error(getApiErrorMessage(error, errorFallback));
     }
+  };
+
+  const handleApproveEditRequest = (request: ArticleEditRequest) => {
+    runAction(
+      () => approveEditRequest({ id: request.id }).unwrap(),
+      "Đã chấp nhận yêu cầu sửa bài viết.",
+      "Không thể chấp nhận yêu cầu sửa bài viết.",
+    );
+  };
+
+  const handleRejectEditRequest = (request: ArticleEditRequest) => {
+    const reviewNote = window.prompt("Nhập lý do từ chối yêu cầu sửa:", "");
+    if (!reviewNote?.trim()) return;
+    runAction(
+      () => rejectEditRequest({ id: request.id, reviewNote }).unwrap(),
+      "Đã từ chối yêu cầu sửa bài viết.",
+      "Không thể từ chối yêu cầu sửa bài viết.",
+    );
   };
 
   const handleReject = () => {
@@ -152,6 +185,49 @@ const AdminArticleReview: React.FC = () => {
             placeholder="Tìm bài hoặc tác giả..."
           />
         </div>
+        {editRequests.length > 0 && (
+          <div className="article-edit-request-panel">
+            <div className="article-review-heading">
+              <div>
+                <span className="article-review-eyebrow">Yêu cầu mới</span>
+                <h3>Yêu cầu sửa bài đã xuất bản</h3>
+              </div>
+              <span className="article-edit-request-count">
+                {editRequests.length} yêu cầu chờ xử lý
+              </span>
+            </div>
+            <div className="article-edit-request-list">
+              {editRequests.map((request) => (
+                <div className="article-edit-request-item" key={request.id}>
+                  <div>
+                    <strong>{request.title}</strong>
+                    <span>
+                      Người gửi: {request.requesterName || "Writer"}
+                    </span>
+                    {request.description && <p>{request.description}</p>}
+                  </div>
+                  <div className="article-table-actions">
+                    <button
+                      type="button"
+                      className="submit"
+                      disabled={isActing}
+                      onClick={() => handleApproveEditRequest(request)}
+                    >
+                      Chấp nhận
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isActing}
+                      onClick={() => handleRejectEditRequest(request)}
+                    >
+                      Từ chối
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         <DataTable<ArticleListItem>
           data={articles}
           rowKey={(item) => item.id}
@@ -180,7 +256,7 @@ const AdminArticleReview: React.FC = () => {
               title: "Trạng thái",
               render: (item) => (
                 <StatusBadge
-                  label={item.statusValueVi || item.statusId}
+                  label={getArticleStatusLabel(item.statusId, item.statusValueVi)}
                   variant={statusVariant(item.statusId)}
                 />
               ),
@@ -247,7 +323,7 @@ const AdminArticleReview: React.FC = () => {
                   </p>
                 </div>
                 <StatusBadge
-                  label={article.statusValueVi || article.statusId}
+                  label={getArticleStatusLabel(article.statusId, article.statusValueVi)}
                   variant={statusVariant(article.statusId)}
                 />
               </div>

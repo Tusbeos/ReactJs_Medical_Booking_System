@@ -57,6 +57,7 @@ const UserRedux: React.FC<UserReduxProps> = ({
   roleId = USER_ROLE.CLINIC_MANAGER,
 }) => {
   const isWriter = roleId === USER_ROLE.WRITER;
+  const isClinicManager = roleId === USER_ROLE.CLINIC_MANAGER;
   const roleLabel = isWriter ? "Writer" : "Clinic Manager";
   const [page, setPage] = useState(0);
   const {
@@ -66,6 +67,10 @@ const UserRedux: React.FC<UserReduxProps> = ({
     isError: isUsersError,
     refetch: refetchUsers,
   } = useGetUsersQuery({ page, size: 10, roleId });
+  const { data: clinicManagersResponse } = useGetUsersQuery(
+    { page: 0, size: 100, roleId: USER_ROLE.CLINIC_MANAGER },
+    { skip: !isClinicManager },
+  );
   const {
     data: clinicsResponse,
     isLoading: isLoadingClinics,
@@ -79,7 +84,7 @@ const UserRedux: React.FC<UserReduxProps> = ({
     isFetching: isFetchingGenders,
     isError: isGendersError,
     refetch: refetchGenders,
-  } = useGetAllCodeQuery("GENDER");
+  } = useGetAllCodeQuery("GENDER", { skip: isClinicManager });
   const [generateUserEmail] = useLazyGenerateUserEmailQuery();
   const [createUser, { isLoading: isCreatingUser }] = useCreateUserMutation();
   const [updateUser, { isLoading: isUpdatingUser }] = useUpdateUserMutation();
@@ -125,16 +130,42 @@ const UserRedux: React.FC<UserReduxProps> = ({
   >();
   const [searchTerm, setSearchTerm] = useState("");
   const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const selectedClinic = useMemo(
+    () => clinicArr.find((clinic: any) => String(clinic.id) === String(clinicId)),
+    [clinicArr, clinicId],
+  );
+  const assignedClinicIds = useMemo(
+    () =>
+      new Set(
+        clinicManagersResponse?.errCode === 0 &&
+        Array.isArray(clinicManagersResponse.data)
+          ? clinicManagersResponse.data
+              .filter((manager: any) => String(manager.id) !== String(userEditId))
+              .map((manager: any) => String(manager.clinicId))
+              .filter((id: string) => id && id !== "undefined" && id !== "null")
+          : [],
+      ),
+    [clinicManagersResponse, userEditId],
+  );
+  const availableClinics = useMemo(
+    () =>
+      !isClinicManager
+        ? clinicArr
+        : clinicArr.filter(
+            (clinic: any) => !assignedClinicIds.has(String(clinic.id)),
+          ),
+    [assignedClinicIds, clinicArr, isClinicManager],
+  );
 
   const clearFormError = useCallback((field: FormFieldKey) => {
     setFormErrors((current) => ({ ...current, [field]: undefined }));
   }, []);
 
   useEffect(() => {
-    if (!gender && genderArr.length > 0) {
+    if (!isClinicManager && !gender && genderArr.length > 0) {
       setGender(genderArr[0].keyMap || "");
     }
-  }, [gender, genderArr]);
+  }, [gender, genderArr, isClinicManager]);
 
   useEffect(() => {
     if (currentAction !== CRUD_ACTIONS.CREATE) return;
@@ -170,13 +201,15 @@ const UserRedux: React.FC<UserReduxProps> = ({
         errors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
     }
     if (!firstName.trim()) errors.firstName = "Vui lòng nhập tên.";
-    if (!lastName.trim()) errors.lastName = "Vui lòng nhập họ.";
-    if (!gender) errors.gender = "Vui lòng chọn giới tính.";
+    if (!isClinicManager) {
+      if (!lastName.trim()) errors.lastName = "Vui lòng nhập họ.";
+      if (!gender) errors.gender = "Vui lòng chọn giới tính.";
+    }
     if (!isWriter && !clinicId)
       errors.clinicId = "Vui lòng chọn cơ sở y tế quản lý.";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
-  }, [clinicId, currentAction, email, firstName, gender, isWriter, lastName, password]);
+  }, [clinicId, currentAction, email, firstName, gender, isClinicManager, isWriter, lastName, password]);
 
   const resetForm = useCallback(() => {
     setEmail("");
@@ -185,14 +218,14 @@ const UserRedux: React.FC<UserReduxProps> = ({
     setLastName("");
     setPhoneNumber("");
     setAddress("");
-    setGender(genderArr[0]?.keyMap || "");
+    setGender(isClinicManager ? "" : genderArr[0]?.keyMap || "");
     setAvatar("");
     setAvatarPreview("");
     setClinicId("");
     setCurrentAction(CRUD_ACTIONS.CREATE);
     setUserEditId("");
     setFormErrors({});
-  }, [genderArr]);
+  }, [genderArr, isClinicManager]);
 
   const handleAvatarChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -231,14 +264,18 @@ const UserRedux: React.FC<UserReduxProps> = ({
     if (!validateForm()) return;
     const userData: Record<string, any> = {
       firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      phoneNumber: phoneNumber.trim(),
-      address: address.trim(),
-      gender,
+      lastName: isClinicManager ? "" : lastName.trim(),
       roleId,
     };
+    if (!isClinicManager) {
+      userData.phoneNumber = phoneNumber.trim();
+      userData.address = address.trim();
+      userData.gender = gender;
+    }
     if (!isWriter) userData.clinicId = Number(clinicId);
-    if (avatar) userData.avatar = avatar;
+    if (avatar || selectedClinic?.image) {
+      userData.avatar = avatar || selectedClinic.image;
+    }
 
     try {
       const res =
@@ -271,12 +308,14 @@ const UserRedux: React.FC<UserReduxProps> = ({
     email,
     firstName,
     gender,
+    isClinicManager,
     isWriter,
     lastName,
     password,
     phoneNumber,
     resetForm,
     roleId,
+    selectedClinic,
     roleLabel,
     updateUser,
     userEditId,
@@ -284,20 +323,30 @@ const UserRedux: React.FC<UserReduxProps> = ({
   ]);
 
   const handleEditUser = useCallback((user: any) => {
+    const assignedClinic = clinicArr.find(
+      (clinic: any) => String(clinic.id) === String(user.clinicId),
+    );
     setEmail(user.email || "");
     setPassword("");
-    setFirstName(user.firstName || "");
-    setLastName(user.lastName || "");
+    setFirstName(
+      isClinicManager
+        ? `${user.lastName || ""} ${user.firstName || ""}`.trim()
+        : user.firstName || "",
+    );
+    setLastName(isClinicManager ? "" : user.lastName || "");
     setPhoneNumber(user.phoneNumber || "");
     setAddress(user.address || "");
-    setGender(user.gender || "");
-    setAvatar("");
-    setAvatarPreview(normalizeImageSrc(user.image));
+    setGender(isClinicManager ? "" : user.gender || "");
+    const clinicImage = assignedClinic?.image || "";
+    setAvatar(isClinicManager ? clinicImage : "");
+    setAvatarPreview(
+      normalizeImageSrc(isClinicManager ? clinicImage || user.image : user.image),
+    );
     setClinicId(user.clinicId || "");
     setCurrentAction(CRUD_ACTIONS.EDIT);
     setUserEditId(user.id);
     setFormErrors({});
-  }, []);
+  }, [clinicArr, isClinicManager]);
 
   const handleDeleteUser = useCallback(
     async (user: any) => {
@@ -447,12 +496,11 @@ const UserRedux: React.FC<UserReduxProps> = ({
   const isLoadingData =
     isLoadingUsers ||
     isFetchingUsers ||
-    isLoadingGenders ||
-    isFetchingGenders ||
+    (!isClinicManager && (isLoadingGenders || isFetchingGenders)) ||
     (!isWriter && (isLoadingClinics || isFetchingClinics));
   const isSavingUser = isCreatingUser || isUpdatingUser || isDeletingUser;
   const hasDataError =
-    isUsersError || isGendersError || (!isWriter && isClinicsError);
+    isUsersError || (!isClinicManager && isGendersError) || (!isWriter && isClinicsError);
 
   return (
     <div className="manage-user-container">
@@ -471,17 +519,19 @@ const UserRedux: React.FC<UserReduxProps> = ({
         )}
 
         <div className="user-form-grid">
-          <FormField label="Email" required error={formErrors.email}>
-            <input
-              className="sys-input readonly-input"
-              type="email"
-              placeholder="Tự động tạo từ họ tên"
-              value={email}
-              readOnly
-              disabled={currentAction === CRUD_ACTIONS.EDIT}
-              aria-invalid={Boolean(formErrors.email)}
-            />
-          </FormField>
+          {!isClinicManager && (
+            <FormField label="Email" required error={formErrors.email}>
+              <input
+                className="sys-input readonly-input"
+                type="email"
+                placeholder="Tự động tạo từ họ tên"
+                value={email}
+                readOnly
+                disabled={currentAction === CRUD_ACTIONS.EDIT}
+                aria-invalid={Boolean(formErrors.email)}
+              />
+            </FormField>
+          )}
 
           {currentAction === CRUD_ACTIONS.CREATE && (
             <FormField label="Mật khẩu" required error={formErrors.password}>
@@ -499,19 +549,21 @@ const UserRedux: React.FC<UserReduxProps> = ({
             </FormField>
           )}
 
-          <FormField label="Họ" required error={formErrors.lastName}>
-            <input
-              className="sys-input"
-              type="text"
-              placeholder="Nhập họ..."
-              value={lastName}
-              onChange={(event) => {
-                setLastName(event.target.value);
-                clearFormError("lastName");
-              }}
-              aria-invalid={Boolean(formErrors.lastName)}
-            />
-          </FormField>
+          {!isClinicManager && (
+            <FormField label="Họ" required error={formErrors.lastName}>
+              <input
+                className="sys-input"
+                type="text"
+                placeholder="Nhập họ..."
+                value={lastName}
+                onChange={(event) => {
+                  setLastName(event.target.value);
+                  clearFormError("lastName");
+                }}
+                aria-invalid={Boolean(formErrors.lastName)}
+              />
+            </FormField>
+          )}
 
           <FormField label="Tên" required error={formErrors.firstName}>
             <input
@@ -527,44 +579,50 @@ const UserRedux: React.FC<UserReduxProps> = ({
             />
           </FormField>
 
-          <FormField label="Số điện thoại">
-            <input
-              className="sys-input"
-              type="tel"
-              placeholder="Nhập số điện thoại..."
-              value={phoneNumber}
-              onChange={(event) => setPhoneNumber(event.target.value)}
-            />
-          </FormField>
+          {!isClinicManager && (
+            <FormField label="Số điện thoại">
+              <input
+                className="sys-input"
+                type="tel"
+                placeholder="Nhập số điện thoại..."
+                value={phoneNumber}
+                onChange={(event) => setPhoneNumber(event.target.value)}
+              />
+            </FormField>
+          )}
 
-          <FormField label="Giới tính" required error={formErrors.gender}>
-            <select
-              className="sys-input"
-              value={gender}
-              onChange={(event) => {
-                setGender(event.target.value);
-                clearFormError("gender");
-              }}
-              aria-invalid={Boolean(formErrors.gender)}
-            >
-              <option value="">-- Chọn giới tính --</option>
-              {genderArr.map((item: any) => (
-                <option key={item.keyMap} value={item.keyMap}>
-                  {item.valueVi || item.valueEn}
-                </option>
-              ))}
-            </select>
-          </FormField>
+          {!isClinicManager && (
+            <FormField label="Giới tính" required error={formErrors.gender}>
+              <select
+                className="sys-input"
+                value={gender}
+                onChange={(event) => {
+                  setGender(event.target.value);
+                  clearFormError("gender");
+                }}
+                aria-invalid={Boolean(formErrors.gender)}
+              >
+                <option value="">-- Chọn giới tính --</option>
+                {genderArr.map((item: any) => (
+                  <option key={item.keyMap} value={item.keyMap}>
+                    {item.valueVi || item.valueEn}
+                  </option>
+                ))}
+              </select>
+            </FormField>
+          )}
 
-          <FormField label="Địa chỉ">
-            <input
-              className="sys-input"
-              type="text"
-              placeholder="Nhập địa chỉ..."
-              value={address}
-              onChange={(event) => setAddress(event.target.value)}
-            />
-          </FormField>
+          {!isClinicManager && (
+            <FormField label="Địa chỉ">
+              <input
+                className="sys-input"
+                type="text"
+                placeholder="Nhập địa chỉ..."
+                value={address}
+                onChange={(event) => setAddress(event.target.value)}
+              />
+            </FormField>
+          )}
 
           {!isWriter && (
             <FormField
@@ -575,14 +633,23 @@ const UserRedux: React.FC<UserReduxProps> = ({
               <select
                 className="sys-input"
                 onChange={(event) => {
-                  setClinicId(event.target.value);
+                  const nextClinicId = event.target.value;
+                  const nextClinic = clinicArr.find(
+                    (item: any) => String(item.id) === String(nextClinicId),
+                  );
+                  setClinicId(nextClinicId);
+                  if (isClinicManager) {
+                    const clinicImage = nextClinic?.image || "";
+                    setAvatar(clinicImage);
+                    setAvatarPreview(normalizeImageSrc(clinicImage));
+                  }
                   clearFormError("clinicId");
                 }}
                 value={clinicId}
                 aria-invalid={Boolean(formErrors.clinicId)}
               >
                 <option value="">-- Chọn cơ sở y tế --</option>
-                {clinicArr.map((item: any) => (
+                {availableClinics.map((item: any) => (
                   <option key={item.id} value={item.id}>
                     {item.name}
                   </option>
@@ -593,12 +660,18 @@ const UserRedux: React.FC<UserReduxProps> = ({
 
           <div className="user-avatar-field">
             <FormField label="Ảnh đại diện" error={formErrors.avatar}>
-              <input
-                className="sys-input user-avatar-input"
-                type="file"
-                accept="image/*"
-                onChange={(event) => void handleAvatarChange(event)}
-              />
+              {isClinicManager ? (
+                <div className="avatar-clinic-hint">
+                  Ảnh đại diện được lấy tự động từ cơ sở y tế quản lý.
+                </div>
+              ) : (
+                <input
+                  className="sys-input user-avatar-input"
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => void handleAvatarChange(event)}
+                />
+              )}
             </FormField>
             {avatarPreview && (
               <img

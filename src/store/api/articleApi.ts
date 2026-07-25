@@ -19,6 +19,9 @@ export const ARTICLE_WORKSPACE_LIVE_OPTIONS = {
   skipPollingIfUnfocused: true,
   refetchOnFocus: true,
   refetchOnReconnect: true,
+  // A workspace can be opened by a different account after logout/login.
+  // Do not reuse an old result merely because the URL/query arguments match.
+  refetchOnMountOrArgChange: true,
 } as const;
 
 export const ARTICLE_PUBLIC_LIVE_OPTIONS = {
@@ -74,6 +77,20 @@ export type ArticleDetail = ArticleListItem & {
   reviewerName?: string | null;
   submittedAt?: string | null;
   reviewedAt?: string | null;
+};
+
+export type ArticleEditRequest = {
+  id: number;
+  requestCode: string;
+  targetType: "ARTICLE_EDIT" | string;
+  targetId: number;
+  requesterId?: number | null;
+  requesterName?: string | null;
+  statusId: string;
+  title: string;
+  description?: string | null;
+  reviewNote?: string | null;
+  submittedAt?: string | null;
 };
 
 export type ArticleListArgs = {
@@ -180,6 +197,54 @@ export const articleApi = publicApi.injectEndpoints({
         { type: "Article", id: "ADMIN" },
       ],
     }),
+    requestArticleEdit: builder.mutation<
+      ApiResponse<ArticleEditRequest>,
+      { id: number; description?: string }
+    >({
+      query: ({ id, description }) => ({
+        url: `/api/writer/articles/${id}/edit-request`,
+        method: "POST",
+        data: description?.trim() ? { description: description.trim() } : {},
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Article", id },
+        { type: "Article", id: "WRITER" },
+      ],
+    }),
+    getPendingArticleEditRequests: builder.query<
+      ApiResponse<ArticleEditRequest[]>,
+      void
+    >({
+      query: () => ({ url: "/api/admin/article-edit-requests" }),
+      providesTags: [{ type: "Article", id: "EDIT_REQUESTS" }],
+    }),
+    approveArticleEditRequest: builder.mutation<
+      ApiResponse<ArticleEditRequest>,
+      { id: number; reviewNote?: string }
+    >({
+      query: ({ id, reviewNote }) => ({
+        url: `/api/admin/article-edit-requests/${id}/approve`,
+        method: "POST",
+        params: reviewNote?.trim() ? { reviewNote: reviewNote.trim() } : {},
+      }),
+      invalidatesTags: [
+        { type: "Article", id: "EDIT_REQUESTS" },
+        { type: "Article", id: "ADMIN" },
+        { type: "Article", id: "WRITER" },
+        { type: "Article", id: "PUBLIC" },
+      ],
+    }),
+    rejectArticleEditRequest: builder.mutation<
+      ApiResponse<ArticleEditRequest>,
+      { id: number; reviewNote: string }
+    >({
+      query: ({ id, reviewNote }) => ({
+        url: `/api/admin/article-edit-requests/${id}/reject`,
+        method: "POST",
+        params: { reviewNote: reviewNote.trim() },
+      }),
+      invalidatesTags: [{ type: "Article", id: "EDIT_REQUESTS" }],
+    }),
     getAdminArticles: builder.query<
       ApiResponse<ArticleListItem[]>,
       ArticleListArgs
@@ -273,6 +338,10 @@ export const {
   useCreateArticleMutation,
   useUpdateArticleMutation,
   useSubmitArticleMutation,
+  useRequestArticleEditMutation,
+  useGetPendingArticleEditRequestsQuery,
+  useApproveArticleEditRequestMutation,
+  useRejectArticleEditRequestMutation,
   useGetAdminArticlesQuery,
   useGetAdminArticleQuery,
   useApproveArticleMutation,

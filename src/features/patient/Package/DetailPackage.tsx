@@ -5,7 +5,7 @@ import HomeFooter from "layout/HomeFooter";
 import Breadcrumb from "components/Breadcrumb";
 import { normalizeImageSrc, sanitizeHtml } from "../../../utils";
 import "./DetailPackage.scss";
-import { useGetPackageByIdQuery } from "../../../store/api/publicApi";
+import { useGetPublicPackageByIdQuery } from "../../../store/api/publicApi";
 
 const getPackageTypeName = (item: any) => {
   return item?.typeData?.valueVi || item?.typeData?.valueEn || item?.typeCode || "Gói khám";
@@ -45,7 +45,7 @@ const DetailPackage = () => {
     data: packageResponse,
     isLoading: loading,
     isError,
-  } = useGetPackageByIdQuery(id || "", { skip: !id });
+  } = useGetPublicPackageByIdQuery(id || "", { skip: !id });
   const packageInfo = packageResponse?.errCode === 0 ? packageResponse.data : null;
   const notFound = !loading && (!id || isError || !packageInfo);
 

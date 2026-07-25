@@ -29,6 +29,7 @@ import DetailSpecialty from "features/patient/Specialty/DetailSpecialty";
 import DetailClinic from "features/patient/Clinic/DetailClinic";
 import ClinicList from "features/patient/Clinic/ClinicList";
 import TopDoctorList from "features/patient/Doctor/TopDoctorList";
+import DoctorDirectory from "features/patient/Doctor/DoctorDirectory";
 import PatientProfile from "features/patient/Profile/PatientProfile";
 import PatientHistory from "features/patient/History/PatientHistory";
 import PackageList from "features/patient/Package/PackageList";
@@ -168,6 +169,7 @@ const App: React.FC<IAppProps> = ({ persistor, onBeforeLift }) => {
                   path={path.LIST_TOP_DOCTOR}
                   element={<TopDoctorList />}
                 />
+                <Route path={path.LIST_DOCTOR} element={<DoctorDirectory />} />
                 <Route
                   path={path.PATIENT_PROFILE}
                   element={

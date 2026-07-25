@@ -5,7 +5,7 @@
   caret-color: transparent;
 
   .specialty-list-title {
-    margin: 14px 0 28px;
+    margin: 28px 0 14px;
     color: #17324d;
     font-size: 30px;
     font-weight: 700;
@@ -21,6 +21,36 @@
     padding: 0;
     list-style: none;
   }
+}
+
+.specialty-directory-hero {
+  min-height: 210px;
+  margin: 8px 0 0;
+  padding: 36px 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  border-radius: 18px;
+  color: #fff;
+  background: linear-gradient(116deg, #0c70c9 0%, #0baac0 100%);
+
+  > div { max-width: 650px; }
+  span { color: #c9f7fb; font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  h1 { margin: 8px 0 10px; color: #fff; font-size: clamp(30px, 4vw, 42px); line-height: 1.1; }
+  p { margin: 0; color: #e6fbff; line-height: 1.65; }
+  > i { font-size: 106px; opacity: .22; transform: rotate(-12deg); }
+}
+
+.specialty-directory-search {
+  position: relative;
+  display: block;
+  max-width: 480px;
+  margin-bottom: 24px;
+
+  > i { position: absolute; top: 13px; left: 13px; color: #7e91a8; }
+  input { width: 100%; min-height: 44px; padding: 0 12px 0 38px; border: 1px solid #d5e0eb; border-radius: 8px; outline: none; color: #21354c; font: inherit; }
+  input:focus { border-color: #0a9cb7; box-shadow: 0 0 0 3px rgba(10, 156, 183, .12); }
 }
 
 .specialty-item {
@@ -170,6 +200,9 @@
       gap: 16px;
     }
   }
+
+  .specialty-directory-hero { min-height: 0; padding: 27px 24px; }
+  .specialty-directory-hero > i { display: none; }
 
   .specialty-card {
     min-height: 0;

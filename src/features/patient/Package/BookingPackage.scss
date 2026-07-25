@@ -111,6 +111,19 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .form-section-heading {
+    color: #176b87;
+    font-size: 15px;
+    font-weight: 800;
+    margin: 2px 0 16px;
+
+    &.full-width {
+      border-top: 1px solid #edf1f6;
+      margin: 4px 0 0;
+      padding-top: 20px;
+    }
+  }
+
   .full-width {
     grid-column: 1 / -1;
   }
@@ -206,6 +219,41 @@
     span {
       color: #475467;
       font-size: 13px;
+    }
+  }
+
+  .for-other-toggle {
+    align-items: center;
+    background: #f0fbfc;
+    border: 1px solid #c8edf1;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    gap: 12px;
+    margin: 0;
+    padding: 13px 15px;
+
+    input {
+      accent-color: #159aaa;
+      height: 18px;
+      margin: 0;
+      width: 18px;
+    }
+
+    span {
+      display: grid;
+      gap: 3px;
+    }
+
+    strong {
+      color: #176b87;
+      font-size: 14px;
+    }
+
+    small {
+      color: #667085;
+      font-size: 12px;
+      font-weight: 400;
     }
   }
 

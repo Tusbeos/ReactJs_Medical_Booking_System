@@ -5,7 +5,7 @@ import HomeFooter from "layout/HomeFooter";
 import Breadcrumb from "components/Breadcrumb";
 import { normalizeImageSrc } from "../../../utils";
 import "./PackageList.scss";
-import { useGetPackagesQuery } from "../../../store/api/publicApi";
+import { useGetPublicPackagesQuery } from "../../../store/api/publicApi";
 
 const getPackageTypeName = (item: any) => {
   return item?.typeData?.valueVi || item?.typeData?.valueEn || item?.typeCode || "";
@@ -26,7 +26,7 @@ const PackageList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("ALL");
   const [selectedClinic, setSelectedClinic] = useState("ALL");
-  const { data: packagesResponse, isLoading: loading } = useGetPackagesQuery();
+  const { data: packagesResponse, isLoading: loading } = useGetPublicPackagesQuery();
   const packages = useMemo(() => {
     const data = Array.isArray(packagesResponse?.data) ? packagesResponse.data : [];
     return data.filter((item: any) => !item?.statusId || item.statusId === "SD2");
@@ -96,9 +96,17 @@ const PackageList = () => {
               <h1>Gói khám dành cho bạn</h1>
               <p>Chọn gói khám phù hợp theo nhu cầu, phòng khám và ngân sách.</p>
             </div>
+            <i className="fas fa-notes-medical" aria-hidden="true" />
           </div>
 
-          <div className="package-filter-bar">
+          <div className="package-list-content">
+          <aside className="package-filter-bar">
+            <div className="package-filter-heading">
+              <h2><i className="fas fa-sliders-h" /> Bộ lọc</h2>
+              {(searchTerm || selectedType !== "ALL" || selectedClinic !== "ALL") && (
+                <button type="button" onClick={() => { setSearchTerm(""); setSelectedType("ALL"); setSelectedClinic("ALL"); }}>Xóa lọc</button>
+              )}
+            </div>
             <div className="package-search-box">
               <i className="fas fa-search" />
               <input
@@ -127,8 +135,13 @@ const PackageList = () => {
                 </option>
               ))}
             </select>
-          </div>
+          </aside>
 
+          <section className="package-list-results">
+          <div className="package-results-heading">
+            <span>Kết quả tìm kiếm</span>
+            <h2>{filteredPackages.length} gói khám phù hợp</h2>
+          </div>
           {loading ? (
             <div className="package-state">Đang tải danh sách gói khám...</div>
           ) : filteredPackages.length === 0 ? (
@@ -165,6 +178,8 @@ const PackageList = () => {
               })}
             </div>
           )}
+          </section>
+          </div>
         </div>
       </div>
       <HomeFooter />

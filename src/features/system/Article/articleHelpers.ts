@@ -16,6 +16,20 @@ export const ARTICLE_STATUS_OPTIONS: Array<{
   { value: ARTICLE_STATUS.ARCHIVED, label: "Đã gỡ" },
 ];
 
+const ARTICLE_STATUS_LABELS: Record<ArticleStatus, string> = {
+  [ARTICLE_STATUS.DRAFT]: "Bản nháp",
+  [ARTICLE_STATUS.PENDING]: "Chờ duyệt",
+  [ARTICLE_STATUS.APPROVED]: "Đã duyệt",
+  [ARTICLE_STATUS.PUBLISHED]: "Đã xuất bản",
+  [ARTICLE_STATUS.REJECTED]: "Bị từ chối",
+  [ARTICLE_STATUS.ARCHIVED]: "Đã gỡ",
+};
+
+export const getArticleStatusLabel = (
+  status: ArticleStatus,
+  _serverLabel?: string | null,
+) => ARTICLE_STATUS_LABELS[status] || _serverLabel || status;
+
 export const formatArticleDate = (value?: string | null) => {
   if (!value) return "—";
   const date = new Date(value);

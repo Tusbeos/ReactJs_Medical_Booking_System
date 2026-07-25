@@ -21,7 +21,7 @@ const HomeFooter: React.FC = () => {
           <div className="footer-links">
             <h4>Dành cho bệnh nhân</h4>
             <Link to="/specialty">Khám chuyên khoa</Link>
-            <Link to="/top-doctor">Tìm bác sĩ</Link>
+            <Link to="/doctors">Tìm bác sĩ</Link>
             <Link to="/clinic">Bệnh viện và phòng khám</Link>
             <Link to="/articles">Cẩm nang sức khỏe</Link>
           </div>

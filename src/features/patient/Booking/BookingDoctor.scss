@@ -1,333 +1,513 @@
 .booking-modal-container {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    caret-color: transparent;
+  background: #f6f9fc;
+  min-height: 100vh;
+  padding-bottom: 56px;
 
-    .booking-modal-content {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        padding-bottom: 20px;
-
-        .doctor-info-section {
-            justify-content: center;
-            background-color: #ffffff;
-            padding: 20px;
-            display: flex;
-            gap: 20px;
-            border-bottom: 1px solid #eee;
-            position: sticky;
-            top: var(--home-header-height, 64px);
-            z-index: 80;
-
-            .doctor-image {
-                width: 140px;       
-                height: 140px;
-                border-radius: 50%; 
-                background-position: center center;
-                background-repeat: no-repeat;
-                background-size: cover;
-                border: 1px solid #e1e1e1;         
-                margin-right: 20px;                
-                flex-shrink: 0;                   
-                }
-            .doctor-details {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                margin-right: 180px;
-                .title-booking {
-                    font-size: 13px;
-                    font-weight: 600;
-                    color: #555555;
-                    margin-bottom: 5px;
-                }
-                .doctor-name {
-                    font-size: 18px;
-                    font-weight: bold;
-                    color: #577ab7;
-                    margin-bottom: 5px;
-                }
-                .time-booking {
-                    font-size: 18px;
-                    font-weight: bold;
-                    color: #fec206;
-                    i{
-                        font-size: 16px;
-                        font-weight: lighter;
-                        color: #a9a9ab;
-                        margin-right: 7px;
-                    }
-                }
-                .name-clinic{
-                    font-size: 17px;
-                    color: #555555;
-                    font-weight: 600;
-                    margin-top: 5px;
-                    i{
-                        font-size: 14px;
-                        color: #a9a9ab;
-                        margin-right: 7px;
-                    }
-                }
-                .address-clinic{
-                    font-size: 16px;
-                    color: #333;
-                    margin: 5px 0px 0px 25px;
-                }
-            }
-        }
-        
-        .price-section {
-            width: 60%;
-            margin: 0 auto;
-            padding: 10px 0px;
-            font-size: 16px;
-            color: #333;
-            .price-box{
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                border: 1px solid orange;
-                border-radius: 2px;
-                width: 170px;
-                height: 65px;
-                box-shadow: 1px 1px   #ccc;
-                cursor: pointer;
-                transition: all 0.2s;
-                background-color: white;
-            &:hover {
-                background-color: #f1f1f1;
-            }
-        }
-    }
-
-    .booking-modal-body {
-        width: 60%;  
-        margin: 0 auto;
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        margin-left: -10px;
-        margin-right: -10px;
-    }
-    .col-12 {
-        width: 100%;
-        padding: 0 10px;
-    }
-    .col-6 {
-        width: 50%;
-        padding: 0 10px;
-    }
-    .form-group {
-        caret-color: auto;
-        margin-bottom: 15px;
-        .payment{
-            color:#3f86c0;
-            font-weight: 600;
-        }
-        .input{
-            caret-color: auto;
-        }
-        .input-icon-group {
-        position: relative;
-        width: 100%;
-        &.last-child {
-            margin-bottom: 0;
-        }
-        i {
-            position: absolute;
-            top: 50%;       
-            transform: translateY(-50%); 
-            left: 15px;       
-            font-size: 16px;    
-            color: #666;     
-            z-index: 1;  
-        }
-        .form-control {
-            width: 100%;
-            height: 45px;
-            padding-left: 45px; 
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            outline: none;
-            font-size: 14px;
-            &::placeholder {
-                color: #888;
-                font-weight: 400;
-            }
-
-            &:focus {
-                border-color: #45c3d2;
-                background-color: #f7fcfd;
-            }
-        }
-    }
-
-        .form-control {
-            width: 100%;
-            height: 40px; 
-            border-radius: 4px;
-            border: 1px solid #ccc; 
-            padding: 0 10px;
-            outline: none;
-            background-color: #fff;
-            
-            &:focus {
-                border-color: #45c3d2;
-                background-color: #f7fcfd;
-            }
-        }
-
-        .gender-options {
-            display: flex;
-            align-items: center;
-            height: 40px;
-            
-            label {
-                margin-bottom: 0;
-                cursor: pointer;
-                font-weight: normal;
-            }
-            input {
-                caret-color: auto;
-                margin-right: 5px;
-            }
-        }
-    }
-}
-    .booking-modal-footer {
-            padding: 0 20px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            button {
-                padding: 10px 25px;
-                border: none;
-                border-radius: 4px;
-                font-weight: 600;
-                cursor: pointer;
-            }
-
-            .btn-booking-confirm {
-                width: 60%; 
-                margin: 0 auto;
-                background-color: #ffc107;
-                color:white;
-                 font-size: 18px;
-                &:hover { background-color: #e0a800; }
-            }
-    }
-    }
-    .more-info {
-    width: 60%; 
+  .booking-container {
     margin: 0 auto;
-    background-color: #dbd3d36c; 
-    padding: 15px;
-    border-radius: 5px;
-    margin-top: 10px; 
-    .tag-price {
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center;
-        padding: 10px 0; 
-        &:nth-child(2) {
-        border-bottom: 1px solid #ddd;
-        }
-        .left {
-            font-size: 15px;
-            color: #555;
-        }
-        .right {
+    max-width: 1180px;
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 100%;
+  }
 
-            font-size: 16px;
-            color: #333;
-        }
-    }
-}
-    .note-booking {
-    width: 60%; 
-    margin: 10px auto;
-    
-    .note-title{
-        
-        text-align: center;
-        color: #585858;
-        margin-bottom: 10px;
-    }
-    .note-table{
-        .note{
-        font-weight: bold;
-        margin-bottom: 10px;
-        font-size: 15px;
-    }
-        .note-desc {
-        margin-bottom: 10px;
-        font-size: 14px;
-        line-height: 1.5; 
-    }
-    .note-list {
-        font-weight: lighter;
-        padding-left: 20px; 
-        margin-bottom: 0;
-        li {
-            list-style-type: disc;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-    }
-        height:130px;
-        padding: 10px;
-        border-radius: 5px;
-        background-color: #d4effc;
-    }
-    }
-}
+  .booking-modal-content {
+    align-items: start;
+    display: grid;
+    gap: 24px 28px;
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  }
 
-// Styles cho tính năng đặt hộ
-.for-other-checkbox {
-    display: flex;
+  .doctor-info-section,
+  .booking-modal-body,
+  .price-section,
+  .more-info,
+  .note-booking {
+    background: #fff;
+    border: 1px solid #e4eaf2;
+    border-radius: 12px;
+    box-shadow: 0 8px 28px rgb(16 24 40 / 6%);
+  }
+
+  .doctor-info-section {
     align-items: center;
-    cursor: pointer;
-    font-size: 15px;
-    color: #333;
-    padding: 8px 0;
-    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    grid-column: 1;
+    grid-row: 1 / span 5;
+    padding: 28px 22px;
+    position: sticky;
+    top: calc(var(--home-header-height, 64px) + 20px);
+    z-index: 80;
 
-    input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-        accent-color: #45c3d2;
-    }
-}
-
-.for-other-section {
-    border: 1px solid #45c3d2;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 16px;
-    background: #f0fbfc;
-
-    .for-other-title {
-        font-size: 14px;
-        font-weight: 600;
-        color: #25a0b0;
-        margin-bottom: 14px;
+    .doctor-image {
+      background-color: #eef8fa;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      border: 3px solid #e1f3f5;
+      border-radius: 50%;
+      flex: 0 0 auto;
+      height: 142px;
+      margin: 0;
+      width: 142px;
     }
 
-    .form-control {
-        border-radius: 6px;
-        font-size: 14px;
+    .doctor-details {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      text-align: center;
 
-        &:focus {
-            border-color: #45c3d2;
-            box-shadow: 0 0 0 0.2rem rgba(69, 195, 210, 0.2);
+      .title-booking {
+        color: #159aaa;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        margin-bottom: 7px;
+        text-transform: uppercase;
+      }
+
+      .doctor-name {
+        color: #101828;
+        font-size: 21px;
+        font-weight: 800;
+        line-height: 1.4;
+        margin-bottom: 12px;
+      }
+
+      .time-booking {
+        background: #eefafb;
+        border-radius: 8px;
+        color: #176b87;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.45;
+        margin-bottom: 12px;
+        padding: 10px 12px;
+        width: 100%;
+
+        i {
+          color: #159aaa;
+          margin-right: 7px;
         }
+      }
+
+      .name-clinic,
+      .address-clinic {
+        color: #667085;
+        font-size: 14px;
+        line-height: 1.55;
+        margin: 0 0 5px;
+      }
+
+      .name-clinic {
+        color: #344054;
+        font-weight: 700;
+
+        i {
+          color: #45c3d2;
+          margin-right: 6px;
+        }
+      }
+    }
+  }
+
+  .price-section {
+    align-items: center;
+    display: flex;
+    grid-column: 2;
+    margin: 0;
+    padding: 16px 22px;
+
+    .price-box {
+      align-items: center;
+      border: 0;
+      display: flex;
+      gap: 20px;
+      justify-content: space-between;
+      margin: 0;
+      width: 100%;
+
+      input {
+        accent-color: #159aaa;
+      }
+
+      div:first-child {
+        color: #344054;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      div:last-child {
+        color: #d92d20;
+        font-size: 22px;
+        font-weight: 800;
+      }
+    }
+  }
+
+  .booking-modal-body {
+    grid-column: 2;
+    padding: 30px;
+
+    .row {
+      display: grid;
+      gap: 18px 20px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin: 0;
+    }
+
+    .col-12 {
+      grid-column: 1 / -1;
+      padding: 0;
+      width: auto;
+    }
+
+    .col-md-6,
+    .col-6 {
+      padding: 0;
+      width: auto;
+    }
+
+    .form-group {
+      caret-color: auto;
+      margin: 0;
+
+      > label:not(.for-other-checkbox) {
+        color: #344054;
+        display: block;
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 7px;
+      }
+
+      .payment {
+        color: #344054;
+        display: block;
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+    }
+
+    .input-icon-group {
+      position: relative;
+
+      > i {
+        color: #667085;
+        left: 13px;
+        pointer-events: none;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1;
+      }
+
+      > .form-control,
+      > input,
+      .flatpickr-input,
+      .form-control.flatpickr-input {
+        // Flatpickr and global form styles can otherwise overwrite this value.
+        // Reserve a fixed text area after the absolutely positioned icon.
+        padding-left: 48px !important;
+      }
+    }
+
+    .form-control,
+    input:not([type="radio"]):not([type="checkbox"]),
+    select,
+    textarea {
+      background: #fff;
+      border: 1px solid #cfd8e6;
+      border-radius: 7px;
+      box-sizing: border-box;
+      color: #1d2939;
+      font: inherit;
+      min-height: 44px;
+      outline: 0;
+      padding: 10px 12px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      width: 100%;
+
+      &:focus {
+        border-color: #45c3d2;
+        box-shadow: 0 0 0 3px rgb(69 195 210 / 14%);
+      }
+
+      &:disabled,
+      &:read-only {
+        background: #f4f7fa;
+        color: #667085;
+      }
     }
 
     textarea.form-control {
-        resize: vertical;
+      min-height: 88px;
+      padding-left: 12px;
+      resize: vertical;
     }
+
+    .gender-options,
+    .payment-options {
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid #e4eaf2;
+      border-radius: 7px;
+      display: flex;
+      gap: 20px;
+      min-height: 44px;
+      padding: 10px 12px;
+
+      label {
+        color: #344054;
+        cursor: pointer;
+        font-size: 14px;
+        margin: 0 !important;
+      }
+
+      input {
+        accent-color: #159aaa;
+        margin-right: 6px;
+      }
+    }
+
+    .for-other-checkbox {
+      align-items: center;
+      background: #f0fbfc;
+      border: 1px solid #c8edf1;
+      border-radius: 8px;
+      color: #176b87;
+      cursor: pointer;
+      display: flex;
+      font-size: 14px;
+      gap: 9px;
+      margin: 0;
+      padding: 12px 14px;
+
+      input {
+        accent-color: #159aaa;
+        height: 18px;
+        margin: 0;
+        width: 18px;
+      }
+    }
+
+    .for-other-section {
+      background: #f7fcfd;
+      border: 1px solid #c8edf1;
+      border-radius: 9px;
+      grid-column: 1 / -1;
+      margin: 0;
+      padding: 18px;
+
+      .for-other-title {
+        color: #176b87;
+        font-size: 15px;
+        font-weight: 800;
+        margin-bottom: 16px;
+
+        i {
+          color: #159aaa;
+          margin-right: 7px;
+        }
+      }
+
+      .row {
+        gap: 16px 20px;
+      }
+
+      small {
+        color: #667085;
+        display: block;
+        line-height: 1.45;
+        margin-top: 6px;
+      }
+    }
+  }
+
+  .more-info {
+    grid-column: 2;
+    margin: 0;
+    overflow: hidden;
+    padding: 0 22px;
+
+    .tag-price {
+      align-items: center;
+      border-bottom: 1px solid #edf1f6;
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 0;
+
+      &:last-child {
+        border-bottom: 0;
+      }
+
+      .left {
+        color: #667085;
+        font-size: 14px;
+      }
+
+      .right {
+        color: #344054;
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      &:last-child .right {
+        color: #d92d20;
+        font-size: 18px;
+      }
+    }
+  }
+
+  .note-booking {
+    grid-column: 2;
+    margin: 0;
+    padding: 18px 20px;
+
+    .note-title {
+      color: #176b87;
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .note-table {
+      color: #475467;
+      font-size: 14px;
+      line-height: 1.55;
+
+      .note {
+        color: #344054;
+        display: block;
+        font-weight: 800;
+        margin-bottom: 5px;
+      }
+
+      .note-desc {
+        margin: 0 0 8px;
+      }
+
+      .note-list {
+        margin: 0;
+        padding-left: 20px;
+
+        li + li {
+          margin-top: 4px;
+        }
+      }
+    }
+  }
+
+  .booking-modal-footer {
+    display: block;
+    grid-column: 2;
+    padding: 0;
+
+    .btn-booking-confirm {
+      background: #159aaa;
+      border: 0;
+      border-radius: 7px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 800;
+      min-height: 50px;
+      padding: 0 22px;
+      transition: background-color 0.15s ease, opacity 0.15s ease;
+      width: 100%;
+
+      &:hover:not(:disabled) {
+        background: #128794;
+      }
+
+      &:disabled {
+        cursor: wait;
+        opacity: 0.65;
+      }
+    }
+  }
+
+  @media (max-width: 900px) {
+    .booking-modal-content {
+      grid-template-columns: 1fr;
+    }
+
+    .doctor-info-section,
+    .price-section,
+    .booking-modal-body,
+    .more-info,
+    .note-booking,
+    .booking-modal-footer {
+      grid-column: 1;
+      grid-row: auto;
+    }
+
+    .doctor-info-section {
+      align-items: center;
+      flex-direction: row;
+      position: static;
+      text-align: left;
+
+      .doctor-details {
+        align-items: flex-start;
+        text-align: left;
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    padding-bottom: 36px;
+
+    .booking-container {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .doctor-info-section {
+      align-items: center;
+      flex-direction: column;
+      padding: 22px 16px;
+
+      .doctor-details {
+        align-items: center;
+        text-align: center;
+        width: 100%;
+      }
+    }
+
+    .booking-modal-body {
+      padding: 22px 16px;
+
+      .row,
+      .for-other-section .row {
+        grid-template-columns: 1fr;
+      }
+
+      .col-12,
+      .col-md-6,
+      .col-6 {
+        grid-column: auto;
+      }
+    }
+
+    .price-section {
+      padding: 14px 16px;
+
+      .price-box {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+
+    .more-info,
+    .note-booking {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+  }
 }

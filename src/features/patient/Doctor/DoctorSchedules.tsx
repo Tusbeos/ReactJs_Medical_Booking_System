@@ -6,7 +6,7 @@ import moment from "moment";
 import { LANGUAGES, path } from "../../../utils";
 import { FormattedMessage } from "react-intl";
 import { IRootState } from "../../../types";
-import { useGetDoctorScheduleQuery } from "../../../store/api/publicApi";
+import { useGetPublicDoctorScheduleQuery } from "../../../store/api/publicApi";
 import { sortSchedulesChronologically } from "../../../utils/scheduleTime";
 
 interface IDoctorSchedulesProps {
@@ -76,7 +76,7 @@ const DoctorSchedules = ({ detailDoctorFromParent }: IDoctorSchedulesProps) => {
     moment().startOf("day").valueOf()
   );
   const shouldSkipSchedule = !detailDoctorFromParent || detailDoctorFromParent === -1;
-  const { data: scheduleResponse, isFetching: isFetchingSchedule } = useGetDoctorScheduleQuery(
+  const { data: scheduleResponse, isFetching: isFetchingSchedule } = useGetPublicDoctorScheduleQuery(
     {
       doctorId: detailDoctorFromParent,
       date: moment(selectedDate).format("YYYY-MM-DD"),

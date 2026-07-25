@@ -584,12 +584,8 @@ const ManageDoctor: React.FC<ManageDoctorProps> = ({
         }),
       );
 
-    let arrDoctorService: any[] = [];
-    if (serviceRef.current) {
-      const childData = serviceRef.current.getDataFromChild();
-      if (childData.isValid === false) return;
-      arrDoctorService = childData.data;
-    }
+    const childData = serviceRef.current?.getDataFromChild?.();
+    if (childData?.isValid === false) return;
 
     try {
       const res = await saveDoctorInfo({
@@ -616,9 +612,9 @@ const ManageDoctor: React.FC<ManageDoctorProps> = ({
         return;
       }
 
-      if (arrDoctorService && arrDoctorService.length > 0) {
+      if (childData?.data?.length > 0) {
         const serviceRes = await saveDoctorServices({
-          arrDoctorService,
+          arrDoctorService: childData.data,
           doctorId: selectedOption.value,
         }).unwrap();
         if (!serviceRes || serviceRes.errCode !== 0) {
@@ -1772,21 +1768,8 @@ const ManageDoctor: React.FC<ManageDoctorProps> = ({
           </div>
         </div>
 
-        {/* Block 4: Doctor Services */}
+        {/* Block 4: Doctor Services (optional) */}
         <div className="form-card has-border-left red p-0 pb-3">
-          <div className="card-title service-title-row">
-            <span>QUẢN LÝ DANH SÁCH DỊCH VỤ KHÁM</span>
-            <button
-              className="btn-add-service-inline"
-              onClick={() => {
-                if (serviceRef.current && serviceRef.current.handleAddService) {
-                  serviceRef.current.handleAddService();
-                }
-              }}
-            >
-              <i className="fas fa-plus"></i> Thêm dịch vụ
-            </button>
-          </div>
           <div className="service-list-container">
             {selectedOption ? (
               <DoctorServices
@@ -1795,7 +1778,7 @@ const ManageDoctor: React.FC<ManageDoctorProps> = ({
               />
             ) : (
               <div className="p-4 text-center text-secondary">
-                Vui lòng chọn bác sĩ để thêm dịch vụ
+                Vui lòng chọn bác sĩ để quản lý dịch vụ.
               </div>
             )}
           </div>

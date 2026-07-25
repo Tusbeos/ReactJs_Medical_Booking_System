@@ -12,12 +12,13 @@ import {
 import moment from "moment";
 import { NumericFormat } from "react-number-format";
 import HomeHeader from "layout/HomeHeader";
+import HomeFooter from "layout/HomeFooter";
 import DatePicker from "components/Input/DatePicker";
 import { toast } from "react-toastify";
 import { IRootState } from "../../../types";
 import {
   useBookAppointmentMutation,
-  useGetDoctorByIdQuery,
+  useGetPublicDoctorByIdQuery,
   useGetPatientProfilesQuery,
   useGetUserByIdQuery,
 } from "../../../store/api/publicApi";
@@ -103,7 +104,7 @@ const BookingDoctor = () => {
     bookingKind?: string;
   } | null;
   const timeBooking = useMemo(() => routeState?.dataTime || {}, [routeState]);
-  const { data: doctorResponse } = useGetDoctorByIdQuery(id || "", { skip: !id });
+  const { data: doctorResponse } = useGetPublicDoctorByIdQuery(id || "", { skip: !id });
   const detailDoctor = doctorResponse?.errCode === 0 && doctorResponse.data
     ? doctorResponse.data
     : {};
@@ -981,8 +982,9 @@ const BookingDoctor = () => {
           </div>
         </div>
       </div>
+      <HomeFooter />
     </>
   );
-};;
+};
 
 export default BookingDoctor;
