@@ -147,21 +147,6 @@ const Sidebar: React.FC = () => {
         ))}
       </div>
 
-      <div className="sidebar-bottom">
-        <button className="btn-quick-appointment">
-          <i className="fas fa-plus"></i> Quick Appointment
-        </button>
-        <div className="bottom-menu">
-          <div className="menu-item">
-            <i className="fas fa-cog"></i>
-            <span>Settings</span>
-          </div>
-          <div className="menu-item">
-            <i className="far fa-question-circle"></i>
-            <span>Support</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

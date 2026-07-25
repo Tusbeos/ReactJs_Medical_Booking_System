@@ -160,14 +160,6 @@ const Header: React.FC = () => {
       </div>
 
       <div className="topbar-right">
-        <div className="icon-action">
-          <i className="far fa-bell"></i>
-          <span className="badge"></span>
-        </div>
-        <div className="icon-action">
-          <i className="fas fa-cog"></i>
-        </div>
-        
         <div className="user-profile">
           <div className="user-info">
             <span className="user-name">
