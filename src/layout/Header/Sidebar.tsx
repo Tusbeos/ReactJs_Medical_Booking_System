@@ -119,6 +119,16 @@ const Sidebar: React.FC = () => {
               icon: "fas fa-clipboard-check",
               label: "Duyệt bài viết",
             },
+            {
+              to: "/system/statistics",
+              icon: "fas fa-chart-column",
+              label: "Thống kê báo cáo",
+            },
+            {
+              to: "/system/audit-logs",
+              icon: "fas fa-clipboard-list",
+              label: "Nhật ký hoạt động",
+            },
           ];
 
   return (

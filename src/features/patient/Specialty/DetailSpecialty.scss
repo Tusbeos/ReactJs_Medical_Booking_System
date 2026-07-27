@@ -11,7 +11,6 @@
 
     .description-content-up {
       width: 100%;
-      max-width: 1320px;
       margin: 0 auto;
       position: relative;
       z-index: 1;
@@ -84,9 +83,9 @@
   }
 
   .detail-specialty-body {
-    max-width: 1320px;
+    width: min(var(--public-content-max-width), calc(100% - (var(--public-content-gutter) * 2)));
     margin: 0 auto;
-    padding: 20px 15px;
+    padding: 20px 0;
 
     .search-sp-doctor {
       margin-bottom: 20px;
@@ -153,9 +152,8 @@
     background: transparent;
   }
 
-  .description-specialty .booking-container {
-    width: 100%;
-  }
+  .description-specialty .booking-container { width: auto; }
+  .breadcrumb-content-container { width: 100%; }
 
   .description-content-up.specialty-detail-hero {
     display: flex;

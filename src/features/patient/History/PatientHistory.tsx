@@ -9,9 +9,11 @@ import { useGetPatientHistoryQuery } from "../../../store/api/publicApi";
 import { DataState } from "components/System/SystemShared";
 import {
   BOOKING_STATUS_OPTIONS,
+  BOOKING_STATUS,
   BookingStatusId,
   getBookingStatusMeta,
 } from "../../../utils/bookingStatus";
+import DoctorReviewForm from "./DoctorReviewForm";
 
 interface IHistoryRecord {
   id?: number;
@@ -359,6 +361,12 @@ const PatientHistory: React.FC = () => {
                                 {record.notes}
                               </span>
                             </div>
+                          )}
+                          {record.statusId === BOOKING_STATUS.COMPLETED && record.doctorId && (
+                            <DoctorReviewForm
+                              bookingId={record.bookingId}
+                              doctorId={record.doctorId}
+                            />
                           )}
                         </div>
                       )}

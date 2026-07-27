@@ -8,6 +8,7 @@ import "./DetailDoctor.scss";
 import { LANGUAGES, normalizeImageSrc, sanitizeHtml } from "utils";
 import DoctorSchedules from "./DoctorSchedules";
 import DoctorExtraInfo from "./DoctorExtraInfo";
+import DoctorReviews from "./DoctorReviews";
 import { IRootState } from "../../../types";
 import { useGetPublicDoctorByIdQuery } from "../../../store/api/publicApi";
 
@@ -108,9 +109,9 @@ const DetailDoctor = () => {
                     __html: doctorDescriptionHtml,
                   }}
                 ></div>
-              )}
+            )}
           </div>
-          <div className="comment-doctor"></div>
+          {detailDoctor?.id && <DoctorReviews doctorId={detailDoctor.id} />}
         </div>
       </div>
       <HomeFooter />

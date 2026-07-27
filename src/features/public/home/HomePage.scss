@@ -10,12 +10,6 @@
   }
 }
 
-.booking-container,
-.section-container {
-  width: min(1180px, calc(100% - 48px));
-  margin: 0 auto;
-}
-
 .section-share {
   padding: 84px 0;
 
@@ -624,11 +618,6 @@
 }
 
 @media (max-width: 640px) {
-  .booking-container,
-  .section-container {
-    width: min(100% - 28px, 1180px);
-  }
-
   .section-share {
     padding: 58px 0;
   }

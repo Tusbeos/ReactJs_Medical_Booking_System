@@ -7,8 +7,8 @@
     caret-color: transparent;
 }
 .breadcrumb-content-container {
-    width: 100%;
-    max-width: 1400px;
+    box-sizing: border-box;
+    width: min(var(--public-content-max-width), calc(100% - (var(--public-content-gutter) * 2)));
     margin: 0 auto;
     .breadcrumb-list {
         display: flex;

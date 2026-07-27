@@ -5,7 +5,7 @@
 }
 
 .footer-content-container {
-  width: min(1180px, calc(100% - 48px));
+  width: min(var(--public-content-max-width), calc(100% - (var(--public-content-gutter) * 2)));
   margin: 0 auto;
 }
 
@@ -126,7 +126,7 @@
 
 @media (max-width: 640px) {
   .footer-content-container {
-    width: min(100% - 28px, 1180px);
+    width: min(var(--public-content-max-width), calc(100% - (var(--public-content-gutter) * 2)));
   }
 
   .footer-grid {

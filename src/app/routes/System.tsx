@@ -18,6 +18,8 @@ import ClinicManagerReviewDoctor from "features/system/ClinicManager/ClinicManag
 import WriterArticles from "features/system/Article/WriterArticles";
 import ArticleEditor from "features/system/Article/ArticleEditor";
 import AdminArticleReview from "features/system/Article/AdminArticleReview";
+import AuditLogs from "features/system/Admin/AuditLogs";
+import AdminStats from "features/system/Admin/AdminStats";
 import { RequireWriter } from "hoc/authentication";
 import { IRootState } from "types";
 import { USER_ROLE } from "utils";
@@ -133,6 +135,8 @@ const System = () => {
                   <Route path="manage-clinic" element={<ManageClinic />} />
                   <Route path="manage-package" element={<ManagePackage />} />
                   <Route path="articles" element={<AdminArticleReview />} />
+                  <Route path="audit-logs" element={<AuditLogs />} />
+                  <Route path="statistics" element={<AdminStats />} />
                   <Route path="*" element={<UserRedux />} />
                 </>
               )}

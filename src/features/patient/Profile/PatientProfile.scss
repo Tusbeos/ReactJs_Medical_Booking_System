@@ -1,9 +1,9 @@
 $primary-color: #45c3d2;
 
 .patient-profile-container {
-  max-width: 720px;
+  width: min(var(--public-content-max-width), calc(100% - (var(--public-content-gutter) * 2)));
   margin: 30px auto;
-  padding: 0 16px;
+  padding: 0;
 
   .profile-card {
     background: #fff;

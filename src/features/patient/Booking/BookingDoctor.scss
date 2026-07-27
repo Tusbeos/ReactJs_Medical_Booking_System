@@ -4,11 +4,9 @@
   padding-bottom: 56px;
 
   .booking-container {
-    margin: 0 auto;
-    max-width: 1180px;
-    padding-left: 20px;
-    padding-right: 20px;
-    width: 100%;
+    // The shared public frame owns horizontal width and gutters.
+    padding-right: 0;
+    padding-left: 0;
   }
 
   .booking-modal-content {
@@ -461,11 +459,6 @@
 
   @media (max-width: 600px) {
     padding-bottom: 36px;
-
-    .booking-container {
-      padding-left: 12px;
-      padding-right: 12px;
-    }
 
     .doctor-info-section {
       align-items: center;

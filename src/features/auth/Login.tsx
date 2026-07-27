@@ -10,6 +10,7 @@ import {
   handleSystemLoginApi,
 } from "../../services/userService";
 import { USER_ROLE } from "../../utils";
+import { useForgotPasswordMutation } from "../../store/api/passwordResetApi";
 
 const Login: React.FC = () => {
   const dispatch = useDispatch();
@@ -20,16 +21,55 @@ const Login: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [errMessage, setErrMessage] = useState("");
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState("");
+  const [recoveryError, setRecoveryError] = useState("");
+  const [recoverySent, setRecoverySent] = useState(false);
+  const [forgotPassword, forgotPasswordState] = useForgotPasswordMutation();
+  const isSendingRecovery = forgotPasswordState.isLoading;
 
   const openForgotPassword = () => {
     setErrMessage("");
     setShowPassword(false);
+    // Đưa sẵn email đang nhập ở form đăng nhập sang để đỡ phải gõ lại.
+    setRecoveryEmail(username.trim());
+    setRecoveryError("");
+    setRecoverySent(false);
     setIsForgotPasswordOpen(true);
   };
 
   const closeForgotPassword = () => {
     setIsForgotPasswordOpen(false);
+    setRecoveryError("");
+    setRecoverySent(false);
   };
+
+  const handleSendRecovery = useCallback(async () => {
+    const email = recoveryEmail.trim();
+    if (!email) {
+      setRecoveryError("Vui lòng nhập email tài khoản.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setRecoveryError("Email không hợp lệ.");
+      return;
+    }
+    setRecoveryError("");
+    try {
+      await forgotPassword({ email }).unwrap();
+      // Backend cố tình trả thành công kể cả khi email không tồn tại,
+      // nên giao diện cũng không được tiết lộ email có tồn tại hay không.
+      setRecoverySent(true);
+    } catch (error: any) {
+      const status = error?.status;
+      setRecoveryError(
+        status === 429
+          ? "Bạn đã yêu cầu quá nhiều lần. Vui lòng thử lại sau."
+          : error?.data?.errMessage ||
+              error?.data?.message ||
+              "Không thể gửi yêu cầu. Vui lòng thử lại.",
+      );
+    }
+  }, [recoveryEmail, forgotPassword]);
 
   const handleLogin = useCallback(async () => {
     setErrMessage("");
@@ -162,64 +202,76 @@ const Login: React.FC = () => {
                   </span>
                   <h2>Quên mật khẩu?</h2>
                   <p>
-                    Tài khoản hệ thống được cấp và quản lý nội bộ. Hãy liên hệ
-                    quản trị viên phụ trách để xác minh và khôi phục quyền truy
-                    cập an toàn.
+                    Nhập email tài khoản của bạn. Hệ thống sẽ gửi một liên kết
+                    đặt lại mật khẩu có thời hạn tới hộp thư đó.
                   </p>
                 </div>
 
-                <div className="recovery-account-card">
-                  <div className="recovery-account-icon" aria-hidden="true">
-                    <i className="fas fa-envelope" />
-                  </div>
-                  <div>
-                    <span>Email cần hỗ trợ</span>
-                    <strong>
-                      {username.trim() || "Email tài khoản nội bộ của bạn"}
-                    </strong>
-                  </div>
-                </div>
+                {recoverySent ? (
+                  <>
+                    <div className="recovery-security-note">
+                      <i className="fas fa-paper-plane" aria-hidden="true" />
+                      <p>
+                        <strong>Đã gửi yêu cầu</strong>
+                        Nếu email tồn tại trong hệ thống, liên kết đặt lại mật
+                        khẩu đã được gửi. Vui lòng kiểm tra cả mục thư rác.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn-login recovery-login-button"
+                      onClick={closeForgotPassword}
+                    >
+                      Quay lại đăng nhập
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="form-group input-login">
+                      <label htmlFor="recovery-email">Email tài khoản</label>
+                      <input
+                        id="recovery-email"
+                        type="email"
+                        value={recoveryEmail}
+                        onChange={(event) => {
+                          setRecoveryEmail(event.target.value);
+                          setRecoveryError("");
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") handleSendRecovery();
+                        }}
+                        placeholder="Nhập email đã đăng ký"
+                        autoComplete="email"
+                      />
+                    </div>
 
-                <div className="recovery-steps" aria-label="Các bước khôi phục">
-                  <div className="recovery-step">
-                    <span>1</span>
-                    <p>
-                      Cung cấp email nội bộ và vai trò tài khoản cho quản trị
-                      viên.
-                    </p>
-                  </div>
-                  <div className="recovery-step">
-                    <span>2</span>
-                    <p>
-                      Xác minh danh tính theo quy trình của đơn vị hoặc phòng
-                      khám.
-                    </p>
-                  </div>
-                  <div className="recovery-step">
-                    <span>3</span>
-                    <p>
-                      Nhận thông tin đăng nhập mới và đổi mật khẩu ngay sau khi
-                      truy cập.
-                    </p>
-                  </div>
-                </div>
+                    {recoveryError && (
+                      <div className="login-error" role="alert">
+                        {recoveryError}
+                      </div>
+                    )}
 
-                <div className="recovery-security-note">
-                  <i className="fas fa-shield-alt" aria-hidden="true" />
-                  <p>
-                    <strong>Lưu ý bảo mật</strong>
-                    Không cung cấp mật khẩu cũ, mã truy cập hoặc token đăng nhập
-                    cho bất kỳ ai.
-                  </p>
-                </div>
+                    <div className="recovery-security-note">
+                      <i className="fas fa-shield-alt" aria-hidden="true" />
+                      <p>
+                        <strong>Lưu ý bảo mật</strong>
+                        Liên kết chỉ dùng được một lần. Sau khi đổi mật khẩu,
+                        mọi phiên đăng nhập trên thiết bị khác sẽ bị đăng xuất.
+                      </p>
+                    </div>
 
-                <button
-                  type="button"
-                  className="btn-login recovery-login-button"
-                  onClick={closeForgotPassword}
-                >
-                  Quay lại nhập mật khẩu
-                </button>
+                    <button
+                      type="button"
+                      className="btn-login recovery-login-button"
+                      onClick={handleSendRecovery}
+                      disabled={isSendingRecovery}
+                    >
+                      {isSendingRecovery
+                        ? "Đang gửi..."
+                        : "Gửi liên kết đặt lại mật khẩu"}
+                    </button>
+                  </>
+                )}
               </div>
             ) : (
               <>

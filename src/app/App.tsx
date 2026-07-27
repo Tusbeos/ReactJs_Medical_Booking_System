@@ -17,6 +17,7 @@ import { IRootState } from "types";
 
 import Home from "app/routes/Home";
 import Login from "features/auth/Login";
+import ResetPassword from "features/auth/ResetPassword";
 import PatientAuth from "features/auth/PatientAuth";
 import System from "app/routes/System";
 import HomePage from "features/public/home/HomePage";
@@ -86,6 +87,7 @@ const App: React.FC<IAppProps> = ({ persistor, onBeforeLift }) => {
                   }
                 />
                 <Route path={path.PATIENT_AUTH} element={<PatientAuth />} />
+                <Route path={path.RESET_PASSWORD} element={<ResetPassword />} />
                 <Route
                   path={`${path.SYSTEM}/*`}
                   element={

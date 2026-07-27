@@ -1,0 +1,135 @@
+// Trang nhật ký hoạt động. Mọi selector đặt trong .audit-logs-page để không
+// ảnh hưởng tới shell dùng chung (.system-container, header, sidebar).
+.audit-logs-page {
+  .audit-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 16px;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e8ecf1;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+      color: #4a5568;
+
+      span {
+        font-weight: 600;
+      }
+
+      select,
+      input {
+        min-width: 160px;
+        padding: 7px 10px;
+        border: 1px solid #d5dbe3;
+        border-radius: 6px;
+        background: #fff;
+        font-size: 13px;
+        color: #2d3748;
+
+        &:focus-visible {
+          outline: 2px solid #1e90ff;
+          outline-offset: 1px;
+        }
+      }
+    }
+  }
+
+  .audit-reset-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1px solid #d5dbe3;
+    border-radius: 6px;
+    background: #f7f9fc;
+    font-size: 13px;
+    color: #4a5568;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: #edf2f7;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #1e90ff;
+      outline-offset: 1px;
+    }
+  }
+
+  .audit-summary {
+    padding: 12px 20px 0;
+    font-size: 13px;
+    color: #4a5568;
+  }
+
+  .audit-syncing {
+    color: #a0aec0;
+    font-style: italic;
+  }
+
+  .audit-col-time {
+    white-space: nowrap;
+  }
+
+  .audit-failure {
+    color: #c0392b;
+    font-weight: 600;
+  }
+
+  .audit-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 16px 20px;
+    font-size: 13px;
+    color: #4a5568;
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border: 1px solid #d5dbe3;
+      border-radius: 6px;
+      background: #fff;
+      font-size: 13px;
+      color: #2d3748;
+      cursor: pointer;
+
+      &:hover:not(:disabled) {
+        background: #edf2f7;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      &:focus-visible {
+        outline: 2px solid #1e90ff;
+        outline-offset: 1px;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .audit-filters {
+      gap: 12px;
+
+      label select,
+      label input {
+        min-width: 140px;
+      }
+    }
+  }
+}

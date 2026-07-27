@@ -8,9 +8,10 @@
 }
 
 .home-header-content {
-  width: min(1180px, calc(100% - 48px));
+  width: min(var(--public-content-max-width), calc(100% - (var(--public-content-gutter) * 2)));
   height: 64px;
-  margin-left: 300px;
+  margin-right: auto;
+  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 30px;
@@ -321,7 +322,7 @@
 
 @media (max-width: 900px) {
   .home-header-content {
-    width: min(100% - 28px, 1180px);
+    width: min(var(--public-content-max-width), calc(100% - (var(--public-content-gutter) * 2)));
     gap: 16px;
   }
 
@@ -342,6 +343,7 @@
 
 @media (max-width: 640px) {
   .home-header-content {
+    width: min(var(--public-content-max-width), calc(100% - (var(--public-content-gutter) * 2)));
     height: auto;
     min-height: 58px;
     flex-wrap: wrap;

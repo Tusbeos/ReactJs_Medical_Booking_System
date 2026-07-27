@@ -1,9 +1,9 @@
 $primary-color: #45c3d2;
 
 .patient-history-container {
-  max-width: 800px;
+  width: min(var(--public-content-max-width), calc(100% - (var(--public-content-gutter) * 2)));
   margin: 30px auto;
-  padding: 0 16px;
+  padding: 0;
 
   .history-card {
     background: #fff;
@@ -310,6 +310,116 @@ $primary-color: #45c3d2;
                   color: #d96a1a;
                   font-style: italic;
                 }
+              }
+            }
+
+            .doctor-review-form {
+              margin-top: 14px;
+              padding: 16px;
+              border: 1px solid #bfe7ec;
+              border-radius: 10px;
+              background: #f4fdfe;
+
+              .doctor-review-heading {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 12px;
+
+                strong {
+                  color: #16495c;
+                  font-size: 15px;
+
+                  i { color: #f2a900; margin-right: 5px; }
+                }
+
+                p {
+                  margin: 4px 0 0;
+                  color: #607581;
+                  font-size: 13px;
+                }
+              }
+
+              .review-actions {
+                display: flex;
+                gap: 8px;
+
+                button {
+                  border: 0;
+                  background: transparent;
+                  color: #16899b;
+                  cursor: pointer;
+                  font-weight: 700;
+                  font-size: 13px;
+                }
+
+                .delete-review { color: #bf3d3d; }
+              }
+
+              .review-loading { display: block; padding-top: 12px; color: #637b88; font-size: 13px; }
+
+              .review-editor {
+                margin-top: 14px;
+
+                .rating-picker {
+                  display: flex;
+                  align-items: center;
+                  gap: 3px;
+                  margin-bottom: 10px;
+
+                  button {
+                    border: 0;
+                    padding: 2px;
+                    background: transparent;
+                    color: #c8d1d5;
+                    cursor: pointer;
+                    font-size: 21px;
+
+                    &.active { color: #f2a900; }
+                  }
+
+                  span { margin-left: 7px; color: #5a6e79; font-size: 13px; }
+                }
+
+                textarea {
+                  width: 100%;
+                  min-height: 82px;
+                  box-sizing: border-box;
+                  resize: vertical;
+                  border: 1px solid #c9dce2;
+                  border-radius: 8px;
+                  padding: 10px 12px;
+                  color: #263d47;
+                  font: inherit;
+                  line-height: 1.5;
+
+                  &:focus { outline: 0; border-color: $primary-color; box-shadow: 0 0 0 3px rgba($primary-color, .12); }
+                }
+              }
+
+              .review-editor-footer {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-top: 8px;
+                color: #72838b;
+                font-size: 12px;
+
+                div { display: flex; gap: 8px; }
+                button { border-radius: 6px; padding: 7px 12px; cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; }
+                .review-cancel { border: 1px solid #b8c8cf; background: #fff; color: #55707d; }
+                .review-save { border: 1px solid #16899b; background: #16899b; color: #fff; }
+                button:disabled { cursor: not-allowed; opacity: .58; }
+              }
+
+              .review-preview {
+                margin-top: 12px;
+                border-top: 1px dashed #c6e3e7;
+                padding-top: 12px;
+
+                .review-stars { color: #f2a900; font-size: 15px; }
+                .review-stars span { margin-left: 6px; color: #596e79; font-size: 13px; font-weight: 700; }
+                p { margin: 7px 0 0; color: #344d58; white-space: pre-wrap; }
               }
             }
           }

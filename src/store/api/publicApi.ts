@@ -129,6 +129,28 @@ export type UserAccountStatusRecord = {
   accountStatus: AccountStatus;
 };
 
+export type DoctorReviewRecord = {
+  id: number;
+  bookingId: number;
+  doctorId: number;
+  rating: number;
+  comment: string;
+  reviewerName?: string;
+  visible: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type DoctorReviewPage = {
+  averageRating: number;
+  reviewCount: number;
+  items: DoctorReviewRecord[];
+  page: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+};
+
 type PublicTagType =
   | "Specialty"
   | "Clinic"
@@ -141,7 +163,8 @@ type PublicTagType =
   | "Booking"
   | "PackageBooking"
   | "PatientProfile"
-  | "Article";
+  | "Article"
+  | "DoctorReview";
 
 export type SearchResult = {
   type: "doctor" | "clinic" | "specialty" | "package";
@@ -219,6 +242,7 @@ export const publicApi = createApi({
     "PackageBooking",
     "PatientProfile",
     "Article",
+    "DoctorReview",
   ],
   keepUnusedDataFor: 30,
   refetchOnMountOrArgChange: false,
@@ -340,6 +364,19 @@ export const publicApi = createApi({
       query: (doctorId) => ({ url: `/api/doctors/public/${doctorId}` }),
       providesTags: (_result, _error, doctorId) => [
         { type: "Doctor", id: doctorId },
+      ],
+      keepUnusedDataFor: 30,
+    }),
+    getPublicDoctorReviews: builder.query<
+      ApiResponse<DoctorReviewPage>,
+      { doctorId: number | string; page?: number; size?: number }
+    >({
+      query: ({ doctorId, page = 0, size = 5 }) => ({
+        url: `/api/doctors/public/${doctorId}/reviews`,
+        params: { page, size },
+      }),
+      providesTags: (_result, _error, arg) => [
+        { type: "DoctorReview", id: arg.doctorId },
       ],
       keepUnusedDataFor: 30,
     }),
@@ -606,6 +643,16 @@ export const publicApi = createApi({
       providesTags: (_result, _error, bookingId) => [
         { type: "History", id: `booking-${bookingId}` },
       ],
+    }),
+    getMyDoctorReviewByBooking: builder.query<
+      ApiResponse<DoctorReviewRecord | null>,
+      number | string
+    >({
+      query: (bookingId) => ({ url: `/api/doctor-reviews/booking/${bookingId}` }),
+      providesTags: (_result, _error, bookingId) => [
+        { type: "DoctorReview", id: `booking-${bookingId}` },
+      ],
+      keepUnusedDataFor: 10,
     }),
     createUser: builder.mutation<ApiResponse<any>, any>({
       query: (data) => ({ url: "/api/users", method: "POST", data }),
@@ -904,6 +951,47 @@ export const publicApi = createApi({
       query: (data) => ({ url: "/api/histories", method: "POST", data }),
       invalidatesTags: ["History", "Booking"],
     }),
+    createDoctorReview: builder.mutation<
+      ApiResponse<DoctorReviewRecord>,
+      { bookingId: number | string; doctorId: number | string; rating: number; comment: string }
+    >({
+      query: ({ doctorId: _doctorId, ...data }) => ({
+        url: "/api/doctor-reviews",
+        method: "POST",
+        data,
+      }),
+      invalidatesTags: (_result, _error, arg) => [
+        { type: "DoctorReview", id: arg.doctorId },
+        { type: "DoctorReview", id: `booking-${arg.bookingId}` },
+      ],
+    }),
+    updateDoctorReview: builder.mutation<
+      ApiResponse<DoctorReviewRecord>,
+      { reviewId: number | string; bookingId: number | string; doctorId: number | string; rating: number; comment: string }
+    >({
+      query: ({ reviewId, bookingId: _bookingId, doctorId: _doctorId, ...data }) => ({
+        url: `/api/doctor-reviews/${reviewId}`,
+        method: "PUT",
+        data,
+      }),
+      invalidatesTags: (_result, _error, arg) => [
+        { type: "DoctorReview", id: arg.doctorId },
+        { type: "DoctorReview", id: `booking-${arg.bookingId}` },
+      ],
+    }),
+    deleteDoctorReview: builder.mutation<
+      ApiResponse<any>,
+      { reviewId: number | string; bookingId: number | string; doctorId: number | string }
+    >({
+      query: ({ reviewId }) => ({
+        url: `/api/doctor-reviews/${reviewId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_result, _error, arg) => [
+        { type: "DoctorReview", id: arg.doctorId },
+        { type: "DoctorReview", id: `booking-${arg.bookingId}` },
+      ],
+    }),
   }),
 });
 
@@ -922,6 +1010,7 @@ export const {
   useGetDoctorsPaginatedQuery,
   useGetDoctorByIdQuery,
   useGetPublicDoctorByIdQuery,
+  useGetPublicDoctorReviewsQuery,
   useGetDoctorSpecialtiesQuery,
   useGetDoctorsBySpecialtyIdQuery,
   useGetDoctorsByClinicIdQuery,
@@ -949,6 +1038,7 @@ export const {
   useGetClinicBookingsQuery,
   useGetClinicManagerPackagesQuery,
   useGetHistoryByBookingQuery,
+  useGetMyDoctorReviewByBookingQuery,
   useCreateUserMutation,
   useUpdateUserMutation,
   useUpdateUserAccountStatusMutation,
@@ -976,4 +1066,7 @@ export const {
   useVerifyBookingMutation,
   useChangePasswordMutation,
   useCreateHistoryMutation,
+  useCreateDoctorReviewMutation,
+  useUpdateDoctorReviewMutation,
+  useDeleteDoctorReviewMutation,
 } = publicApi;

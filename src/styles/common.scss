@@ -1,5 +1,11 @@
 @import "variables";
 
+:root {
+    // Shared frame for Home and every public/patient screen.
+    --public-content-max-width: 1180px;
+    --public-content-gutter: 24px;
+}
+
 .text-center {
     text-align: center !important;
 }
@@ -15,9 +21,17 @@
 .text-red {
     color: $common-red !important;
 }
-.booking-container {
-    width: min(1320px, calc(100% - 64px));
-    max-width: 1320px;
-    margin: 0 auto;
+.booking-container,
+.section-container,
+.public-content-container {
+    box-sizing: border-box;
+    width: min(var(--public-content-max-width), calc(100% - (var(--public-content-gutter) * 2)));
+    margin-right: auto;
+    margin-left: auto;
+}
 
+@media (max-width: 640px) {
+    :root {
+        --public-content-gutter: 16px;
+    }
 }

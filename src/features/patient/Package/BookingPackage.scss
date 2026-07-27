@@ -1,5 +1,5 @@
 .booking-package-page {
-  background: #f6f9fc;
+  background: #ffffff;
   min-height: 100vh;
 
   .package-booking-layout {
@@ -150,7 +150,9 @@
       font: inherit;
       outline: none;
       padding: 11px 12px;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
       width: 100%;
 
       &:focus {
@@ -414,8 +416,8 @@
   @media (max-width: 600px) {
     .package-booking-layout {
       gap: 18px;
-      padding-left: 12px;
-      padding-right: 12px;
+      padding-right: 0;
+      padding-left: 0;
     }
 
     .package-booking-card {

@@ -1,0 +1,237 @@
+// Màn thống kê báo cáo của Admin.
+// Mọi selector nằm trong .admin-stats-page để không chạm vào shell dùng chung.
+//
+// Màu chuỗi dữ liệu lấy từ bảng màu phân loại đã qua kiểm định:
+// slot 1 xanh dương #2a78d6, slot 2 cam #eb6834, slot 3 aqua #1baf7a.
+// Ba màu này dưới 3:1 trên nền trắng nên mỗi thanh đều mang nhãn và giá trị
+// hiển thị trực tiếp; màu không bao giờ là kênh duy nhất truyền đạt ý nghĩa.
+.admin-stats-page {
+  --series-blue: #2a78d6;
+  --series-orange: #eb6834;
+  --series-aqua: #1baf7a;
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --ink-primary: #1a2b48;
+  --ink-secondary: #52596b;
+  --ink-muted: #8a92a6;
+  --hairline: #e6eaf0;
+
+  .stats-refresh {
+    padding: 7px 14px;
+    border: 1px solid #d5dbe3;
+    border-radius: 6px;
+    background: #f7f9fc;
+    font-size: 13px;
+    color: var(--ink-secondary);
+    cursor: pointer;
+
+    &:hover:not(:disabled) { background: #edf2f7; }
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
+    &:focus-visible { outline: 2px solid var(--series-blue); outline-offset: 1px; }
+  }
+
+  // ---------- Ô số liệu ----------
+  .stat-tiles {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    padding: 20px;
+  }
+
+  .stat-tile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    background: #fff;
+  }
+
+  .stat-tile-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #eef4fc;
+    color: var(--series-blue);
+    font-size: 17px;
+  }
+
+  .stat-tile-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .stat-tile-label {
+    font-size: 12.5px;
+    color: var(--ink-secondary);
+  }
+
+  // Con số chủ đạo: đây là "hero number" nên được ưu tiên thị giác.
+  .stat-tile-value {
+    font-size: 26px;
+    line-height: 1.15;
+    font-weight: 700;
+    color: var(--ink-primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-tile-hint {
+    font-size: 11.5px;
+    color: var(--ink-muted);
+  }
+
+  // ---------- Trạng thái duyệt hồ sơ bác sĩ ----------
+  // Dùng bảng màu trạng thái, luôn đi kèm biểu tượng và nhãn chữ.
+  .doctor-approval {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 0 20px 20px;
+  }
+
+  .approval-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 240px;
+    padding: 13px 16px;
+    border: 1px solid var(--hairline);
+    border-left-width: 4px;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 13.5px;
+    color: var(--ink-secondary);
+
+    strong {
+      margin-left: auto;
+      font-size: 19px;
+      color: var(--ink-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    &--approved {
+      border-left-color: var(--status-good);
+      i { color: var(--status-good); }
+    }
+
+    &--pending {
+      border-left-color: var(--status-warning);
+      i { color: #a9750a; }   // bậc đậm hơn để chữ trên nền trắng vẫn đọc được
+    }
+  }
+
+  // ---------- Biểu đồ thanh ngang ----------
+  .breakdown-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    padding: 0 20px 22px;
+  }
+
+  .breakdown {
+    padding: 16px;
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    background: #fff;
+
+    &--blue   { --bar: var(--series-blue); }
+    &--orange { --bar: var(--series-orange); }
+    &--aqua   { --bar: var(--series-aqua); }
+  }
+
+  .breakdown-title {
+    margin: 0 0 14px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink-primary);
+
+    i { margin-right: 6px; color: var(--ink-muted); }
+  }
+
+  .breakdown-empty {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+
+  .breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;      // khe hở giữa các thanh, tránh hai mảng màu dính nhau
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .breakdown-row {
+    display: grid;
+    grid-template-columns: minmax(96px, 34%) 1fr auto;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .breakdown-label {
+    font-size: 12.5px;
+    color: var(--ink-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // Rãnh nền rất nhạt để trục đọc được mà không cạnh tranh với dữ liệu.
+  .breakdown-track {
+    position: relative;
+    height: 12px;
+    border-radius: 6px;
+    background: #f1f4f8;
+    overflow: hidden;
+  }
+
+  // Thanh mảnh, bo tròn ở đầu mút dữ liệu, neo vào gốc trục.
+  .breakdown-bar {
+    display: block;
+    height: 100%;
+    min-width: 3px;
+    border-radius: 0 6px 6px 0;
+    background: var(--bar);
+  }
+
+  .breakdown-value {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-primary);
+    font-variant-numeric: tabular-nums;
+
+    em {
+      font-style: normal;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--ink-muted);
+    }
+  }
+
+  // ---------- Responsive ----------
+  @media (max-width: 1280px) {
+    .stat-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .breakdown-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 900px) {
+    .stat-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .breakdown-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 560px) {
+    .stat-tiles { grid-template-columns: 1fr; }
+    .breakdown-row { grid-template-columns: minmax(84px, 40%) 1fr auto; }
+  }
+}
