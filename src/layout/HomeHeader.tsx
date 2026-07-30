@@ -10,6 +10,7 @@ import {
 } from "store/api/publicApi";
 import { normalizeImageSrc } from "utils/CommonUtils";
 import { path } from "utils";
+import { clearPendingPatientAuthFlow } from "features/auth/patientAuthFlow";
 
 interface IHomeHeaderProps {
   isShowBanner?: boolean;
@@ -119,6 +120,10 @@ const HomeHeader: React.FC<IHomeHeaderProps> = ({ isShowBanner }) => {
 
   const handleRequestPatientLogin = useCallback(() => {
     setIsSidebarOpen(false);
+    // Đăng nhập từ menu là ý định mới, không phải tiếp tục luồng đặt lịch đang
+    // treo. Xoá luồng cũ để màn đăng nhập không hiện thông báo đặt lịch và để
+    // sau khi đăng nhập người dùng quay lại đúng trang họ đang xem.
+    clearPendingPatientAuthFlow();
     navigate("/patient/auth?mode=login", {
       state: { returnTo: `${location.pathname}${location.search}` },
     });
@@ -127,6 +132,7 @@ const HomeHeader: React.FC<IHomeHeaderProps> = ({ isShowBanner }) => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get("patientLogin") === "1") {
+      clearPendingPatientAuthFlow();
       navigate("/patient/auth?mode=login", {
         replace: true,
         state: { returnTo: location.pathname },

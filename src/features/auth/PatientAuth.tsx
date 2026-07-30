@@ -309,6 +309,30 @@ const PatientAuth = () => {
             </div>
           ) : (
             <>
+              {pendingFlow?.returnTo && (
+                <div className="patient-auth-notice" role="status">
+                  <span className="patient-auth-notice-icon" aria-hidden="true">
+                    <i className="fas fa-calendar-check" />
+                  </span>
+                  <div className="patient-auth-notice-body">
+                    <strong>
+                      {pendingFlow.bookingKind === "package"
+                        ? "Bạn cần đăng nhập để đặt gói khám"
+                        : pendingFlow.bookingKind === "doctor"
+                          ? "Bạn cần đăng nhập để đặt lịch khám"
+                          : "Bạn cần đăng nhập để tiếp tục"}
+                    </strong>
+                    <p>
+                      {pendingFlow.bookingKind === "package"
+                        ? "Gói khám bạn vừa chọn đã được giữ lại. Sau khi đăng nhập, MediBook sẽ đưa bạn trở lại đúng trang đặt gói."
+                        : pendingFlow.bookingKind === "doctor"
+                          ? "Khung giờ khám bạn vừa chọn đã được giữ lại. Sau khi đăng nhập, MediBook sẽ đưa bạn trở lại đúng trang đặt lịch."
+                          : "Sau khi đăng nhập, MediBook sẽ đưa bạn trở lại trang bạn đang xem."}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="patient-auth-tabs" role="tablist">
                 <button
                   type="button"
@@ -331,9 +355,7 @@ const PatientAuth = () => {
                 <p>
                   {pendingFlow?.email
                     ? "Email từ form đặt lịch đã được giữ lại cho bạn."
-                    : pendingFlow?.returnTo
-                      ? "Lựa chọn đặt lịch trước đó đã được giữ lại cho bạn."
-                      : "Sử dụng email cá nhân để quản lý các lịch khám."}
+                    : "Sử dụng email cá nhân để quản lý các lịch khám."}
                 </p>
               </div>
 

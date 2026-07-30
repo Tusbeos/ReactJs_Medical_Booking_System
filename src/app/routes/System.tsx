@@ -13,6 +13,7 @@ import ClinicManagerDashboard from "features/system/ClinicManager/ClinicManagerD
 import ClinicManagerDoctors from "features/system/ClinicManager/ClinicManagerDoctors";
 import ClinicManagerBookings from "features/system/ClinicManager/ClinicManagerBookings";
 import ClinicManagerPackages from "features/system/ClinicManager/ClinicManagerPackages";
+import ClinicManagerPackageBookings from "features/system/ClinicManager/ClinicManagerPackageBookings";
 import ClinicManagerApprovals from "features/system/ClinicManager/ClinicManagerApprovals";
 import ClinicManagerReviewDoctor from "features/system/ClinicManager/ClinicManagerReviewDoctor";
 import WriterArticles from "features/system/Article/WriterArticles";
@@ -93,6 +94,10 @@ const System = () => {
                   <Route
                     path="clinic-manager/packages"
                     element={<ClinicManagerPackages />}
+                  />
+                  <Route
+                    path="clinic-manager/package-bookings"
+                    element={<ClinicManagerPackageBookings />}
                   />
                   <Route
                     path="clinic-manager/approvals"

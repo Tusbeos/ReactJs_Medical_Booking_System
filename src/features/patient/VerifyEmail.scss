@@ -1,56 +1,107 @@
-.verify-container {
-    height: 100vh;
-    background-color: #f0f2f5;
+.verify-booking-page {
+  background: #f6f9fc;
+  min-height: 100vh;
+
+  .verify-booking-main {
+    align-items: center;
     display: flex;
     justify-content: center;
-    align-items: center;
-    
-    .verify-card {
-        background: white;
-        padding: 40px;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        text-align: center;
+    min-height: 600px;
+    padding-bottom: 64px;
+    padding-top: 56px;
+  }
 
-        .status-box {
-            &.expired {
-                .icon-expired {
-                    font-size: 60px;
-                    color: #fa8c16;
-                    display: block;
-                    margin-bottom: 16px;
-                }
-                .title {
-                    font-size: 22px;
-                    font-weight: 700;
-                    color: #d46b08;
-                    margin-bottom: 12px;
-                }
-                .text {
-                    font-size: 15px;
-                    color: #595959;
-                    line-height: 1.6;
-                    margin-bottom: 24px;
-                }
-            }
-        }
+  .verify-booking-card {
+    background: #fff;
+    border: 1px solid #e4eaf2;
+    border-radius: 14px;
+    box-shadow: 0 12px 36px rgb(16 24 40 / 8%);
+    color: #475467;
+    max-width: 640px;
+    padding: 48px;
+    text-align: center;
+    width: 100%;
 
-        .btn-rebook {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 28px;
-            background-color: #45c3d2;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            &:hover {
-                background-color: #35a8b8;
-            }
-        }
+    .status-icon {
+      color: #12b76a;
+      font-size: 62px;
+      margin-bottom: 20px;
     }
+
+    h1 {
+      color: #101828;
+      font-size: 29px;
+      margin: 0 0 12px;
+    }
+
+    p {
+      line-height: 1.7;
+      margin: 0 auto 24px;
+      max-width: 520px;
+    }
+
+    > a,
+    .verify-actions a {
+      background: #159aaa;
+      border: 1px solid #159aaa;
+      border-radius: 7px;
+      color: #fff;
+      display: inline-flex;
+      font-weight: 800;
+      justify-content: center;
+      padding: 12px 18px;
+      text-decoration: none;
+    }
+
+    &.expired .status-icon {
+      color: #f79009;
+    }
+
+    &.failed .status-icon {
+      color: #d92d20;
+    }
+  }
+
+  .verify-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+
+    a.secondary {
+      background: #fff;
+      color: #159aaa;
+    }
+  }
+
+  .verify-spinner {
+    animation: booking-verify-spin 0.8s linear infinite;
+    border: 5px solid #dceff2;
+    border-radius: 50%;
+    border-top-color: #159aaa;
+    height: 58px;
+    margin: 0 auto 22px;
+    width: 58px;
+  }
+
+  @media (max-width: 600px) {
+    .verify-booking-main {
+      min-height: 520px;
+      padding: 28px 12px 48px;
+    }
+
+    .verify-booking-card {
+      padding: 34px 18px;
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+  }
+}
+
+@keyframes booking-verify-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

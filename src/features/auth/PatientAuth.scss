@@ -153,6 +153,43 @@
     color: #344c62;
   }
 
+  .patient-auth-notice {
+    align-items: flex-start;
+    background: #e8f8fa;
+    border: 1px solid #bfe6ec;
+    border-left: 4px solid #159aaa;
+    border-radius: 12px;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 14px 16px;
+
+    .patient-auth-notice-icon {
+      color: #159aaa;
+      flex: 0 0 auto;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+
+    .patient-auth-notice-body {
+      min-width: 0;
+
+      strong {
+        color: #10505a;
+        display: block;
+        font-size: 15px;
+        margin-bottom: 4px;
+      }
+
+      p {
+        color: #46707a;
+        font-size: 14px;
+        line-height: 1.55;
+        margin: 0;
+      }
+    }
+  }
+
   .patient-auth-tabs {
     background: #eef4f7;
     border-radius: 10px;

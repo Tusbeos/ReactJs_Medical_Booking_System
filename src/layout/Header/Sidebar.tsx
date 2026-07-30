@@ -78,6 +78,11 @@ const Sidebar: React.FC = () => {
               label: "Gói khám",
             },
             {
+              to: "/system/clinic-manager/package-bookings",
+              icon: "fas fa-file-medical",
+              label: "Yêu cầu gói khám",
+            },
+            {
               to: "/system/clinic-manager/approvals",
               icon: "fas fa-clipboard-check",
               label: "Phê duyệt",

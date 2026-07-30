@@ -161,7 +161,11 @@ const App: React.FC<IAppProps> = ({ persistor, onBeforeLift }) => {
                 />
                 <Route
                   path={path.BOOKING_PACKAGE}
-                  element={<BookingPackage />}
+                  element={
+                    <RequirePatient>
+                      <BookingPackage />
+                    </RequirePatient>
+                  }
                 />
                 <Route
                   path={path.VERIFY_PACKAGE_BOOKING}

@@ -59,14 +59,30 @@ export type PackageBookingRecord = {
   desiredDate: string;
   desiredTime?: string;
   reason?: string;
+  clinicNote?: string;
   status:
     | "PENDING_EMAIL"
     | "PENDING_CLINIC"
     | "CONFIRMED"
+    | "COMPLETED"
     | "CANCELLED"
     | "EXPIRED";
+  confirmedAt?: string;
+  completedAt?: string;
   createdAt: string;
   updatedAt: string;
+};
+
+export type PackageBookingStatus = PackageBookingRecord["status"];
+
+export type PackageBookingStatusHistoryRecord = {
+  id: number;
+  fromStatus?: PackageBookingStatus;
+  toStatus: PackageBookingStatus;
+  actorUserId?: number;
+  actorName?: string;
+  note?: string;
+  createdAt: string;
 };
 
 type HomeStats = {
@@ -525,6 +541,71 @@ export const publicApi = createApi({
         data,
       }),
       invalidatesTags: [{ type: "PackageBooking", id: "MINE" }],
+    }),
+    getMyPackageBookings: builder.query<
+      ApiResponse<PackageBookingRecord[]>,
+      { page: number; size: number; status?: PackageBookingStatus }
+    >({
+      query: ({ page, size, status }) => ({
+        url: "/api/package-bookings/mine",
+        params: { page, size, ...(status ? { status } : {}) },
+      }),
+      providesTags: (result) => [
+        { type: "PackageBooking", id: "MINE" },
+        ...(result?.data || []).map((booking) => ({
+          type: "PackageBooking" as const,
+          id: booking.id,
+        })),
+      ],
+      keepUnusedDataFor: 10,
+    }),
+    getClinicPackageBookings: builder.query<
+      ApiResponse<PackageBookingRecord[]>,
+      {
+        clinicId: number | string;
+        page: number;
+        size: number;
+        status?: PackageBookingStatus;
+      }
+    >({
+      query: ({ clinicId, page, size, status }) => ({
+        url: "/api/package-bookings",
+        params: { clinicId, page, size, ...(status ? { status } : {}) },
+      }),
+      providesTags: (result, _error, arg) => [
+        { type: "PackageBooking", id: `CLINIC-${arg.clinicId}` },
+        ...(result?.data || []).map((booking) => ({
+          type: "PackageBooking" as const,
+          id: booking.id,
+        })),
+      ],
+      keepUnusedDataFor: 10,
+    }),
+    getPackageBookingStatusHistory: builder.query<
+      ApiResponse<PackageBookingStatusHistoryRecord[]>,
+      number | string
+    >({
+      query: (bookingId) => ({
+        url: `/api/package-bookings/${bookingId}/status-history`,
+      }),
+      providesTags: (_result, _error, bookingId) => [
+        { type: "PackageBooking", id: bookingId },
+      ],
+      keepUnusedDataFor: 10,
+    }),
+    updatePackageBookingStatus: builder.mutation<
+      ApiResponse<PackageBookingRecord>,
+      { bookingId: number | string; status: PackageBookingStatus; note?: string }
+    >({
+      query: ({ bookingId, status, note }) => ({
+        url: `/api/package-bookings/${bookingId}/status`,
+        method: "PATCH",
+        data: { status, note },
+      }),
+      invalidatesTags: (_result, _error, arg) => [
+        { type: "PackageBooking", id: arg.bookingId },
+        { type: "PackageBooking", id: "MINE" },
+      ],
     }),
     getUserById: builder.query<ApiResponse<any>, number | string>({
       query: (userId) => ({ url: `/api/users/${userId}` }),
@@ -1028,6 +1109,10 @@ export const {
   useGetPatientProfilesQuery,
   useCreatePackageBookingMutation,
   useVerifyPackageBookingMutation,
+  useGetMyPackageBookingsQuery,
+  useGetClinicPackageBookingsQuery,
+  useGetPackageBookingStatusHistoryQuery,
+  useUpdatePackageBookingStatusMutation,
   useGetUserByIdQuery,
   useGetUsersQuery,
   useGetUserAccountStatusesQuery,

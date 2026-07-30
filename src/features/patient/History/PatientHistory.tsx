@@ -14,6 +14,7 @@ import {
   getBookingStatusMeta,
 } from "../../../utils/bookingStatus";
 import DoctorReviewForm from "./DoctorReviewForm";
+import PatientPackageHistory from "./PatientPackageHistory";
 
 interface IHistoryRecord {
   id?: number;
@@ -45,12 +46,14 @@ interface IHistoryRecord {
 }
 
 type TabType = "all" | "self" | "relative";
+type HistoryType = "doctor" | "package";
 
 const PatientHistory: React.FC = () => {
   const language = useSelector((state: IRootState) => state.app.language);
   const userInfo = useSelector((state: IRootState) => state.user.userInfo);
 
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [historyType, setHistoryType] = useState<HistoryType>("doctor");
   const [activeTab, setActiveTab] = useState<TabType>("all");
   const [statusFilter, setStatusFilter] = useState<"all" | BookingStatusId>(
     "all",
@@ -72,7 +75,7 @@ const PatientHistory: React.FC = () => {
       status: statusFilter === "all" ? undefined : statusFilter,
     },
     {
-      skip: !userId,
+      skip: !userId || historyType !== "doctor",
       pollingInterval: 30_000,
       skipPollingIfUnfocused: true,
       refetchOnFocus: true,
@@ -119,6 +122,31 @@ const PatientHistory: React.FC = () => {
             </h2>
           </div>
 
+          <div className="history-category-tabs" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={historyType === "doctor"}
+              className={historyType === "doctor" ? "active" : ""}
+              onClick={() => setHistoryType("doctor")}
+            >
+              <i className="fas fa-user-md" /> Lịch khám bác sĩ
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={historyType === "package"}
+              className={historyType === "package" ? "active" : ""}
+              onClick={() => setHistoryType("package")}
+            >
+              <i className="fas fa-briefcase-medical" /> Gói khám
+            </button>
+          </div>
+
+          {historyType === "package" ? (
+            <PatientPackageHistory />
+          ) : (
+            <>
           {/* Tabs lọc: Tất cả / Của tôi / Người thân */}
           <div className="history-tabs">
             <button
@@ -398,6 +426,8 @@ const PatientHistory: React.FC = () => {
               </div>
             )}
           </div>
+            </>
+          )}
         </div>
       </div>
     </>
