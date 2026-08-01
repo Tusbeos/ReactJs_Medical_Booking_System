@@ -292,6 +292,14 @@
     &:disabled { cursor: wait; opacity: 0.7; }
   }
 
+  .patient-auth-forgot-password {
+    color: #087f8c;
+    font-size: 13px;
+    font-weight: 700;
+    margin: -7px 0 2px;
+    text-align: right;
+  }
+
   .patient-auth-back {
     color: #526f86;
     display: block;

@@ -1,6 +1,11 @@
 import React, { FormEvent, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import HomeHeader from "layout/HomeHeader";
 import HomeFooter from "layout/HomeFooter";
 import {
@@ -50,12 +55,10 @@ const PatientAuth = () => {
   const currentUser = useSelector((state: IRootState) => state.user.userInfo);
   const currentRoleId =
     currentUser?.roleId || (currentUser as any)?.roleData?.keyMap;
-  const isSystemAccount =
-    isLoggedIn && currentRoleId !== USER_ROLE.PATIENT;
+  const isSystemAccount = isLoggedIn && currentRoleId !== USER_ROLE.PATIENT;
   const initialEmail = pendingFlow?.email || locationState?.email || "";
-  const mode: AuthMode = searchParams.get("mode") === "register"
-    ? "register"
-    : "login";
+  const mode: AuthMode =
+    searchParams.get("mode") === "register" ? "register" : "login";
 
   const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState("");
@@ -103,8 +106,14 @@ const PatientAuth = () => {
 
   const finishAuthentication = useCallback(
     async (response: any) => {
-      if (!response || (!response.success && response.errCode !== 0) || !response.data) {
-        throw new Error(response?.message || response?.errMessage || "Xác thực thất bại.");
+      if (
+        !response ||
+        (!response.success && response.errCode !== 0) ||
+        !response.data
+      ) {
+        throw new Error(
+          response?.message || response?.errMessage || "Xác thực thất bại.",
+        );
       }
 
       let userInfo = response.data;
@@ -225,16 +234,17 @@ const PatientAuth = () => {
     setError("");
     setIsSubmitting(true);
     try {
-      const response = mode === "login"
-        ? await handlePatientLoginApi(normalizedEmail, password)
-        : await handlePatientRegisterApi({
-            email: normalizedEmail,
-            password,
-            firstName: firstName.trim(),
-            lastName: lastName.trim() || undefined,
-            phoneNumber: phoneNumber.trim() || undefined,
-            address: address.trim() || undefined,
-          });
+      const response =
+        mode === "login"
+          ? await handlePatientLoginApi(normalizedEmail, password)
+          : await handlePatientRegisterApi({
+              email: normalizedEmail,
+              password,
+              firstName: firstName.trim(),
+              lastName: lastName.trim() || undefined,
+              phoneNumber: phoneNumber.trim() || undefined,
+              address: address.trim() || undefined,
+            });
       await finishAuthentication(response);
     } catch (requestError: any) {
       setError(
@@ -253,16 +263,24 @@ const PatientAuth = () => {
       <HomeHeader isShowBanner={false} />
       <main className="patient-auth-main">
         <section className="patient-auth-intro">
-          <span className="patient-auth-eyebrow">Tài khoản bệnh nhân MediBook</span>
+          <span className="patient-auth-eyebrow">
+            Tài khoản bệnh nhân MediBook
+          </span>
           <h1>Đặt lịch và quản lý hành trình khám bệnh của bạn</h1>
           <p>
-            Đăng nhập hoặc tạo tài khoản để lịch khám được liên kết đúng với
-            hồ sơ bệnh nhân và được bảo vệ bằng phiên đăng nhập riêng.
+            Đăng nhập hoặc tạo tài khoản để lịch khám được liên kết đúng với hồ
+            sơ bệnh nhân và được bảo vệ bằng phiên đăng nhập riêng.
           </p>
           <ul>
-            <li><i className="fas fa-check-circle" /> Theo dõi lịch hẹn tập trung</li>
-            <li><i className="fas fa-check-circle" /> Đặt lịch cho người thân</li>
-            <li><i className="fas fa-check-circle" /> Xem lại lịch sử khám bệnh</li>
+            <li>
+              <i className="fas fa-check-circle" /> Theo dõi lịch hẹn tập trung
+            </li>
+            <li>
+              <i className="fas fa-check-circle" /> Đặt lịch cho người thân
+            </li>
+            <li>
+              <i className="fas fa-check-circle" /> Xem lại lịch sử khám bệnh
+            </li>
           </ul>
         </section>
 
@@ -277,14 +295,16 @@ const PatientAuth = () => {
               </span>
               <h2>Bạn đang đăng nhập bằng tài khoản hệ thống</h2>
               <p>
-                Chức năng đặt lịch chỉ dành cho tài khoản bệnh nhân. MediBook
-                sẽ giữ lại bác sĩ, gói khám, ngày và giờ bạn đã chọn trong phiên
+                Chức năng đặt lịch chỉ dành cho tài khoản bệnh nhân. MediBook sẽ
+                giữ lại bác sĩ, gói khám, ngày và giờ bạn đã chọn trong phiên
                 trình duyệt này.
               </p>
               <div className="patient-account-current">
                 <span>Phiên đang sử dụng</span>
                 <strong>{getRoleLabel(currentRoleId)}</strong>
-                <small>{currentUser?.email || "Không có thông tin email"}</small>
+                <small>
+                  {currentUser?.email || "Không có thông tin email"}
+                </small>
               </div>
               <div className="patient-account-switch-actions">
                 <button
@@ -351,7 +371,11 @@ const PatientAuth = () => {
               </div>
 
               <div className="patient-auth-heading">
-                <h2>{mode === "login" ? "Chào mừng bạn quay lại" : "Tạo tài khoản bệnh nhân"}</h2>
+                <h2>
+                  {mode === "login"
+                    ? "Chào mừng bạn quay lại"
+                    : "Tạo tài khoản bệnh nhân"}
+                </h2>
                 <p>
                   {pendingFlow?.email
                     ? "Email từ form đặt lịch đã được giữ lại cho bạn."
@@ -360,85 +384,133 @@ const PatientAuth = () => {
               </div>
 
               <form onSubmit={handleSubmit}>
-            {mode === "register" && (
-              <div className="patient-auth-grid">
-                <label>
-                  <span>Họ</span>
-                  <input value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                </label>
-                <label>
-                  <span>Tên <strong>*</strong></span>
-                  <input value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                </label>
-              </div>
-            )}
+                {mode === "register" && (
+                  <div className="patient-auth-grid">
+                    <label>
+                      <span>Họ</span>
+                      <input
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                      />
+                    </label>
+                    <label>
+                      <span>
+                        Tên <strong>*</strong>
+                      </span>
+                      <input
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                      />
+                    </label>
+                  </div>
+                )}
 
-            <label>
-              <span>Email <strong>*</strong></span>
-              <input
-                type="email"
-                value={email}
-                readOnly={mode === "register" && Boolean(pendingFlow?.email)}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-              />
-              {mode === "register" && pendingFlow?.email && (
-                <small>Email này được lấy từ form đặt lịch trước đó.</small>
-              )}
-            </label>
-
-            {mode === "register" && (
-              <>
                 <label>
-                  <span>Số điện thoại</span>
-                  <input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+                  <span>
+                    Email <strong>*</strong>
+                  </span>
+                  <input
+                    type="email"
+                    value={email}
+                    readOnly={
+                      mode === "register" && Boolean(pendingFlow?.email)
+                    }
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
+                  />
+                  {mode === "register" && pendingFlow?.email && (
+                    <small>Email này được lấy từ form đặt lịch trước đó.</small>
+                  )}
                 </label>
-                <label>
-                  <span>Địa chỉ</span>
-                  <input value={address} onChange={(e) => setAddress(e.target.value)} />
-                </label>
-              </>
-            )}
 
-            <label>
-              <span>Mật khẩu <strong>*</strong></span>
-              <div className="patient-auth-password">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete={mode === "login" ? "current-password" : "new-password"}
-                />
-                <button type="button" onClick={() => setShowPassword((current) => !current)}>
-                  <i className={showPassword ? "fas fa-eye-slash" : "fas fa-eye"} />
+                {mode === "register" && (
+                  <>
+                    <label>
+                      <span>Số điện thoại</span>
+                      <input
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                      />
+                    </label>
+                    <label>
+                      <span>Địa chỉ</span>
+                      <input
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                      />
+                    </label>
+                  </>
+                )}
+
+                <label>
+                  <span>
+                    Mật khẩu <strong>*</strong>
+                  </span>
+                  <div className="patient-auth-password">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      autoComplete={
+                        mode === "login" ? "current-password" : "new-password"
+                      }
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((current) => !current)}
+                    >
+                      <i
+                        className={
+                          showPassword ? "fas fa-eye-slash" : "fas fa-eye"
+                        }
+                      />
+                    </button>
+                  </div>
+                </label>
+                {mode === "login" && (
+                  <Link
+                    className="patient-auth-forgot-password"
+                    to="/patient/forgot-password"
+                  >
+                    Quên mật khẩu?
+                  </Link>
+                )}
+                {mode === "register" && (
+                  <label>
+                    <span>
+                      Xác nhận mật khẩu <strong>*</strong>
+                    </span>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      autoComplete="new-password"
+                    />
+                  </label>
+                )}
+
+                {error && (
+                  <div className="patient-auth-error" role="alert">
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  className="patient-auth-submit"
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting
+                    ? "Đang xử lý..."
+                    : mode === "login"
+                      ? "Đăng nhập tài khoản bệnh nhân"
+                      : "Đăng ký và tiếp tục đặt lịch"}
                 </button>
-              </div>
-            </label>
-
-            {mode === "register" && (
-              <label>
-                <span>Xác nhận mật khẩu <strong>*</strong></span>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  autoComplete="new-password"
-                />
-              </label>
-            )}
-
-            {error && <div className="patient-auth-error" role="alert">{error}</div>}
-
-            <button className="patient-auth-submit" type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? "Đang xử lý..."
-                : mode === "login"
-                  ? "Đăng nhập tài khoản bệnh nhân"
-                  : "Đăng ký và tiếp tục đặt lịch"}
-            </button>
               </form>
 
-              <Link className="patient-auth-back" to="/home">Quay lại trang chủ</Link>
+              <Link className="patient-auth-back" to="/home">
+                Quay lại trang chủ
+              </Link>
             </>
           )}
         </section>

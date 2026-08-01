@@ -19,6 +19,10 @@ import Home from "app/routes/Home";
 import Login from "features/auth/Login";
 import ResetPassword from "features/auth/ResetPassword";
 import PatientAuth from "features/auth/PatientAuth";
+import {
+  PatientForgotPassword,
+  PatientResetPassword,
+} from "features/auth/PatientPasswordRecovery";
 import System from "app/routes/System";
 import HomePage from "features/public/home/HomePage";
 import CustomScrollbars from "components/CustomScrollbars";
@@ -87,6 +91,14 @@ const App: React.FC<IAppProps> = ({ persistor, onBeforeLift }) => {
                   }
                 />
                 <Route path={path.PATIENT_AUTH} element={<PatientAuth />} />
+                <Route
+                  path={path.PATIENT_FORGOT_PASSWORD}
+                  element={<PatientForgotPassword />}
+                />
+                <Route
+                  path={path.PATIENT_RESET_PASSWORD}
+                  element={<PatientResetPassword />}
+                />
                 <Route path={path.RESET_PASSWORD} element={<ResetPassword />} />
                 <Route
                   path={`${path.SYSTEM}/*`}

@@ -20,8 +20,29 @@ export const passwordResetApi = publicApi.injectEndpoints({
         data: body,
       }),
     }),
+    forgotSystemPassword: builder.mutation<ApiResponse<void>, { email: string }>({
+      query: (body) => ({
+        url: "/api/auth/forgot-password-system",
+        method: "POST",
+        data: body,
+      }),
+    }),
+    resetSystemPassword: builder.mutation<
+      ApiResponse<void>,
+      { token: string; newPassword: string; confirmPassword: string }
+    >({
+      query: (body) => ({
+        url: "/api/auth/reset-password-system",
+        method: "POST",
+        data: body,
+      }),
+    }),
   }),
 });
 
-export const { useForgotPasswordMutation, useResetPasswordMutation } =
-  passwordResetApi;
+export const {
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+  useForgotSystemPasswordMutation,
+  useResetSystemPasswordMutation,
+} = passwordResetApi;

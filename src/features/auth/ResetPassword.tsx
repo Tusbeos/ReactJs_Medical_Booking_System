@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { useResetPasswordMutation } from "../../store/api/passwordResetApi";
+import { useResetSystemPasswordMutation } from "../../store/api/passwordResetApi";
 import systemLogo from "../../assets/Logo Medibook.png";
 import { path } from "../../utils";
 import "./ResetPassword.scss";
@@ -17,7 +17,7 @@ const ResetPassword: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
-  const [resetPassword, { isLoading }] = useResetPasswordMutation();
+  const [resetPassword, { isLoading }] = useResetSystemPasswordMutation();
 
   const handleSubmit = async () => {
     if (newPassword.length < MIN_PASSWORD_LENGTH) {

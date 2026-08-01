@@ -220,12 +220,12 @@ const HomeHeader: React.FC<IHomeHeaderProps> = ({ isShowBanner }) => {
           </nav>
 
           <div className="header-actions">
-            <button type="button" className="type" aria-label="Thông báo">
+            {/* <button type="button" className="type" aria-label="Thông báo">
               <i className="far fa-bell" />
             </button>
             <button type="button" className="type" aria-label="Hỗ trợ">
               <i className="far fa-question-circle" />
-            </button>
+            </button> */}
             <button
               type="button"
               className="menu-toggle"

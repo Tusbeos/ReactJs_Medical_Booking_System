@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
 
 import * as actions from "store/actions";
-import Navigator from 'components/Navigator';
+import Navigator from "components/Navigator";
 import { adminMenu, clinicManagerMenu, doctorMenu } from "./menuApp";
 import { USER_ROLE } from "utils";
 import "./Header.scss";
@@ -153,17 +153,19 @@ const Header: React.FC = () => {
       <div className="page-title">
         {pageTitle ? <FormattedMessage id={pageTitle} /> : null}
       </div>
-
+      {/* 
       <div className="search-container">
         <i className="fas fa-search search-icon"></i>
         <input type="text" placeholder="Search doctors, ID, or clinic..." />
-      </div>
+      </div> */}
 
       <div className="topbar-right">
         <div className="user-profile">
           <div className="user-info">
             <span className="user-name">
-              {userInfo && userInfo.lastName ? `${userInfo.lastName} ${userInfo.firstName}` : "Admin Profile"}
+              {userInfo && userInfo.lastName
+                ? `${userInfo.lastName} ${userInfo.firstName}`
+                : "Admin Profile"}
             </span>
             <span className="user-role">{getRoleLabel()}</span>
           </div>

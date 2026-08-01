@@ -10,7 +10,7 @@ import {
   handleSystemLoginApi,
 } from "../../services/userService";
 import { USER_ROLE } from "../../utils";
-import { useForgotPasswordMutation } from "../../store/api/passwordResetApi";
+import { useForgotSystemPasswordMutation } from "../../store/api/passwordResetApi";
 
 const Login: React.FC = () => {
   const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const Login: React.FC = () => {
   const [recoveryEmail, setRecoveryEmail] = useState("");
   const [recoveryError, setRecoveryError] = useState("");
   const [recoverySent, setRecoverySent] = useState(false);
-  const [forgotPassword, forgotPasswordState] = useForgotPasswordMutation();
+  const [forgotPassword, forgotPasswordState] = useForgotSystemPasswordMutation();
   const isSendingRecovery = forgotPasswordState.isLoading;
 
   const openForgotPassword = () => {
